@@ -1,6 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
+using DG.Tweening;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -16,6 +15,7 @@ public class Player : MonoBehaviour
     {
         _worldGenerator = WorldManager.Instance;
         _toRemoveChunkCoord = new List<Vector2Int>();
+        transform.DOMove(new Vector3(1,2,3), 1);
     }
 
     void Update()
