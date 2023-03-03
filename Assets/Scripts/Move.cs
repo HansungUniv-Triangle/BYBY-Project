@@ -19,6 +19,14 @@ public class Move : MonoBehaviour
     private BaseStat _base;
     [SerializeField]
     private WeaponData _weapon;
+    [SerializeField]
+    private WeaponData Autorifle;
+    [SerializeField]
+    private WeaponData Cannon;
+    [SerializeField]
+    private WeaponData Shotgun;
+    [SerializeField]
+    private WeaponData Handgun;
     private float _fireCoolTime = 0f;
 
     #region Target
@@ -33,6 +41,7 @@ public class Move : MonoBehaviour
 
     private GameManager _gameManager;
     public List<Synergy> synergyList = new List<Synergy>();
+    private int BtnStatus = 0;
 
     private void Awake()
     {
@@ -45,8 +54,17 @@ public class Move : MonoBehaviour
 
     private void Start()
     {
+        SetupWeapon();
         InitialStatus();
         ApplyStatToBulletData();
+    }
+
+    private void SetupWeapon()
+    {
+        _gameManager.weaponList.Add(Autorifle);
+        _gameManager.weaponList.Add(Cannon);
+        _gameManager.weaponList.Add(Shotgun);
+        _gameManager.weaponList.Add(Handgun);
     }
 
     private void InitialStatus()
@@ -67,20 +85,77 @@ public class Move : MonoBehaviour
         _gameManager.PlayerBulletData.velocity = _base.Velocity;
     }
 
+    public void ChangeGun1()
+    {
+        if (BtnStatus != 1)
+        {
+            _base.ClearStatList();
+            _weapon = _gameManager.weaponList.Find(x => x.weaponName == "라이플");
+            InitialStatus();
+            ApplyStatToBulletData();
+            BtnStatus = 1;
+        }
+    }
+
+    public void ChangeGun2()
+    {
+        if (BtnStatus != 2)
+        {
+            _base.ClearStatList(); 
+            _weapon = _gameManager.weaponList.Find(x => x.weaponName == "캐논");
+            InitialStatus();
+            ApplyStatToBulletData();
+            BtnStatus = 2;
+        }
+    }
+
+    public void ChangeGun3()
+    {
+        if (BtnStatus != 3)
+        {
+            _base.ClearStatList();
+            _weapon = _gameManager.weaponList.Find(x => x.weaponName == "샷건");
+            InitialStatus();
+            ApplyStatToBulletData();
+            BtnStatus = 3;
+        }
+    }
+
+    public void ChangeGun4()
+    {
+        if (BtnStatus != 4)
+        {
+            _base.ClearStatList();
+            _weapon = _gameManager.weaponList.Find(x => x.weaponName == "핸드건");
+            InitialStatus();
+            ApplyStatToBulletData();
+            BtnStatus = 4;
+        }
+    }
+    public void GetUlt()
+    {
+        Debug.Log("Ult");
+    }
+
+    public void CharacterMove(Vector2 inputVector)
+    {
+        float h, v;
+        Vector2 moveInput = inputVector;
+        h = moveInput.x;
+        v = moveInput.y;
+
+        // move
+        _characterRigidbody.velocity = new Vector3(h * _base.Speed, 0, v * _base.Speed);
+    }
+
     private void Update()
     {
-        var inputX = Input.GetAxis("Horizontal");
-        var inputZ = Input.GetAxis("Vertical");
         var inputSpace = Input.GetButton("Jump");
-        
-        // move
-        _characterRigidbody.velocity = new Vector3(inputX * _base.Speed, 0, inputZ * _base.Speed);
-        
         // fire gun
         _fireCoolTime += Time.deltaTime;
         if (inputSpace && _fireCoolTime > _base.FireRate)
         {
-            _gun.Shoot(_base.ShotAtOnce + 5);
+            _gun.Shoot(_base.ShotAtOnce);
             _fireCoolTime = 0;
         }
         

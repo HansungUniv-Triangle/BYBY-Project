@@ -53,8 +53,8 @@ namespace Status
         {
             foreach (var ratioStat in statList)
             {
-                ratioStat.amount = 0;
-                ratioStat.ratio = 0;
+                ratioStat.amount = 1;
+                ratioStat.ratio = 1;
             }
         }
 
