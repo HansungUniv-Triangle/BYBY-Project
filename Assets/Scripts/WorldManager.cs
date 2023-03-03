@@ -46,7 +46,6 @@ public class WorldManager : Singleton<WorldManager>
 
     [Space(5f)]
     public Material Material;
-    public AnimatorController AnimatorController;
     public GameObject BlockPrefab;
     public GameObject ChunkPrefab;
 

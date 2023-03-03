@@ -285,18 +285,20 @@ public class Chunk
         if (_damagedBlocks.Count == 0)
             return;
 
-        MeshFilter[] meshFilters = _chunk.GetComponentsInChildren<MeshFilter>(true);
-        CombineInstance[] combine = new CombineInstance[meshFilters.Length];
+        CombineInstance[] combine = new CombineInstance[_damagedBlocks.Count + 1];
 
-        int j = 0;
-        for (int i = 0; i < meshFilters.Length; i++)
+        combine[0].mesh = _meshFilter.sharedMesh;
+        combine[0].transform = _meshFilter.transform.localToWorldMatrix;
+
+        var j = 1;
+        foreach (var block in _damagedBlocks)
         {
-            if (meshFilters[i] != _meshFilter &&
-                meshFilters[i].gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 0)
+            var damagedBlock = block.Value;
+            if (damagedBlock.IsShaking())
                 continue;
 
-            combine[j].mesh = meshFilters[i].sharedMesh;
-            combine[j].transform = meshFilters[i].transform.localToWorldMatrix;
+            combine[j].mesh = damagedBlock.GetMeshFilter().sharedMesh;
+            combine[j].transform = damagedBlock.GetMeshFilter().transform.localToWorldMatrix;
             j++;
         }
 
@@ -312,27 +314,26 @@ public class Chunk
         if (_damagedBlocks.Count == 0)
             return;
 
-        MeshFilter excludeMeshFilter = _damagedBlocks[excludePos].GetMeshFilter();
+        DamagedBlock excludeBlock = _damagedBlocks[excludePos];
+        CombineInstance[] combine = new CombineInstance[_damagedBlocks.Count];
 
-        MeshFilter[] meshFilters = _chunk.GetComponentsInChildren<MeshFilter>(true);
-        CombineInstance[] combine = new CombineInstance[meshFilters.Length - 1];
+        combine[0].mesh = _meshFilter.sharedMesh;
+        combine[0].transform = _meshFilter.transform.localToWorldMatrix;
 
-        int j = 0;
-        for (int i = 0; i < meshFilters.Length; i++)
+        var j = 1;
+        foreach (var block in _damagedBlocks)
         {
-            if (meshFilters[i] == excludeMeshFilter)
+            var damagedBlock = block.Value;
+            if (damagedBlock == excludeBlock || 
+                damagedBlock.IsShaking())
                 continue;
 
-            if (meshFilters[i] != _meshFilter &&
-                meshFilters[i].gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime > 0)
-                continue;
-
-            combine[j].mesh = meshFilters[i].sharedMesh;
-            combine[j].transform = meshFilters[i].transform.localToWorldMatrix;
+            combine[j].mesh = damagedBlock.GetMeshFilter().sharedMesh;
+            combine[j].transform = damagedBlock.GetMeshFilter().transform.localToWorldMatrix;
             j++;
         }
 
-       if (j != combine.Length)
+        if (j != combine.Length)
             Array.Resize(ref combine, j);
 
         _meshFilter.mesh = new Mesh();
