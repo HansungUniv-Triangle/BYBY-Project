@@ -33,6 +33,11 @@ public class Move : MonoBehaviour
 
     private GameManager _gameManager;
     public List<Synergy> synergyList = new List<Synergy>();
+    public Autorifle autorifle;
+    public Cannon cannon;
+    public Shotgun shotgun;
+    public Handgun handgun;
+    private int BtnStatus = 0;
 
     private void Awake()
     {
@@ -67,20 +72,85 @@ public class Move : MonoBehaviour
         _gameManager.PlayerBulletData.velocity = _base.Velocity;
     }
 
+    public void ChangeGun1()
+    {
+        if (BtnStatus != 1)
+        {
+            _base.ClearStatList();
+            _base = new BaseStat();
+            autorifle = GameObject.Find("Autorifle").GetComponent<Autorifle>();
+            _weapon = autorifle._weapon;
+            InitialStatus();
+            ApplyStatToBulletData();
+            BtnStatus = 1;
+        }
+    }
+
+    public void ChangeGun2()
+    {
+        if (BtnStatus != 2)
+        {
+            _base.ClearStatList();
+            _base = new BaseStat();
+            cannon = GameObject.Find("Cannon").GetComponent<Cannon>();
+            _weapon = cannon._weapon;
+            InitialStatus();
+            ApplyStatToBulletData();
+            BtnStatus = 2;
+        }
+    }
+
+    public void ChangeGun3()
+    {
+        if (BtnStatus != 3)
+        {
+            _base.ClearStatList();
+            _base = new BaseStat();
+            shotgun = GameObject.Find("Shotgun").GetComponent<Shotgun>();
+            _weapon = shotgun._weapon;
+            InitialStatus();
+            ApplyStatToBulletData();
+            BtnStatus = 3;
+        }
+    }
+
+    public void ChangeGun4()
+    {
+        if (BtnStatus != 4)
+        {
+            _base.ClearStatList();
+            _base = new BaseStat();
+            handgun = GameObject.Find("Handgun").GetComponent<Handgun>();
+            _weapon = handgun._weapon;
+            InitialStatus();
+            ApplyStatToBulletData();
+            BtnStatus = 4;
+        }
+    }
+    public void GetUlt()
+    {
+        Debug.Log("Ult");
+    }
+
+    public void CharacterMove(Vector2 inputVector)
+    {
+        float h, v;
+        Vector2 moveInput = inputVector;
+        h = moveInput.x;
+        v = moveInput.y;
+
+        // move
+        _characterRigidbody.velocity = new Vector3(h * _base.Speed, 0, v * _base.Speed);
+    }
+
     private void Update()
     {
-        var inputX = Input.GetAxis("Horizontal");
-        var inputZ = Input.GetAxis("Vertical");
         var inputSpace = Input.GetButton("Jump");
-        
-        // move
-        _characterRigidbody.velocity = new Vector3(inputX * _base.Speed, 0, inputZ * _base.Speed);
-        
         // fire gun
         _fireCoolTime += Time.deltaTime;
         if (inputSpace && _fireCoolTime > _base.FireRate)
         {
-            _gun.Shoot(_base.ShotAtOnce + 5);
+            _gun.Shoot(_base.ShotAtOnce);
             _fireCoolTime = 0;
         }
         
