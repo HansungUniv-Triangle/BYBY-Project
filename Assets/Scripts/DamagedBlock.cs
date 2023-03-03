@@ -1,5 +1,7 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UIElements;
@@ -12,9 +14,7 @@ public class DamagedBlock
     public bool isBroken = false;
 
     private Mesh _mesh;
-    private MeshRenderer _meshRenderer;
     private MeshFilter _meshFilter;
-    private Animator _animator;
 
     private List<Vector3> _vertices;
     private List<int> _indices;
@@ -30,6 +30,8 @@ public class DamagedBlock
 
     private Vector3Int _position;
 
+    private DG.Tweening.Sequence _shakingSequence;
+
     public DamagedBlock(Chunk chunk, Block block, Vector3Int position)
     {
         _position = position;
@@ -40,12 +42,16 @@ public class DamagedBlock
         _gameObject.name = $"Block {position.x} {position.y} {position.z}";
         _gameObject.transform.SetParent(_chunk.GetGameObject().transform);
 
-        _gameObject.GetComponent<DamagedBlockAnimationEvent>().SetEndEvent(AnimationEndEvent);
-
         _mesh = new Mesh();
-        _meshRenderer = _gameObject.GetComponent<MeshRenderer>();
         _meshFilter = _gameObject.GetComponent<MeshFilter>();
-        _animator = _gameObject.GetComponent<Animator>();    
+
+        _shakingSequence = DOTween.Sequence()
+            .SetAutoKill(false)
+            .Append(_gameObject.transform.DOShakePosition(0.5f, 0.25f, 20, 90))
+            .OnComplete(() =>
+            {
+                ShakingEndEvent();
+            });
 
         textureAtlasCellWidth = 1f / textureAtlasWidth;
         textureAtlasCellHeight = 1f / textureAtlasHeight;
@@ -60,21 +66,11 @@ public class DamagedBlock
 
     public MeshFilter GetMeshFilter() { return _meshFilter; }
 
-    public void AnimationEndEvent()
-    {
-        _chunk.CombineOneMesh(_position);
-        _gameObject.SetActive(false);
-    }
-
     public void DecreaseHP(int damage)
     {
         _gameObject.SetActive(true);
+        _shakingSequence.Restart();
 
-        if (_hp > 2)
-            _animator.Play("BlockShaking", -1, 0f);
-        else
-            _animator.Play("BlockShaking2", -1, 0f);
-        
         _hp -= damage;
 
         if (_hp <= 0)
@@ -84,15 +80,27 @@ public class DamagedBlock
         }
     }
 
+    public bool IsShaking()
+    {
+        return _shakingSequence.IsPlaying();
+    }
+
+    public void ShakingEndEvent()
+    {
+        _chunk.CombineOneMesh(_position);
+        _gameObject.SetActive(false);
+    }
+
     public void DestroyGameObject()
     {
+        _shakingSequence.Kill();
         _gameObject.transform.parent = null;
         Object.Destroy(_gameObject);
     }
 
     public void SetMeshRendererEnable(bool state)
     {
-        _meshRenderer.enabled = state;
+        _gameObject.GetComponent<MeshRenderer>().enabled = state;
     }
 
     private void CreateMesh(Block block, Vector3Int position)

@@ -217,13 +217,11 @@ public class World
     public Vector3Int GetBlockCoords(Vector3 pos)
     {
         return new Vector3Int((int)(pos.x + 0.5f), (int)(pos.y + 0.5f), (int)(pos.z + 0.5f));
-        //return new Vector3Int(Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.y), Mathf.RoundToInt(pos.z));
     }
 
     public Vector3Int GetBlockCoords(float x, float y, float z)
     {
         return new Vector3Int((int)(x + 0.5f), (int)(y + 0.5f), (int)(z + 0.5f));
-        //return new Vector3Int(Mathf.RoundToInt(x), Mathf.RoundToInt(y), Mathf.RoundToInt(z));
     }
 
     private void updateChunks(Vector3 pos)
