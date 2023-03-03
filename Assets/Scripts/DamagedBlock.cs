@@ -47,7 +47,7 @@ public class DamagedBlock
 
         _shakingSequence = DOTween.Sequence()
             .SetAutoKill(false)
-            .Append(_gameObject.transform.DOShakeRotation(0.5f, 30, 30, 90))
+            .Append(_gameObject.transform.DOShakePosition(0.5f, 0.25f, 20, 90))
             .OnComplete(() =>
             {
                 ShakingEndEvent();
