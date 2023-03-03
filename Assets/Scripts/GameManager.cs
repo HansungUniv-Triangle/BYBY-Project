@@ -11,4 +11,5 @@ public class GameManager : Singleton<GameManager>
 
     public BulletData PlayerBulletData => playerBulletData;
     public BulletData EnemyBulletData => enemyBulletData;
+    public List<WeaponData> weaponList = new List<WeaponData>();
 }

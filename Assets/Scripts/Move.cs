@@ -19,6 +19,14 @@ public class Move : MonoBehaviour
     private BaseStat _base;
     [SerializeField]
     private WeaponData _weapon;
+    [SerializeField]
+    private WeaponData Autorifle;
+    [SerializeField]
+    private WeaponData Cannon;
+    [SerializeField]
+    private WeaponData Shotgun;
+    [SerializeField]
+    private WeaponData Handgun;
     private float _fireCoolTime = 0f;
 
     #region Target
@@ -33,10 +41,6 @@ public class Move : MonoBehaviour
 
     private GameManager _gameManager;
     public List<Synergy> synergyList = new List<Synergy>();
-    public Autorifle autorifle;
-    public Cannon cannon;
-    public Shotgun shotgun;
-    public Handgun handgun;
     private int BtnStatus = 0;
 
     private void Awake()
@@ -50,8 +54,17 @@ public class Move : MonoBehaviour
 
     private void Start()
     {
+        SetupWeapon();
         InitialStatus();
         ApplyStatToBulletData();
+    }
+
+    private void SetupWeapon()
+    {
+        _gameManager.weaponList.Add(Autorifle);
+        _gameManager.weaponList.Add(Cannon);
+        _gameManager.weaponList.Add(Shotgun);
+        _gameManager.weaponList.Add(Handgun);
     }
 
     private void InitialStatus()
@@ -77,9 +90,7 @@ public class Move : MonoBehaviour
         if (BtnStatus != 1)
         {
             _base.ClearStatList();
-            _base = new BaseStat();
-            autorifle = GameObject.Find("Autorifle").GetComponent<Autorifle>();
-            _weapon = autorifle._weapon;
+            _weapon = _gameManager.weaponList.Find(x => x.weaponName == "라이플");
             InitialStatus();
             ApplyStatToBulletData();
             BtnStatus = 1;
@@ -90,10 +101,8 @@ public class Move : MonoBehaviour
     {
         if (BtnStatus != 2)
         {
-            _base.ClearStatList();
-            _base = new BaseStat();
-            cannon = GameObject.Find("Cannon").GetComponent<Cannon>();
-            _weapon = cannon._weapon;
+            _base.ClearStatList(); 
+            _weapon = _gameManager.weaponList.Find(x => x.weaponName == "캐논");
             InitialStatus();
             ApplyStatToBulletData();
             BtnStatus = 2;
@@ -105,9 +114,7 @@ public class Move : MonoBehaviour
         if (BtnStatus != 3)
         {
             _base.ClearStatList();
-            _base = new BaseStat();
-            shotgun = GameObject.Find("Shotgun").GetComponent<Shotgun>();
-            _weapon = shotgun._weapon;
+            _weapon = _gameManager.weaponList.Find(x => x.weaponName == "샷건");
             InitialStatus();
             ApplyStatToBulletData();
             BtnStatus = 3;
@@ -119,9 +126,7 @@ public class Move : MonoBehaviour
         if (BtnStatus != 4)
         {
             _base.ClearStatList();
-            _base = new BaseStat();
-            handgun = GameObject.Find("Handgun").GetComponent<Handgun>();
-            _weapon = handgun._weapon;
+            _weapon = _gameManager.weaponList.Find(x => x.weaponName == "핸드건");
             InitialStatus();
             ApplyStatToBulletData();
             BtnStatus = 4;
