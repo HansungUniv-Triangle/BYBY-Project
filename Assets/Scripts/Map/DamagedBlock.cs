@@ -9,7 +9,7 @@ using UnityEngine.UIElements;
 public class DamagedBlock
 {
     private GameObject _gameObject;
-    private int _hp;
+    private float _hp;
     
     public bool isBroken = false;
 
@@ -66,7 +66,7 @@ public class DamagedBlock
 
     public MeshFilter GetMeshFilter() { return _meshFilter; }
 
-    public void DecreaseHP(int damage)
+    public void DecreaseHP(float damage)
     {
         _gameObject.SetActive(true);
         _shakingSequence.Restart();

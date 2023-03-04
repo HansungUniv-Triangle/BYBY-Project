@@ -26,7 +26,7 @@ public class Synergy : ScriptableObject
         
         if ((checkChar > 0) || (checkWeapon > 0))
         {
-            Debug.Log($"{synergyName}에 중복된 stat이 존재합니다.");
+            Debug.LogWarning($"{synergyName}에 중복된 stat이 존재합니다.");
         }
     }
 }

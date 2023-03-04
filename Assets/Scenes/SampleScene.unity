@@ -210,13 +210,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 79994739}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1ebca1abb583a2469dfece1c4dfdf9c, type: 3}
+  m_Script: {fileID: 11500000, guid: 380e41eabcc504f44b77d3b031513bdd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lever: {fileID: 444465247}
-  leverRange: 50
+  lever: {fileID: 0}
+  leverRange: 0
   inputVector: {x: 0, y: 0}
-  controller: {fileID: 1562452195}
+  controller: {fileID: 0}
 --- !u!1 &87949602
 GameObject:
   m_ObjectHideFlags: 0
@@ -301,9 +301,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1562452195}
-        m_TargetAssemblyTypeName: Move, Assembly-CSharp
-        m_MethodName: GetUlt
+      - m_Target: {fileID: 683401467}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: Test
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1541,17 +1541,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   testButton: 0
-  _weapon: {fileID: 11400000, guid: 5666c289c2c3492489e0eaf1e90da016, type: 2}
-  Autorifle: {fileID: 11400000, guid: 8d34c3b650b778d40b33583021847081, type: 2}
-  Cannon: {fileID: 11400000, guid: 5666c289c2c3492489e0eaf1e90da016, type: 2}
-  Shotgun: {fileID: 11400000, guid: c138c4127547cdd49bc2b654f1dfa30f, type: 2}
-  Handgun: {fileID: 11400000, guid: 61d40fcfcd2d62748aa2283fc707eb41, type: 2}
   target: {fileID: 1972338502}
   synergyList:
   - {fileID: 11400000, guid: 4dd813c273201e3499f90b7ed0bdda15, type: 2}
-  - {fileID: 11400000, guid: 00d4c3ca0825c0040a3290d5b5b65b61, type: 2}
-  - {fileID: 11400000, guid: 7b8e0f607fe4e1347953888d3abd9100, type: 2}
-  - {fileID: 11400000, guid: 6201d83668f0ab745bfb55e53cad71c2, type: 2}
 --- !u!54 &1562452196
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1659,7 +1651,6 @@ GameObject:
   - component: {fileID: 1594681842}
   - component: {fileID: 1594681845}
   - component: {fileID: 1594681844}
-  - component: {fileID: 1594681846}
   m_Layer: 0
   m_Name: Gun
   m_TagString: Untagged
@@ -1732,18 +1723,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1594681841}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &1594681846
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1594681841}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e22e9d632364ae08709559eab957150, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1596480990
 GameObject:
   m_ObjectHideFlags: 0

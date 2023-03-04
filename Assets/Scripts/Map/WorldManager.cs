@@ -70,7 +70,7 @@ public class WorldManager : Singleton<WorldManager>
     {
         _noiseMap = Noise.GeneratePerlinNoise(MapWidth, MapHeight, Seed, NoiseScale, Octaves, Persistance, Lacunarity, Offset);
         /*
-        // ³ëÀÌÁî ¸Ê °æ°è¼± °ªµé º¸°£
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½è¼± ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         Noise.MakeSeamlessNoiseHorizontally(_noiseMap, 30);
         Noise.MakeSeamlessNoiseVertically(_noiseMap, 30);
         */
@@ -142,5 +142,10 @@ public class WorldManager : Singleton<WorldManager>
         {
             ChunkSize.z = MapHeight / WorldChunkHeight;
         }
+    }
+
+    protected override void Initiate()
+    {
+        
     }
 }

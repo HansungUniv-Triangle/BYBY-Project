@@ -8,26 +8,46 @@ public class World
 {
     public GameObject gameObject;
     private Chunk[,] _worldMap;
-
-    private readonly Vector3[] checkOffsetBlock = {
-        new Vector3(0, 0, -1),
-        new Vector3(0, 0, 1),
-        new Vector3(-1, 0, 0),
-        new Vector3(1, 0, 0)
+    
+    private readonly Vector3[] _checkOffsetBlock = {
+        Vector3.back, 
+        Vector3.forward,
+        Vector3.left,
+        Vector3.right
     };
 
-    private readonly Vector2Int[] checkOffsetChunk = {
-        new Vector2Int(0, 0),
-        new Vector2Int(0, -1),
-        new Vector2Int(0, 1),
-        new Vector2Int(-1, 0),
-        new Vector2Int(1, 0),
-        new Vector2Int(-1, -1),
-        new Vector2Int(-1, 1),
-        new Vector2Int(1, -1),
-        new Vector2Int(1, 1)
+    private readonly Vector2Int[] _checkOffsetChunk = {
+        Vector2Int.zero,
+        Vector2Int.down,
+        Vector2Int.up,
+        Vector2Int.left,
+        Vector2Int.right,
+        Vector2Int.left + Vector2Int.down,
+        Vector2Int.left + Vector2Int.up,
+        Vector2Int.right + Vector2Int.down,
+        Vector2Int.right + Vector2Int.up,
     };
 
+    #region GetMethod
+
+    public Chunk GetChunk(int x, int z) => _worldMap[x, z];
+    public Chunk GetChunk(Vector2Int pos) => _worldMap[pos.x, pos.y];
+    public Chunk GetChunk(Vector3 pos)
+    {
+        var chunkPos = WorldManager.Instance.CalculateChunkCoords(pos);
+        if (IsPositionInWorld(chunkPos))
+            return _worldMap[chunkPos.x, chunkPos.y];
+        else
+            return null;
+    }
+    public Chunk[,] GetChunkAll => _worldMap;
+    public int GetWidth() => _worldMap.GetLength(0);
+    public int GetHeight() => _worldMap.GetLength(1);
+    public Vector3Int GetBlockCoords(Vector3 pos) => new((int)(pos.x + 0.5f), (int)(pos.y + 0.5f), (int)(pos.z + 0.5f));
+    public Vector3Int GetBlockCoords(float x, float y, float z) => new((int)(x + 0.5f), (int)(y + 0.5f), (int)(z + 0.5f));
+
+    #endregion
+    
     public World()
     {
         gameObject = new GameObject("World", new System.Type[] { });
@@ -38,24 +58,6 @@ public class World
         _worldMap = new Chunk[worldChunkWidth, worldChunkHeight];
     }
 
-    public Chunk GetChunk(int x, int z)
-    {
-        return _worldMap[x, z];
-    }
-    
-    public Chunk GetChunk(Vector2Int pos)
-    {
-        return _worldMap[pos.x, pos.y];
-    }
-
-    public Chunk GetChunk(Vector3 pos)
-    {
-        var chunkPos = WorldManager.Instance.CalculateChunkCoords(pos);
-        if (IsPositionInWorld(chunkPos))
-            return _worldMap[chunkPos.x, chunkPos.y];
-        else
-            return null;
-    }
 
     public void SetChunk(int x, int z, Chunk chunk)
     {
@@ -107,7 +109,7 @@ public class World
                 var noiseHeight = (int)(noiseMap[x, z] * TerrainHeight) + TerrainBaseHeight - 1;
 
                 /*
-                // »ê °°Àº ÁöÇü, °ª ÁõÆø
+                // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
                 if (noiseHeight > 45)
                 {
                     var offset = noiseHeight - 45;
@@ -133,7 +135,7 @@ public class World
     {
         var Blocks = WorldManager.Instance.Blocks;
 
-        // ºí·°ÀÌ ³ªÅ¸³ª´Â Á¶°Çµé
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Çµï¿½
         if (pos.y == 0)
             return Blocks[(int)Block.BlockType.Bedrock];
         if (pos.y == noiseHeight)
@@ -211,26 +213,16 @@ public class World
                 }
             }
         }
-        updateChunks(center);   // ÀÏ°ý Ã³¸®
-    }
-
-    public Vector3Int GetBlockCoords(Vector3 pos)
-    {
-        return new Vector3Int((int)(pos.x + 0.5f), (int)(pos.y + 0.5f), (int)(pos.z + 0.5f));
-    }
-
-    public Vector3Int GetBlockCoords(float x, float y, float z)
-    {
-        return new Vector3Int((int)(x + 0.5f), (int)(y + 0.5f), (int)(z + 0.5f));
+        updateChunks(center);   // ï¿½Ï°ï¿½ Ã³ï¿½ï¿½
     }
 
     private void updateChunks(Vector3 pos)
     {
-        // ÇØ´ç À§Ä¡ÀÇ Ã»Å©¿¡¼­ »óÇÏÁÂ¿ì´ë°¢¼± Ã»Å© ¾÷µ¥ÀÌÆ®
+        // ï¿½Ø´ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ Ã»Å©ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Â¿ï¿½ë°¢ï¿½ï¿½ Ã»Å© ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
         var currentChunkPos = WorldManager.Instance.CalculateChunkCoords(pos);
-        for (int i = 0; i < checkOffsetChunk.Length; i++)
+        for (int i = 0; i < _checkOffsetChunk.Length; i++)
         {
-            var nextChunkPos = currentChunkPos + checkOffsetChunk[i];
+            var nextChunkPos = currentChunkPos + _checkOffsetChunk[i];
             if(IsPositionInWorld(nextChunkPos))
             {
                 var chunk = _worldMap[nextChunkPos.x, nextChunkPos.y];
@@ -242,15 +234,15 @@ public class World
 
     private void updateChunks(Chunk currentChunk, Vector3 pos)
     {
-        // ÇØ´ç À§Ä¡ÀÇ ºí·°¿¡¼­ »óÇÏÁÂ¿ì ÇÑ Ä­¿¡ ´Ù¸¥ Ã»Å©°¡ ÀÖÀ» °æ¿ì ¾÷µ¥ÀÌÆ®
+        // ï¿½Ø´ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Â¿ï¿½ ï¿½ï¿½ Ä­ï¿½ï¿½ ï¿½Ù¸ï¿½ Ã»Å©ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
         var chunkPos = currentChunk.GetChunkCoord();
 
         //currentChunk.CreateChunkMesh();
         //currentChunk.UpdateChunkMesh();
 
-        for (int i = 0; i < checkOffsetBlock.Length; i++)
+        for (int i = 0; i < _checkOffsetBlock.Length; i++)
         {
-            var nextChunkPos = WorldManager.Instance.CalculateChunkCoords(pos + checkOffsetBlock[i]);
+            var nextChunkPos = WorldManager.Instance.CalculateChunkCoords(pos + _checkOffsetBlock[i]);
             if (chunkPos != nextChunkPos && IsPositionInWorld(nextChunkPos))
             {
                 var chunk = _worldMap[nextChunkPos.x, nextChunkPos.y];
@@ -258,16 +250,6 @@ public class World
                 chunk.UpdateChunkMesh();
             }
         }
-    }
-
-    public int GetWidth()
-    {
-        return _worldMap.GetLength(0);
-    }
-
-    public int GetHeight()
-    {
-        return _worldMap.GetLength(1);
     }
 
     public bool IsPositionInWorld(Vector2Int pos)

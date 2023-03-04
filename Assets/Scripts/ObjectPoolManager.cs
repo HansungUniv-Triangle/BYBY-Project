@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Type;
-// ReSharper disable All
 
 public class ObjectPoolManager : Singleton<ObjectPoolManager>
 {
@@ -79,5 +78,8 @@ public class ObjectPoolManager : Singleton<ObjectPoolManager>
     //         _ => throw new ArgumentOutOfRangeException()
     //     };
     // }
-    
+    protected override void Initiate()
+    {
+        throw new NotImplementedException();
+    }
 }

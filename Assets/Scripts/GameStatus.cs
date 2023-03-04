@@ -86,6 +86,14 @@ namespace GameStatus
         {
             GetStat(stat.Type).AddStat(stat);
         }
+        
+        public void AddStatList(List<Stat<T>> statList)
+        {
+            foreach (var stat in statList)
+            {
+                AddStat(stat);
+            }
+        }
 
         public Stat<T> GetStat(T type)
         {

@@ -1,20 +1,19 @@
-﻿using Type;
+﻿using System.Collections.Generic;
+using Type;
 using UnityEngine;
 using GameStatus;
 
 namespace Weapon
 {
-    public abstract class Weapon : MonoBehaviour
+    public abstract class WeaponBase : MonoBehaviour
     {
-        protected BaseStat<WeaponStat> BaseStat;
+        protected BaseStat<WeaponStat> BaseWeaponStat;
+        protected Transform WeaponPos;
         protected float CoolTime;
         protected int Level;
 
         private void Awake()
         {
-            BaseStat = new BaseStat<WeaponStat>();
-            Level = 0;
-            CoolTime = 0;
             Initialize();
         }
         
@@ -25,7 +24,7 @@ namespace Weapon
 
         public void IncreaseLevel()
         {
-            if (BaseStat.GetStat(WeaponStat.MaxLevel).Total > Level) Level++;
+            if (BaseWeaponStat.GetStat(WeaponStat.MaxLevel).Total > Level) Level++;
         }
         
         public void DecreaseLevel()
@@ -38,9 +37,24 @@ namespace Weapon
             return Level;
         }
 
+        public void AddWeaponStat(Stat<WeaponStat> stat)
+        {
+            BaseWeaponStat.AddStat(stat);
+        }
+        
+        public void AddWeaponStatList(List<Stat<WeaponStat>> statList)
+        {
+            BaseWeaponStat.AddStatList(statList);
+        }
+
+        public void ClearWeaponStat()
+        {
+            BaseWeaponStat.ClearStatList();
+        }
+
         protected virtual bool CheckCoolTime()
         {
-            var interval = BaseStat.GetStat(WeaponStat.Interval).Total;
+            var interval = BaseWeaponStat.GetStat(WeaponStat.Interval).Total;
             return CoolTime > interval;
         }
 
