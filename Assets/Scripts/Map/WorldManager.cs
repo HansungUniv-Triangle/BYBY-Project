@@ -58,6 +58,7 @@ public class WorldManager : Singleton<WorldManager>
     public void Start()
     {
         _world = new World();
+        GeneratorMap();
     }
 
     public World GetWorld()

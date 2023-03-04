@@ -160,7 +160,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 84, y: 55}
+  m_AnchoredPosition: {x: 78, y: 77}
   m_SizeDelta: {x: 130, y: 130}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &79994741
@@ -254,7 +254,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 191, y: 64}
+  m_AnchoredPosition: {x: 188, y: 24}
   m_SizeDelta: {x: 80, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &87949604
@@ -904,8 +904,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29bfef11b84916443b6ffafc55ef33f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bulletPrefab: {fileID: 656240099821018407, guid: de3564578b2a7984f9adfc4053fbaf80,
-    type: 3}
 --- !u!4 &683401466
 Transform:
   m_ObjectHideFlags: 0
@@ -933,9 +931,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cce31cc1a39442e9b4c78d04cc8a7efa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerBulletData: {fileID: 11400000, guid: 24eddbbbc3a97864f9271a91ac5844cb, type: 2}
-  enemyBulletData: {fileID: 11400000, guid: ef5940710f5c96e499d1e42aa62231c0, type: 2}
-  weaponList: []
 --- !u!1 &739233070
 GameObject:
   m_ObjectHideFlags: 0
@@ -2286,7 +2281,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 252.1, y: 20}
+  m_AnchoredPosition: {x: 122, y: 386}
   m_SizeDelta: {x: 207, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2105967991

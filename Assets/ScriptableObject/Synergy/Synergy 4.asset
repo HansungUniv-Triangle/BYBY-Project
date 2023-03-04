@@ -22,3 +22,5 @@ MonoBehaviour:
   - statType: 11
     amount: 1
     ratio: 0
+  eventList:
+  - {fileID: 0}

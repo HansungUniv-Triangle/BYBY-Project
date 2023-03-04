@@ -1,13 +1,9 @@
 fileFormatVersion: 2
-<<<<<<< Updated upstream
 <<<<<<<< Updated upstream:Assets/Scripts/Joystick.cs.meta
-guid: 380e41eabcc504f44b77d3b031513bdd
+guid: ec2cbb4c2537d014588bb746caed2d37
 ========
 guid: 4d51306c61efd88439442b49a476ff4e
 >>>>>>>> Stashed changes:Assets/Scripts/Follow.cs.meta
-=======
-guid: a0c86bcc775f660438f98a3a9c4026d8
->>>>>>> Stashed changes
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2

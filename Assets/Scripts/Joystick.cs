@@ -1,65 +1,65 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.EventSystems;
-
-public class Joystick : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
-{
-    [SerializeField]
-    private RectTransform lever;
-    private RectTransform joystickPanel;
-
-    [SerializeField, Range(10f, 150f)]
-    private float leverRange;
-    public Vector2 inputVector;
-    private bool isInput;
-
-    public Move controller;
-
-    void Start()
-    {
-        joystickPanel = GetComponent<RectTransform>();
-        //leverRange = 10.0f;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (isInput)
-        {
-            InputControlVector();
-        }
-    }
-    public void OnBeginDrag(PointerEventData eventData)
-    {
-        ControlJoystickLever(eventData);
-        isInput = true;
-    }
-
-    // ¿ÀºêÁ§Æ®¸¦ Å¬¸¯ÇØ¼­ µå·¡±× ÇÏ´Â µµÁß¿¡ µé¾î¿À´Â ÀÌº¥Æ®    // ÇÏÁö¸¸ Å¬¸¯À» À¯ÁöÇÑ »óÅÂ·Î ¸¶¿ì½º¸¦ ¸ØÃß¸é ÀÌº¥Æ®°¡ µé¾î¿ÀÁö ¾ÊÀ½    
-    public void OnDrag(PointerEventData eventData)
-    {
-        ControlJoystickLever(eventData);  // Ãß°¡
-    }
-
-    public void OnEndDrag(PointerEventData eventData)
-    {
-        lever.anchoredPosition = Vector2.zero;
-        isInput = false;
-        controller.CharacterMove(Vector2.zero);
-    }
-
-    public void ControlJoystickLever(PointerEventData eventData)
-    {
-        var inputDir = eventData.position - joystickPanel.anchoredPosition;
-        var clampedDir = inputDir.magnitude < leverRange ? inputDir : inputDir.normalized * leverRange;
-
-        lever.anchoredPosition = clampedDir;
-        inputVector = clampedDir / leverRange;
-    }
-
-    private void InputControlVector()
-    {
-        controller.CharacterMove(inputVector);
-    }
-}
+// using System.Collections;
+// using System.Collections.Generic;
+// using UnityEngine;
+// using UnityEngine.EventSystems;
+//
+// public class Joystick : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+// {
+//     [SerializeField]
+//     private RectTransform lever;
+//     private RectTransform joystickPanel;
+//
+//     [SerializeField, Range(10f, 150f)]
+//     private float leverRange;
+//     public Vector2 inputVector;
+//     private bool isInput;
+//
+//     public Move controller;
+//
+//     void Start()
+//     {
+//         joystickPanel = GetComponent<RectTransform>();
+//         //leverRange = 10.0f;
+//     }
+//
+//     // Update is called once per frame
+//     void Update()
+//     {
+//         if (isInput)
+//         {
+//             InputControlVector();
+//         }
+//     }
+//     public void OnBeginDrag(PointerEventData eventData)
+//     {
+//         ControlJoystickLever(eventData);
+//         isInput = true;
+//     }
+//
+//     // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½Ø¼ï¿½ ï¿½å·¡ï¿½ï¿½ ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ß¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ìºï¿½Æ®    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â·ï¿½ ï¿½ï¿½ï¿½ì½ºï¿½ï¿½ ï¿½ï¿½ï¿½ß¸ï¿½ ï¿½Ìºï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½    
+//     public void OnDrag(PointerEventData eventData)
+//     {
+//         ControlJoystickLever(eventData);  // ï¿½ß°ï¿½
+//     }
+//
+//     public void OnEndDrag(PointerEventData eventData)
+//     {
+//         lever.anchoredPosition = Vector2.zero;
+//         isInput = false;
+//         controller.CharacterMove(Vector2.zero);
+//     }
+//
+//     public void ControlJoystickLever(PointerEventData eventData)
+//     {
+//         var inputDir = eventData.position - joystickPanel.anchoredPosition;
+//         var clampedDir = inputDir.magnitude < leverRange ? inputDir : inputDir.normalized * leverRange;
+//
+//         lever.anchoredPosition = clampedDir;
+//         inputVector = clampedDir / leverRange;
+//     }
+//
+//     private void InputControlVector()
+//     {
+//         controller.CharacterMove(inputVector);
+//     }
+// }

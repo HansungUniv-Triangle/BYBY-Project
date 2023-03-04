@@ -15,49 +15,60 @@ public class Player : MonoBehaviour
     {
         _worldGenerator = WorldManager.Instance;
         _toRemoveChunkCoord = new List<Vector2Int>();
-        transform.DOMove(new Vector3(1,2,3), 1);
     }
 
-    void Update()
-    {
-        _chunkCoord = _worldGenerator.CalculateChunkCoords(transform.position);
-
-        if(_chunkCoord != _prevChunkCoord)
-        {
-            _prevChunkCoord = _chunkCoord;
-            DectivatesChunks();
-            ActivatesChunks();
-        }
-    }
-    private void ActivatesChunks()
-    {
-        if (_worldGenerator.GetWorld() == null)
-            return;
-
-        for (var x = _chunkCoord.x - ActiveChunksRange; x <= _chunkCoord.x + ActiveChunksRange; x++)
-        {
-            for (var z = _chunkCoord.y - ActiveChunksRange; z <= _chunkCoord.y + ActiveChunksRange; z++)
-            {
-                var pos = new Vector2Int(x, z);
-
-                if (_worldGenerator.GetWorld().IsPositionInWorld(pos))
-                {
-                    _toRemoveChunkCoord.Add(pos);
-
-                    var chunk = _worldGenerator.GetWorld().GetChunk(pos);
-                    chunk.ActivatesMesh();
-                }
-            }
-        }
-    }
-
-    private void DectivatesChunks()
-    {
-        foreach(var chunkCoord in _toRemoveChunkCoord)
-        {
-            var chunk = _worldGenerator.GetWorld().GetChunk(chunkCoord.x, chunkCoord.y);
-            chunk.DeactivatesMesh();
-        }
-        _toRemoveChunkCoord.Clear();
-    }
+    // void Update()
+    // {
+    //     ActivatesChunks();
+    //     _chunkCoord = _worldGenerator.CalculateChunkCoords(transform.position);
+    //
+    //      if(_chunkCoord != _prevChunkCoord)
+    //      {
+    //          _prevChunkCoord = _chunkCoord;
+    //          //DectivatesChunks();
+    //          ActivatesChunks();
+    //      }
+    // }
+    //
+    // private void ActivatesChunks()
+    // {
+    //     if (_worldGenerator.GetWorld() == null)
+    //         return;
+    //
+    //     foreach (var chunk in _worldGenerator.GetWorld().chunkArray)
+    //     {
+    //         chunk.ActivatesMesh();
+    //     }
+    // }
+    //
+    // private void ActivatesChunks()
+    // {
+    //     if (_worldGenerator.GetWorld() == null)
+    //         return;
+    //
+    //     for (var x = _chunkCoord.x - ActiveChunksRange; x <= _chunkCoord.x + ActiveChunksRange; x++)
+    //     {
+    //         for (var z = _chunkCoord.y - ActiveChunksRange; z <= _chunkCoord.y + ActiveChunksRange; z++)
+    //         {
+    //             var pos = new Vector2Int(x, z);
+    //
+    //             if (_worldGenerator.GetWorld().IsPositionInWorld(pos))
+    //             {
+    //                 _toRemoveChunkCoord.Add(pos);
+    //
+    //                 var chunk = _worldGenerator.GetWorld().GetChunk(pos);
+    //                 chunk.ActivatesMesh();
+    //             }
+    //         }
+    //     }
+    // }
+    // private void DectivatesChunks()
+    // {
+    //     foreach(var chunkCoord in _toRemoveChunkCoord)
+    //     {
+    //         var chunk = _worldGenerator.GetWorld().GetChunk(chunkCoord.x, chunkCoord.y);
+    //         chunk.DeactivatesMesh();
+    //     }
+    //     _toRemoveChunkCoord.Clear();
+    // }
 }

@@ -1,22 +1,30 @@
 using System.Collections.Generic;
 using System.Linq;
+using GameStatus;
 using UnityEngine;
-using Status;
+using Type;
 
 [ CreateAssetMenu(fileName = "Synergy", menuName = "SO/Synergy" )]
 public class Synergy : ScriptableObject
 {
     public Sprite sprite;
     public string synergyName;
+    public string synergyExplain;
     public int priority = 0;
-    public List<RatioStat> statList = new List<RatioStat>();
-
+    public List<Stat<CharStat>> charStatList = new List<Stat<CharStat>>();
+    public List<Stat<WeaponStat>> weaponStatList = new List<Stat<WeaponStat>>();
+    
     private void Awake()
     {
-        var result = statList
-            .GroupBy(x => x.statType)
+        var checkChar = charStatList
+            .GroupBy(x => x.Type)
             .Count(g => g.Count() > 1);
-        if (result > 0)
+        
+        var checkWeapon = weaponStatList
+            .GroupBy(x => x.Type)
+            .Count(g => g.Count() > 1);
+        
+        if ((checkChar > 0) || (checkWeapon > 0))
         {
             Debug.Log($"{synergyName}에 중복된 stat이 존재합니다.");
         }

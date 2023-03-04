@@ -2,7 +2,7 @@
 using UnityEngine;
 
 [ CreateAssetMenu(fileName = "BulletData", menuName = "SO/BulletData" )]
-public class BulletData : ScriptableObject
+public class ProjectileData : ScriptableObject
 {
     public PoolObject poolObject = PoolObject.PlayerBullet;
     public float maxRange = 1; // 최대 거리

@@ -58,6 +58,8 @@ public class Chunk
 
         textureAtlasCellWidth = 1f / textureAtlasWidth;
         textureAtlasCellHeight = 1f / textureAtlasHeight;
+        
+        ActivatesMesh();
     }
 
     public GameObject GetGameObject()
