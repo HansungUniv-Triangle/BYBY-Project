@@ -10,6 +10,7 @@
 
     public enum Layer
     {
+        World = 1 << 6,
         Entity = 1 << 7,
         Block = 1 << 8,
     }
