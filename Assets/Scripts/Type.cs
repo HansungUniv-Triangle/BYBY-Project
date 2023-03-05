@@ -28,7 +28,7 @@
         Shield, // 쉴드 비율
         Vampire, // 피흡
         Armor, // 방어력
-        Ult, // 필살기 횟수
+        Ultimate, // 필살기 횟수
         DamageRatio, // 최종 데미지 비율
         IntervalRatio, // 연사 비율
     }

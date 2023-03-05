@@ -213,10 +213,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 380e41eabcc504f44b77d3b031513bdd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lever: {fileID: 0}
-  leverRange: 0
+  lever: {fileID: 444465247}
+  leverRange: 20
   inputVector: {x: 0, y: 0}
-  controller: {fileID: 0}
+  controller: {fileID: 1562452195}
 --- !u!1 &87949602
 GameObject:
   m_ObjectHideFlags: 0
@@ -1544,6 +1544,7 @@ MonoBehaviour:
   target: {fileID: 1972338502}
   synergyList:
   - {fileID: 11400000, guid: 4dd813c273201e3499f90b7ed0bdda15, type: 2}
+  weapons: []
 --- !u!54 &1562452196
 Rigidbody:
   m_ObjectHideFlags: 0

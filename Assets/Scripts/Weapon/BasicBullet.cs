@@ -4,6 +4,7 @@
 
 using System;
 using UnityEngine;
+using Util;
 
 namespace Weapon
 {
@@ -29,7 +30,7 @@ namespace Weapon
                 }
                 else
                 {
-                    throw new Exception("Tag는 Block인데 DamagedBlock이 없음");
+                    throw new Exception(Message.CantFindBlockTagInDamagedBlock);
                 }
             }
         }

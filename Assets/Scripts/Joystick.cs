@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -19,7 +17,7 @@ public class Joystick : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     void Start()
     {
         joystickPanel = GetComponent<RectTransform>();
-        //leverRange = 10.0f;
+        leverRange = 10.0f;
     }
 
     // Update is called once per frame
