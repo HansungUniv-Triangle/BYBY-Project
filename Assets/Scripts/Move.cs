@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using GameStatus;
 using UnityEngine;
@@ -22,6 +23,11 @@ public class Move : MonoBehaviour
     [SerializeField]
     private Joystick _joystick;
     
+    public float _jumpForce = 7.0f;
+    public float _fallMultiplier = 2.0f;
+    [SerializeField]
+    private bool _isOnGround;
+    
     private bool _isTargetNotNull;
     private Rigidbody _characterRigidbody;
     private int _btnStatus;
@@ -30,6 +36,8 @@ public class Move : MonoBehaviour
     public List<Synergy> synergyList = new List<Synergy>();
 
     public List<WeaponBase> weapons = new List<WeaponBase>();
+    
+    
     private WeaponBase _weapon => weapons[_btnStatus - 1];
     
     private void Awake()
@@ -103,29 +111,45 @@ public class Move : MonoBehaviour
     public void CharacterMove()
     {
         var speed = _baseCharStat.GetStat(CharStat.Speed).Total;
-
-        _characterRigidbody.velocity = new Vector3(
-            _joystick.Horizontal * speed, 
-            0, 
-            _joystick.Vertical * speed);
+        _characterRigidbody.AddForce(new Vector3(_joystick.Horizontal, 0, _joystick.Vertical) * speed, ForceMode.Acceleration);
     }
 
     private void Update()
     {
         var inputSpace = Input.GetButton("Jump");
 ;
-        if (inputSpace)
+        if (inputSpace && _isOnGround)
         {
-            _weapon.Attack();
+            _characterRigidbody.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
         }
+    }
 
-        CharacterMove();
-        
-        // target
+    private void FixedUpdate()
+    {
         if(_isTargetNotNull) transform.LookAt(target.transform);
-        
-        // Todo: 그냥 테스트용 코드
+        CharacterMove();
         TestUpdate();
+
+        if (_characterRigidbody.velocity.y < 0)
+        {
+            //_characterRigidbody.AddForce(Vector3.down * _fallMultiplier, ForceMode.Impulse);
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.layer == LayerMask.NameToLayer("World"))
+        {
+            _isOnGround = true;
+        }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.layer == LayerMask.NameToLayer("World"))
+        {
+            _isOnGround = false;
+        }
     }
 
     public void Attack()

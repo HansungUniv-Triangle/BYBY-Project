@@ -186,7 +186,7 @@ public class World
         var blockPos = GetBlockCoords(pos);
 
         chunk.HitBlock(blockPos, damage);
-        updateChunks(chunk, pos);
+        UpdateChunks(chunk, pos);
     }
 
     public void ExplodeBlocks(Vector3 center, int radius)
@@ -209,10 +209,10 @@ public class World
                 }
             }
         }
-        updateChunks(center);   // �ϰ� ó��
+        UpdateChunks(center);   // �ϰ� ó��
     }
 
-    private void updateChunks(Vector3 pos)
+    private void UpdateChunks(Vector3 pos)
     {
         // �ش� ��ġ�� ûũ���� �����¿�밢�� ûũ ������Ʈ
         var currentChunkPos = WorldManager.Instance.CalculateChunkCoords(pos);
@@ -228,7 +228,7 @@ public class World
         }
     }
 
-    private void updateChunks(Chunk currentChunk, Vector3 pos)
+    private void UpdateChunks(Chunk currentChunk, Vector3 pos)
     {
         // �ش� ��ġ�� ������ �����¿� �� ĭ�� �ٸ� ûũ�� ���� ��� ������Ʈ
         var chunkPos = currentChunk.GetChunkCoord();

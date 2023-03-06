@@ -20,19 +20,27 @@ namespace Weapon
             return Distance > MaxRange;
         }
         
-        protected override void OnCollisionEnter(Collision collision)
+        private void OnCollisionEnter(Collision collision)
         {
-            if (collision.gameObject.CompareTag("Block"))
+            if (collision.gameObject.layer == LayerMask.NameToLayer("World"))
             {
-                if (collision.gameObject.TryGetComponent<DamagedBlock>(out var damagedBlockScript))
-                {
-                    damagedBlockScript.DecreaseHP(TotalDamage);
-                }
-                else
-                {
-                    throw new Exception(Message.CantFindBlockTagInDamagedBlock);
-                }
+                var hit = collision.contacts[0];
+                var point = hit.point - hit.normal * 0.1f;
+                WorldManager.Instance.GetWorld().HitBlock(point, 1);
+                DestroyProjectile();
             }
+            
+            // if (collision.gameObject.CompareTag("Block"))
+            // {
+            //     if (collision.gameObject.TryGetComponent<DamagedBlock>(out var damagedBlockScript))
+            //     {
+            //         damagedBlockScript.DecreaseHP(TotalDamage);
+            //     }
+            //     else
+            //     {
+            //         throw new Exception(Message.CantFindBlockTagInDamagedBlock);
+            //     }
+            // }
         }
     }
 }

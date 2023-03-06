@@ -71,6 +71,9 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
+# TextMesh Pro files
+/[Aa]ssets/TextMesh*Pro/
+
 # Firebase
 /[Aa]ssets/Editor Default Resources/
 /[Aa]ssets/ExternalDependencyManager/

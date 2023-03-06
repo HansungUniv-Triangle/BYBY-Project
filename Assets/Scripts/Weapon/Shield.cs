@@ -11,9 +11,14 @@ namespace Weapon
             return Distance > MaxRange || _isTouched;
         }
 
-        protected override void OnCollisionEnter(Collision collision)
+        private void OnCollisionEnter(Collision collision)
         {
-            if(collision.gameObject.CompareTag("Bullet")) _isTouched = true;
+            if (collision.gameObject.layer == LayerMask.NameToLayer("World"))
+            {
+                var hit = collision.contacts[0];
+                var point = hit.point - hit.normal * 0.1f;
+                WorldManager.Instance.GetWorld().HitBlock(point, 1);
+            }
         }
 
         protected override void MoveProjectile()

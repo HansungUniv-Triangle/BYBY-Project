@@ -90,12 +90,17 @@ namespace Weapon
         {
             if (CheckDestroy())
             {
-                if (_projectileHolder is null)
-                {
-                    throw new Exception($"{nameof(T)} : {Message.CantAssignHolder}");
-                }
-                _projectileHolder.RemoveProjectile(this);
+                DestroyProjectile();
             }
+        }
+
+        protected void DestroyProjectile()
+        {
+            if (_projectileHolder is null)
+            {
+                throw new Exception($"{nameof(T)} : {Message.CantAssignHolder}");
+            }
+            _projectileHolder.RemoveProjectile(this);
         }
 
         // 이동 거리 계산
@@ -119,9 +124,6 @@ namespace Weapon
     
         // 총알 파괴 조건
         protected abstract bool CheckDestroy();
-
-        // 총알이 닿았을 때
-        protected abstract void OnCollisionEnter(Collision collision);
 
         // 총알이 어떻게 움직이는가
         protected abstract void MoveProjectile();

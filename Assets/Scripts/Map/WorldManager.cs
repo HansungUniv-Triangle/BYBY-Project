@@ -71,8 +71,8 @@ public class WorldManager : Singleton<WorldManager>
         Noise.MakeSeamlessNoiseVertically(_noiseMap, 30);
         */
 
-        MapDisplay display = FindObjectOfType<MapDisplay>();
-        display.DrawNoiseMap(_noiseMap);
+        // MapDisplay display = FindObjectOfType<MapDisplay>();
+        // display.DrawNoiseMap(_noiseMap);
 
         if (Application.isPlaying)
         {
