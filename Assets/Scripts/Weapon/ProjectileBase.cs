@@ -2,6 +2,7 @@ using System;
 using GameStatus;
 using Type;
 using UnityEngine;
+using Util;
 
 /* ProjectileBase
  * 투사체에 사용하는 클래스
@@ -91,7 +92,7 @@ namespace Weapon
             {
                 if (_projectileHolder is null)
                 {
-                    throw new Exception("홀더 지정 에러");
+                    throw new Exception($"{nameof(T)} : {Message.CantAssignHolder}");
                 }
                 _projectileHolder.RemoveProjectile(this);
             }

@@ -19,6 +19,8 @@ public class Move : MonoBehaviour
     #endregion
 
     private BaseStat<CharStat> _baseCharStat;
+    [SerializeField]
+    private Joystick _joystick;
     
     private bool _isTargetNotNull;
     private Rigidbody _characterRigidbody;
@@ -36,7 +38,7 @@ public class Move : MonoBehaviour
         _baseCharStat = new BaseStat<CharStat>();
         _isTargetNotNull = target is not null;
         _characterRigidbody = GetComponent<Rigidbody>();
-        
+
         weapons.Add(gameObject.AddComponent<HandGun>());
         weapons.Add(gameObject.AddComponent<ShieldGenerator>());
     }
@@ -98,13 +100,14 @@ public class Move : MonoBehaviour
         Debug.Log("Ult");
     }
 
-    public void CharacterMove(Vector2 inputVector)
+    public void CharacterMove()
     {
         var speed = _baseCharStat.GetStat(CharStat.Speed).Total;
-        var h = inputVector.x;
-        var v = inputVector.y;
-        
-        _characterRigidbody.velocity = new Vector3(h * speed, 0, v * speed);
+
+        _characterRigidbody.velocity = new Vector3(
+            _joystick.Horizontal * speed, 
+            0, 
+            _joystick.Vertical * speed);
     }
 
     private void Update()
@@ -115,11 +118,18 @@ public class Move : MonoBehaviour
         {
             _weapon.Attack();
         }
+
+        CharacterMove();
         
         // target
         if(_isTargetNotNull) transform.LookAt(target.transform);
         
         // Todo: 그냥 테스트용 코드
         TestUpdate();
+    }
+
+    public void Attack()
+    {
+        _weapon.Attack();
     }
 }
