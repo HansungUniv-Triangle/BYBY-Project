@@ -1,4 +1,5 @@
 using UnityEngine;
+using Random = System.Random;
 
 public class WorldManager : Singleton<WorldManager>
 {
@@ -80,7 +81,13 @@ public class WorldManager : Singleton<WorldManager>
             _world.GenerateWorld(_noiseMap);
             _world.RenderWorld();
         }
-    } 
+    }
+
+    public void ChangeRandomSeed()
+    {
+        Seed = new Random().Next(1, 10000);
+        GeneratorMap();
+    }
 
     public Vector2Int CalculateChunkCoords(Vector3 pos)
     {

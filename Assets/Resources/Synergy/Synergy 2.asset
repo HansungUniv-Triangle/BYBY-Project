@@ -19,5 +19,5 @@ MonoBehaviour:
   charStatList: []
   weaponStatList:
   - <Type>k__BackingField: 11
-    <Amount>k__BackingField: 10
+    <Amount>k__BackingField: 1
     <Ratio>k__BackingField: 0

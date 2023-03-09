@@ -1,12 +1,14 @@
 using System.Collections.Generic;
+using System.Globalization;
 using GameStatus;
 using Type;
 using UnityEngine;
+using UnityEngine.UI;
 using Weapon;
 
 public class Move : MonoBehaviour
 {
-    #region 테스트용 코드 (스탯 적용)
+    #region 테스트 코드 (스탯 적용)
     public bool testButton = false;
     private void TestUpdate()
     {
@@ -18,6 +20,98 @@ public class Move : MonoBehaviour
     }
     #endregion
     
+    #region 테스트 코드 (스탯 UI)
+
+    private List<Stat<CharStat>> statlist1 = new List<Stat<CharStat>>();
+    private List<Stat<WeaponStat>> statlist2 = new List<Stat<WeaponStat>>();
+    
+    public void IncreaseSpeed(GameObject text)
+    {
+        statlist1.Add(new Stat<CharStat>(CharStat.Speed, 1, 0));
+        AdditionalWork(text, CharStat.Speed);
+    }
+    
+    public void DecreaseSpeed(GameObject text)
+    {
+        statlist1.Add(new Stat<CharStat>(CharStat.Speed, -1, 0));
+        AdditionalWork(text, CharStat.Speed);
+    }
+    
+    public void IncreaseInterval(GameObject text)
+    {
+        statlist2.Add(new Stat<WeaponStat>(WeaponStat.Interval, 0.1f, 0));
+        AdditionalWork(text, WeaponStat.Interval);
+    }
+    
+    public void DecreaseInterval(GameObject text)
+    {
+        statlist2.Add(new Stat<WeaponStat>(WeaponStat.Interval, -0.1f, 0));
+        AdditionalWork(text, WeaponStat.Interval);
+    }
+    
+    public void IncreaseRange(GameObject text)
+    {
+        statlist2.Add(new Stat<WeaponStat>(WeaponStat.Range, 0.5f, 0));
+        AdditionalWork(text, WeaponStat.Range);
+    }
+    
+    public void DecreaseRange(GameObject text)
+    {
+        statlist2.Add(new Stat<WeaponStat>(WeaponStat.Range, -0.5f, 0));
+        AdditionalWork(text, WeaponStat.Range);
+    }
+    
+    public void IncreaseGuided(GameObject text)
+    {
+        statlist2.Add(new Stat<WeaponStat>(WeaponStat.Guided, 0.5f, 0));
+        AdditionalWork(text, WeaponStat.Guided);
+    }
+    
+    public void DecreaseGuided(GameObject text)
+    {
+        statlist2.Add(new Stat<WeaponStat>(WeaponStat.Guided, -0.5f, 0));
+        AdditionalWork(text, WeaponStat.Guided);
+    }
+
+    public void AdditionalWork(GameObject text, CharStat type)
+    {
+        InitialStatus();
+        
+        foreach (var s1 in statlist1)
+        {
+            _baseCharStat.AddStat(s1);
+        }
+        
+        foreach (var s2 in statlist2)
+        {
+            _weapon.AddWeaponStat(s2);
+        }
+
+        var total = _baseCharStat.GetStat(type).Total;
+        text.GetComponent<Text>().text = total.ToString("F2");
+    }
+    
+    public void AdditionalWork(GameObject text, WeaponStat type)
+    {
+        InitialStatus();
+        
+        foreach (var s1 in statlist1)
+        {
+            _baseCharStat.AddStat(s1);
+        }
+        
+        foreach (var s2 in statlist2)
+        {
+            _weapon.AddWeaponStat(s2);
+        }
+
+        var total = _weapon.GetWeaponStat(type).Total;
+        text.GetComponent<Text>().text = total.ToString("F2");
+    }
+    
+    
+    #endregion
+
     #region 타겟 지정 관련 변수
     public GameObject target;
     private bool _isTargetNotNull;
@@ -147,6 +241,11 @@ public class Move : MonoBehaviour
                 yVelocity = jumpForce;
             }
         }
+    }
+
+    public void Jump()
+    {
+        yVelocity = jumpForce;
     }
 
     private void Update()

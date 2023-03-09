@@ -50,6 +50,11 @@ namespace Weapon
         {
             BaseWeaponStat.AddStatList(statList);
         }
+        
+        public Stat<WeaponStat> GetWeaponStat(WeaponStat stat)
+        {
+            return BaseWeaponStat.GetStat(stat);
+        }
 
         public void ClearWeaponStat()
         {
