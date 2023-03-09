@@ -36,6 +36,7 @@ public class Move : MonoBehaviour
     #endregion
 
     #region 전투 관련
+    
     private BaseStat<CharStat> _baseCharStat;
     public List<Synergy> synergyList = new List<Synergy>();
     public List<WeaponBase> weapons = new List<WeaponBase>();
@@ -49,15 +50,18 @@ public class Move : MonoBehaviour
     {
         _btnStatus = 1;
         _transform = gameObject.transform;
-        _baseCharStat = new BaseStat<CharStat>();
+        
+        _baseCharStat = new BaseStat<CharStat>(1, 1);
+
         _gameManager = GameManager.Instance;
         _isTargetNotNull = false;
         _characterController = GetComponent<CharacterController>();
         
         weapons.Add(gameObject.AddComponent<HandGun>());
         weapons.Add(gameObject.AddComponent<ShieldGenerator>());
-        // 임시 칸 채우기 용도
-        weapons.Add(gameObject.AddComponent<HandGun>());
+        weapons.Add(gameObject.AddComponent<GuidedGun>());
+        
+        // 임시 무기 채우기
         weapons.Add(gameObject.AddComponent<ShieldGenerator>());
     }
 
@@ -69,6 +73,7 @@ public class Move : MonoBehaviour
     private void InitialStatus()
     {
         _baseCharStat.ClearStatList();
+        _weapon.ClearWeaponStat();
         foreach (var synergy in synergyList)
         {
             _baseCharStat.AddStatList(synergy.charStatList);
@@ -78,26 +83,26 @@ public class Move : MonoBehaviour
 
     public void ChangeGun1()
     {
-        InitialStatus();
         _btnStatus = 1;
+        InitialStatus();
     }
     
     public void ChangeGun2()
     {
-        InitialStatus();
         _btnStatus = 2;
+        InitialStatus();
     }
     
     public void ChangeGun3()
     {
-        InitialStatus();
         _btnStatus = 3;
+        InitialStatus();
     }
     
     public void ChangeGun4()
     {
-        InitialStatus();
         _btnStatus = 4;
+        InitialStatus();
     }
     
     public void GetUlt()
@@ -136,7 +141,7 @@ public class Move : MonoBehaviour
     {
         if (moveDir.x != 0 && moveDir.z != 0)
         {
-            yVelocity = 0;
+            yVelocity = 0;  
             if (_characterController.isGrounded)
             {
                 yVelocity = jumpForce;

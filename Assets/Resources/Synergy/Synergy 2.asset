@@ -14,14 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sprite: {fileID: 0}
   synergyName: "\uC2DC\uB108\uC9C02"
+  synergyExplain: 
   priority: 0
-  statList:
-  - statType: 4
-    amount: 2
-    ratio: 0
-  - statType: 5
-    amount: 2
-    ratio: 0
-  - statType: 6
-    amount: 2
-    ratio: 0
+  charStatList: []
+  weaponStatList:
+  - <Type>k__BackingField: 11
+    <Amount>k__BackingField: 10
+    <Ratio>k__BackingField: 0

@@ -12,16 +12,9 @@ namespace Weapon
         {
             _projectileHolder = new ProjectileHolder<Shield>("Shield");
             
-            BaseWeaponStat = new BaseStat<WeaponStat>();
             BaseWeaponStat.GetStat(WeaponStat.BulletSize).AddRatio(-0.5f);
-            BaseWeaponStat.GetStat(WeaponStat.Range).AddRatio(200.0f);
-            BaseWeaponStat.GetStat(WeaponStat.Velocity).AddRatio(200.0f);
-            
-            Level = 0;
-            CoolTime = 0;
-            
-            // 임시로 위치 얻어오기
-            WeaponPos = GameObject.Find("Player").transform;
+            BaseWeaponStat.GetStat(WeaponStat.Range).AddRatio(360.0f);
+            BaseWeaponStat.GetStat(WeaponStat.Velocity).AddRatio(360.0f);
         }
 
         public override void Attack()

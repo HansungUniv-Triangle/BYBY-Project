@@ -17,11 +17,8 @@ namespace Weapon
         private ProjectileHolder<T> _projectileHolder;
 
         // 기본 스탯
-        private Stat<WeaponStat> _range;
-        private Stat<WeaponStat> _velocity;
-        private Stat<WeaponStat> _bulletSize;
-        private Stat<WeaponStat> _damage;
-    
+        private BaseStat<WeaponStat> _base;
+
         // 변동 스탯
         protected Vector3 Direction;
         protected float Distance;
@@ -30,18 +27,27 @@ namespace Weapon
         protected float AddDamage;
     
         // 기본 + 변동 스탯
-        public float TotalVelocity => _velocity.Total + AddVelocity;
-        public float TotalBulletSize => _bulletSize.Total + AddScale;
-        public float TotalDamage => _damage.Total + AddDamage;
-        protected float MaxRange => _range.Total;
+        public float TotalVelocity => _base.GetStat(WeaponStat.Velocity).Total + AddVelocity;
+        public float TotalBulletSize => _base.GetStat(WeaponStat.BulletSize).Total + AddScale;
+        public float TotalDamage => _base.GetStat(WeaponStat.Damage).Total + AddDamage;
+        protected float MaxRange => _base.GetStat(WeaponStat.Range).Total;
         
-        
-        // 스탯 초기화
+        // 초기화
         public void Initialized(ProjectileHolder<T> holder)
         {
-            InitializedStat();
             SetHolder(holder);
-            AddBulletSize(_bulletSize.Total);
+            InitializedStat();
+            AddBulletSize(TotalBulletSize);
+        }
+        
+        private void InitializedStat()
+        {
+            _base = new BaseStat<WeaponStat>(0, 1);
+            Distance = 0;
+            Direction = Vector3.forward;
+            AddVelocity = 0;
+            AddScale = 0;
+            AddDamage = 0;
         }
         
         private void SetHolder(ProjectileHolder<T> holder)
@@ -52,32 +58,7 @@ namespace Weapon
         // 스탯 지정
         public ProjectileBase<T> AddBaseStat(Stat<WeaponStat> stat)
         {
-            switch (stat.Type)
-            {
-                case WeaponStat.Range:
-                    _range.AddStat(stat);
-                    break;
-                case WeaponStat.Damage:
-                    _damage.AddStat(stat);
-                    break;
-                case WeaponStat.Velocity:
-                    _velocity.AddStat(stat);
-                    break;
-                case WeaponStat.BulletSize:
-                    _bulletSize.AddStat(stat);
-                    break;
-                case WeaponStat.Interval:
-                case WeaponStat.ShotAtOnce:
-                case WeaponStat.Reload:
-                case WeaponStat.Bullet:
-                case WeaponStat.ShieldBreak:
-                case WeaponStat.Special:
-                case WeaponStat.Pierce:
-                case WeaponStat.Guided:
-                case WeaponStat.MaxLevel:
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(stat), stat, null);
-            }
+            _base.AddStat(stat);
             return this;
         }
 
@@ -109,15 +90,33 @@ namespace Weapon
             Distance += Time.deltaTime * TotalVelocity;
             MoveProjectile();
             ChangeScale();
+
+            var guided = _base.GetStat(WeaponStat.Guided).Total;
+            if (guided > 0) GuidedTarget(guided);
         }
 
         private void ChangeScale()
         {
             if (AddScale == 0) return;
-            _bulletSize.AddAmount(AddScale);
+
+            var sizeStat = new Stat<WeaponStat>(WeaponStat.BulletSize, AddScale, 0);
+            _base.AddStat(sizeStat);
             var size = TotalBulletSize;
             transform.localScale = new Vector3(size, size, size);
             AddScale = 0;
+        }
+
+        private void GuidedTarget(float guided)
+        {
+            var ray = Physics.SphereCastAll(transform.position, guided, transform.forward, 0, (int)Layer.Entity);
+            
+            foreach (var raycastHit in ray)
+            {
+                if (raycastHit.transform.gameObject.name == "허수아비")
+                {
+                    transform.LookAt(raycastHit.transform);
+                }
+            }
         }
 
         #region 오버라이드 메소드 (abstract, virtual)
@@ -128,20 +127,6 @@ namespace Weapon
         // 총알이 어떻게 움직이는가
         protected abstract void MoveProjectile();
 
-        protected virtual void InitializedStat()
-        {
-            _range = new Stat<WeaponStat>(WeaponStat.Range, 1);
-            _velocity = new Stat<WeaponStat>(WeaponStat.Velocity, 0.1f);
-            _bulletSize = new Stat<WeaponStat>(WeaponStat.BulletSize, 1);
-            _damage = new Stat<WeaponStat>(WeaponStat.Damage, 1);
-        
-            Distance = 0;
-            Direction = Vector3.forward;
-            AddVelocity = 0;
-            AddScale = 0;
-            AddDamage = 0;
-        }
-        
         #endregion
     }
 }

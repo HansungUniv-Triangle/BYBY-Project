@@ -3,15 +3,12 @@ using Type;
 using UnityEngine;
 
 /* HandGun : WeaponBase
- * 기본적인 권총을 구현한 클래스
- * 반드시 Initialize에서 Holder를 생성해야 합니다.
- * Level 사용은 아직 정하지 않았음.
- * 추후 weaponpos 변경
+ * 핸드건이랑 같은데 총알이 유도탄 추가
  */
 
 namespace Weapon
 {
-    public class HandGun : WeaponBase
+    public class GuidedGun : WeaponBase
     {
         private ProjectileHolder<BasicBullet> _projectileHolder;
 
@@ -27,7 +24,8 @@ namespace Weapon
             _projectileHolder.GetProjectile(WeaponPos)
                 .AddBaseStat(BaseWeaponStat.GetStat(WeaponStat.Damage))
                 .AddBaseStat(BaseWeaponStat.GetStat(WeaponStat.Range))
-                .AddBaseStat(BaseWeaponStat.GetStat(WeaponStat.Velocity));
+                .AddBaseStat(BaseWeaponStat.GetStat(WeaponStat.Velocity))
+                .AddBaseStat(BaseWeaponStat.GetStat(WeaponStat.Guided));
             CoolTime = 0;
         }
     }

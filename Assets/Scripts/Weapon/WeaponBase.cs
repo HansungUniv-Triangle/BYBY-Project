@@ -14,6 +14,10 @@ namespace Weapon
 
         private void Awake()
         {
+            BaseWeaponStat = new BaseStat<WeaponStat>(1 ,1);
+            CoolTime = 0;
+            Level = 0;
+            WeaponPos = GameObject.Find("Gun").transform;
             Initialize();
         }
         
