@@ -1,16 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Type;
 
 namespace Observer
 {
     public interface IObserver
     {
-        void Update(ISubject subject);
-    }
-
-    public interface ISubject
-    {
-        void Attach(IObserver observer);
-        void Detach(IObserver observer);
-        void Notify();
+        void ReceiveNotify();
     }
 }

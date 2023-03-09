@@ -35,9 +35,6 @@ public class PuppetMove : MonoBehaviour
         moveDir = new Vector3(h, 0, v);
         moveDir = headTransform.TransformDirection(moveDir);
         moveDir *= moveSpeed;
-
-
-
     }
 
     private void Jump()

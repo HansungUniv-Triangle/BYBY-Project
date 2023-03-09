@@ -174,7 +174,7 @@ MonoBehaviour:
   NoiseScale: 27.65
   Offset: {x: 0, y: 0}
   Octaves: 3
-  Persistance: 0.33
+  Persistance: 0.369
   Lacunarity: 1.5
   AutoUpdate: 1
   TerrainHeight: 15
