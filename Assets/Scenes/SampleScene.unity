@@ -2680,7 +2680,7 @@ GameObject:
   - component: {fileID: 1972338503}
   - component: {fileID: 1972338507}
   - component: {fileID: 1972338506}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: "\uD5C8\uC218\uC544\uBE44"
   m_TagString: Player
   m_Icon: {fileID: 0}

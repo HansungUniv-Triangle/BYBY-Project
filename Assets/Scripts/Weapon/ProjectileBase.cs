@@ -42,7 +42,7 @@ namespace Weapon
         
         private void InitializedStat()
         {
-            _base = new BaseStat<WeaponStat>(0, 1);
+            _base = new BaseStat<WeaponStat>(0, 0);
             Distance = 0;
             Direction = Vector3.forward;
             AddVelocity = 0;
@@ -92,7 +92,11 @@ namespace Weapon
             ChangeScale();
 
             var guided = _base.GetStat(WeaponStat.Guided).Total;
-            if (guided > 0) GuidedTarget(guided);
+            if (guided > 0)
+            {
+                Debug.Log(guided);
+                GuidedTarget(guided);
+            }
         }
 
         private void ChangeScale()
