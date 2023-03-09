@@ -28,6 +28,10 @@ public class Move : MonoBehaviour
     [SerializeField]
     private WeaponData Handgun;
     private float _fireCoolTime = 0f;
+    public VariableJoystick Joystick;
+
+    RaycastHit _raycast;
+    public float maxDistance = 10.0f;
 
     #region Target
     public GameObject target;
@@ -35,7 +39,8 @@ public class Move : MonoBehaviour
     #endregion
 
     #region Start
-    private Rigidbody _characterRigidbody;
+    public Transform _transform;
+    private CharacterController _characterController;
     private Gun _gun;
     #endregion
 
@@ -43,12 +48,18 @@ public class Move : MonoBehaviour
     public List<Synergy> synergyList = new List<Synergy>();
     private int BtnStatus = 0;
 
+    private Vector3 moveDir;
+    private float gravity = -10.0f;
+    private float jumpForce = 5.0f;
+    public float yVelocity = 0.0f;
+
     private void Awake()
     {
         _base = new BaseStat();
         _gameManager = GameManager.Instance;
-        _isTargetNotNull = target is not null;
-        _characterRigidbody = GetComponent<Rigidbody>();
+        //_isTargetNotNull = target is not null;
+        _isTargetNotNull = false;
+        _characterController = GetComponent<CharacterController>();
         _gun = transform.GetComponentInChildren<Gun>();
     }
 
@@ -137,19 +148,61 @@ public class Move : MonoBehaviour
         Debug.Log("Ult");
     }
 
-    public void CharacterMove(Vector2 inputVector)
+    private void CharacterMove()
     {
         float h, v;
-        Vector2 moveInput = inputVector;
-        h = moveInput.x;
-        v = moveInput.y;
+        h = Joystick.Horizontal;
+        v = Joystick.Vertical;
 
         // move
-        _characterRigidbody.velocity = new Vector3(h * _base.Speed, 0, v * _base.Speed);
+        moveDir = new Vector3(h, 0, v);
+        moveDir = _transform.TransformDirection(moveDir);
+        moveDir *= _base.Speed;
+
+        //_characterRigidbody.velocity = new Vector3(h * _base.Speed, 0, v * _base.Speed);
+        if (_isTargetNotNull == false)
+        {
+            if (!(h == 0 && v == 0))
+            {
+                _transform.rotation = Quaternion.Lerp(_transform.rotation, Quaternion.LookRotation(moveDir), Time.deltaTime * _base.Speed);
+            }
+        }
+        
+        yVelocity += (gravity * Time.deltaTime);
+        moveDir.y = yVelocity;
+        
+        _characterController.Move(moveDir * Time.deltaTime);
+
+    }
+
+    private void OnCollisionEnter()
+    {
+        if (moveDir.x != 0 && moveDir.z != 0)
+        {
+            yVelocity = 0;
+            if (_characterController.isGrounded)
+            {
+                yVelocity = jumpForce;
+            }
+        }
     }
 
     private void Update()
     {
+        CharacterMove();
+        if (Physics.Raycast(transform.position, transform.forward, out _raycast, maxDistance))
+        {
+            if (_raycast.transform.gameObject.name == "허수아비")
+            {
+                _isTargetNotNull = true;
+                target = _raycast.transform.gameObject;
+            }
+        }
+        else
+        {
+            _isTargetNotNull = false;
+            target = null;
+        }
         var inputSpace = Input.GetButton("Jump");
         // fire gun
         _fireCoolTime += Time.deltaTime;
