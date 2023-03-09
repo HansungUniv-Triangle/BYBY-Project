@@ -1,13 +1,10 @@
-using System;
 using System.Collections.Generic;
-using GameStatus;
 using UnityEngine;
-using Type;
-using Weapon;
+using Status;
 
 public class Move : MonoBehaviour
 {
-    #region 인스펙터에 버튼 만들기 귀찮아서 만들어둔 테스트코드입니다.
+    #region Test Code
     public bool testButton = false;
     private void TestUpdate()
     {
@@ -18,142 +15,207 @@ public class Move : MonoBehaviour
         }
     }
     #endregion
+    
+    private BaseStat _base;
+    [SerializeField]
+    private WeaponData _weapon;
+    [SerializeField]
+    private WeaponData Autorifle;
+    [SerializeField]
+    private WeaponData Cannon;
+    [SerializeField]
+    private WeaponData Shotgun;
+    [SerializeField]
+    private WeaponData Handgun;
+    private float _fireCoolTime = 0f;
+    public VariableJoystick Joystick;
 
-    private BaseStat<CharStat> _baseCharStat;
-    [SerializeField]
-    private Joystick _joystick;
-    
-    public float _jumpForce = 7.0f;
-    public float _fallMultiplier = 2.0f;
-    [SerializeField]
-    private bool _isOnGround;
-    
-    private bool _isTargetNotNull;
-    private Rigidbody _characterRigidbody;
-    private int _btnStatus;
-    
+    RaycastHit _raycast;
+    public float maxDistance = 10.0f;
+
+    #region Target
     public GameObject target;
-    public List<Synergy> synergyList = new List<Synergy>();
+    private bool _isTargetNotNull;
+    #endregion
 
-    public List<WeaponBase> weapons = new List<WeaponBase>();
-    
-    
-    private WeaponBase _weapon => weapons[_btnStatus - 1];
-    
+    #region Start
+    public Transform _transform;
+    private CharacterController _characterController;
+    private Gun _gun;
+    #endregion
+
+    private GameManager _gameManager;
+    public List<Synergy> synergyList = new List<Synergy>();
+    private int BtnStatus = 0;
+
+    private Vector3 moveDir;
+    private float gravity = -10.0f;
+    private float jumpForce = 5.0f;
+    public float yVelocity = 0.0f;
+
     private void Awake()
     {
-        _btnStatus = 1;
-        _baseCharStat = new BaseStat<CharStat>();
-        _isTargetNotNull = target is not null;
-        _characterRigidbody = GetComponent<Rigidbody>();
-
-        weapons.Add(gameObject.AddComponent<HandGun>());
-        weapons.Add(gameObject.AddComponent<ShieldGenerator>());
+        _base = new BaseStat();
+        _gameManager = GameManager.Instance;
+        //_isTargetNotNull = target is not null;
+        _isTargetNotNull = false;
+        _characterController = GetComponent<CharacterController>();
+        _gun = transform.GetComponentInChildren<Gun>();
     }
 
     private void Start()
     {
+        SetupWeapon();
         InitialStatus();
+        ApplyStatToBulletData();
+    }
+
+    private void SetupWeapon()
+    {
+        _gameManager.weaponList.Add(Autorifle);
+        _gameManager.weaponList.Add(Cannon);
+        _gameManager.weaponList.Add(Shotgun);
+        _gameManager.weaponList.Add(Handgun);
     }
 
     private void InitialStatus()
     {
-        _baseCharStat.ClearStatList();
+        _base.AddRatioStat(_weapon.statList);
         foreach (var synergy in synergyList)
         {
-            _baseCharStat.AddStatList(synergy.charStatList);
-            _weapon.AddWeaponStatList(synergy.weaponStatList);
+            _base.AddRatioStat(synergy.statList);
         }
+    }
+
+    private void ApplyStatToBulletData()
+    {
+        _gameManager.PlayerBulletData.maxRange = _base.Range;
+        _gameManager.PlayerBulletData.size = _base.Size;
+        _gameManager.PlayerBulletData.damage = _base.Damage;
+        _gameManager.PlayerBulletData.shield = _base.Shield;
+        _gameManager.PlayerBulletData.velocity = _base.Velocity;
     }
 
     public void ChangeGun1()
     {
-        InitialStatus();
-        _btnStatus = 1;
+        if (BtnStatus != 1)
+        {
+            _base.ClearStatList();
+            _weapon = _gameManager.weaponList.Find(x => x.weaponName == "라이플");
+            InitialStatus();
+            ApplyStatToBulletData();
+            BtnStatus = 1;
+        }
     }
-    
+
     public void ChangeGun2()
     {
-        InitialStatus();
-        _btnStatus = 2;
+        if (BtnStatus != 2)
+        {
+            _base.ClearStatList(); 
+            _weapon = _gameManager.weaponList.Find(x => x.weaponName == "캐논");
+            InitialStatus();
+            ApplyStatToBulletData();
+            BtnStatus = 2;
+        }
     }
-    
-    //
-    // public void ChangeGun3()
-    // {
-    //     if (BtnStatus != 3)
-    //     {
-    //         _base.ClearStatList();
-    //         _weapon = _gameManager.weaponList.Find(x => x.weaponName == "샷건");
-    //         InitialStatus();
-    //         ApplyStatToBulletData();
-    //         BtnStatus = 3;
-    //     }
-    // }
-    //
-    // public void ChangeGun4()
-    // {
-    //     if (BtnStatus != 4)
-    //     {
-    //         _base.ClearStatList();
-    //         _weapon = _gameManager.weaponList.Find(x => x.weaponName == "핸드건");
-    //         InitialStatus();
-    //         ApplyStatToBulletData();
-    //         BtnStatus = 4;
-    //     }
-    // }
-    
+
+    public void ChangeGun3()
+    {
+        if (BtnStatus != 3)
+        {
+            _base.ClearStatList();
+            _weapon = _gameManager.weaponList.Find(x => x.weaponName == "샷건");
+            InitialStatus();
+            ApplyStatToBulletData();
+            BtnStatus = 3;
+        }
+    }
+
+    public void ChangeGun4()
+    {
+        if (BtnStatus != 4)
+        {
+            _base.ClearStatList();
+            _weapon = _gameManager.weaponList.Find(x => x.weaponName == "핸드건");
+            InitialStatus();
+            ApplyStatToBulletData();
+            BtnStatus = 4;
+        }
+    }
     public void GetUlt()
     {
         Debug.Log("Ult");
     }
 
-    public void CharacterMove()
+    private void CharacterMove()
     {
-        var speed = _baseCharStat.GetStat(CharStat.Speed).Total;
-        _characterRigidbody.AddForce(new Vector3(_joystick.Horizontal, 0, _joystick.Vertical) * speed, ForceMode.Acceleration);
+        float h, v;
+        h = Joystick.Horizontal;
+        v = Joystick.Vertical;
+
+        // move
+        moveDir = new Vector3(h, 0, v);
+        moveDir = _transform.TransformDirection(moveDir);
+        moveDir *= _base.Speed;
+
+        //_characterRigidbody.velocity = new Vector3(h * _base.Speed, 0, v * _base.Speed);
+        if (_isTargetNotNull == false)
+        {
+            if (!(h == 0 && v == 0))
+            {
+                _transform.rotation = Quaternion.Lerp(_transform.rotation, Quaternion.LookRotation(moveDir), Time.deltaTime * _base.Speed);
+            }
+        }
+        
+        yVelocity += (gravity * Time.deltaTime);
+        moveDir.y = yVelocity;
+        
+        _characterController.Move(moveDir * Time.deltaTime);
+
+    }
+
+    private void OnCollisionEnter()
+    {
+        if (moveDir.x != 0 && moveDir.z != 0)
+        {
+            yVelocity = 0;
+            if (_characterController.isGrounded)
+            {
+                yVelocity = jumpForce;
+            }
+        }
     }
 
     private void Update()
     {
-        var inputSpace = Input.GetButton("Jump");
-;
-        if (inputSpace && _isOnGround)
-        {
-            _characterRigidbody.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
-        }
-    }
-
-    private void FixedUpdate()
-    {
-        if(_isTargetNotNull) transform.LookAt(target.transform);
         CharacterMove();
+        if (Physics.Raycast(transform.position, transform.forward, out _raycast, maxDistance))
+        {
+            if (_raycast.transform.gameObject.name == "허수아비")
+            {
+                _isTargetNotNull = true;
+                target = _raycast.transform.gameObject;
+            }
+        }
+        else
+        {
+            _isTargetNotNull = false;
+            target = null;
+        }
+        var inputSpace = Input.GetButton("Jump");
+        // fire gun
+        _fireCoolTime += Time.deltaTime;
+        if (inputSpace && _fireCoolTime > _base.FireRate)
+        {
+            _gun.Shoot(_base.ShotAtOnce);
+            _fireCoolTime = 0;
+        }
+        
+        // target
+        if(_isTargetNotNull) transform.LookAt(target.transform);
+        
+        // Todo: 그냥 테스트용 코드
         TestUpdate();
-
-        if (_characterRigidbody.velocity.y < 0)
-        {
-            //_characterRigidbody.AddForce(Vector3.down * _fallMultiplier, ForceMode.Impulse);
-        }
-    }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.layer == LayerMask.NameToLayer("World"))
-        {
-            _isOnGround = true;
-        }
-    }
-
-    private void OnCollisionExit(Collision collision)
-    {
-        if (collision.gameObject.layer == LayerMask.NameToLayer("World"))
-        {
-            _isOnGround = false;
-        }
-    }
-
-    public void Attack()
-    {
-        _weapon.Attack();
     }
 }
