@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -39,9 +40,8 @@ public class Chunk
         _chunkCoord = chunkCoord;
         _chunkSize = chunkSize;
 
-        _chunk = UnityEngine.Object.Instantiate(WorldManager.Instance.ChunkPrefab, Vector3.zero, Quaternion.identity);
+        _chunk = UnityEngine.Object.Instantiate(WorldManager.Instance.ChunkPrefab, Vector3.zero, Quaternion.identity, _world.gameObject.transform);
         _chunk.name = $"Chunk {chunkCoord.x} {chunkCoord.y}";
-        _chunk.transform.SetParent(_world.gameObject.transform);
 
         _blockMap = new Dictionary<Vector3Int, Block>();
 
@@ -90,30 +90,81 @@ public class Chunk
 
         if (!_damagedBlocks.ContainsKey(pos))
         {
-            if (!_blockMap.ContainsKey(pos) || 
+            if (!_blockMap.ContainsKey(pos) ||
                 _blockMap[pos].GetBlockType() == Block.BlockType.Bedrock)
                 return;
 
             damagedBlock = new DamagedBlock(this, _blockMap[pos], pos);
             damagedBlock.SetMeshRendererEnable(_meshRenderer.enabled);
             _damagedBlocks[pos] = damagedBlock;
-            
+
             DestroyBlock(pos);
-            CreateChunkMesh();
+            _world.UpdateAroundChunks(this, pos);
         }
         else
         {
             damagedBlock = _damagedBlocks[pos];
+            damagedBlock.SetCanCombine(false);
         }
 
+        CreateChunkMesh();
         UpdateChunkMeshWithoutOneMesh(pos);
+
         damagedBlock.DecreaseHP(damage);
 
-        if(damagedBlock.isBroken)
+        if (damagedBlock.isBroken)
         {
             damagedBlock.DestroyGameObject();
-            _damagedBlocks.Remove(pos);
-        }        
+            //_damagedBlocks.Remove(pos);
+        }
+    }
+
+    public void HitBlocks(List<Vector3Int> positions, int damage)
+    {
+        for (int i = 0; i < positions.Count; i++)
+        {
+            var pos = positions[i];
+            if (!_damagedBlocks.ContainsKey(pos))
+            {
+                if (!_blockMap.ContainsKey(pos) || _blockMap[pos].GetBlockType() == Block.BlockType.Bedrock)
+                {
+                    positions.RemoveAt(i--);
+                }
+                else
+                {
+                    var damagedBlock = new DamagedBlock(this, _blockMap[pos], pos);
+                    damagedBlock.SetMeshRendererEnable(_meshRenderer.enabled);
+                    _damagedBlocks[pos] = damagedBlock;
+                    DestroyBlock(pos);
+                }
+            }
+            else
+            {
+                _damagedBlocks[pos].SetCanCombine(false);
+            }
+        }
+
+        CreateChunkMesh();
+        UpdateChunkMesh();
+
+        for (int i = 0; i < positions.Count; i++)
+        {
+            var pos = positions[i];
+            var damagedBlock = _damagedBlocks[pos];
+
+            damagedBlock.DecreaseHP(damage);
+
+            if (damagedBlock.isBroken)
+            {
+                damagedBlock.DestroyGameObject();
+                //_damagedBlocks.Remove(pos);
+            }
+        }
+    }
+
+    public void RemoveDamagedBlocks(Vector3Int pos)
+    {
+        _damagedBlocks.Remove(pos);
     }
 
     public void DestroyBlock(Vector3Int pos)
@@ -129,7 +180,23 @@ public class Chunk
             if (_damagedBlocks.ContainsKey(pos))
             {
                 _damagedBlocks[pos].DestroyGameObject();
-                _damagedBlocks.Remove(pos);
+                //_damagedBlocks.Remove(pos);
+            }
+        }
+    }
+
+    public void SetGrassBlock()
+    {
+        var Blocks = WorldManager.Instance.Blocks;
+
+        foreach (var item in _blockMap.ToList())
+        {
+            var checkPos = item.Key;
+            checkPos.y++;
+            if (!_blockMap.ContainsKey(checkPos) &&
+                item.Value.GetBlockType() == Block.BlockType.Dirt)
+            {
+                SetBlock(item.Key, Blocks[(int)Block.BlockType.Grass]);
             }
         }
     }
@@ -168,56 +235,47 @@ public class Chunk
         _indices.Clear();
         _uvs.Clear();
 
-        var xStart = _chunkCoord.x * _chunkSize.x;
-        var zStart = _chunkCoord.y * _chunkSize.z;
-
-        for (var x = xStart; x < xStart + _chunkSize.x; x++)
+        foreach (var block in _blockMap)
         {
-            for (var y = 0; y < _chunkSize.y; y++)
+            var blockPos = block.Key;
+
+            for (var dir = 0; dir < MeshBlockData.CheckDireactions.Length; dir++)
             {
-                for (var z = zStart; z < zStart + _chunkSize.z; z++)
+                // 맨 아래 (y == 0) 블럭의 밑면의 경우, 그리지 않기
+                if (blockPos.y == 0 && dir == 5) { continue; }
+
+                var checkBlockPos = blockPos + MeshBlockData.CheckDireactions[dir];
+
+                if (!_blockMap.ContainsKey(checkBlockPos) || !_blockMap[checkBlockPos].GetSolidType())
                 {
-                    var blockPos = new Vector3Int(x, y, z);
-                    if (!_blockMap.ContainsKey(blockPos)) { continue; }
+                    // 다음 청크에 있을 수도 있어 예외 처리
+                    var checkChunkPos = new Vector2Int(_chunkCoord.x + MeshBlockData.CheckDireactions[dir].x,
+                                                       _chunkCoord.y + MeshBlockData.CheckDireactions[dir].z);
 
-                    for(var dir = 0; dir < MeshBlockData.CheckDireactions.Length; dir++)
+                    // 다음 청크에서 블럭 존재할 경우, 해당 면 그리지 않기
+                    if (_world.IsPositionInWorld(checkChunkPos) &&
+                        _world.GetChunk(checkChunkPos).GetBlock(checkBlockPos) != null)
+                        continue;
+
+                    // Culling 방식
+                    for (var idx = 0; idx < MeshBlockData.FaceNumber.GetLength(1); idx++)
                     {
-                        // 맨 아래 (y == 0) 블럭의 밑면의 경우, 그리지 않기
-                        if (y == 0 && dir == 5) { continue; }
-
-                        var checkBlockPos = blockPos + MeshBlockData.CheckDireactions[dir];
-
-                        if(!_blockMap.ContainsKey(checkBlockPos) || !_blockMap[checkBlockPos].GetSolidType())
-                        {
-                            // 다음 청크에 있을 수도 있어 예외 처리
-                            var checkChunkPos = new Vector2Int(_chunkCoord.x + MeshBlockData.CheckDireactions[dir].x,
-                                                               _chunkCoord.y + MeshBlockData.CheckDireactions[dir].z);
-
-                            // 다음 청크에서 블럭 존재할 경우, 해당 면 그리지 않기
-                            if (_world.IsPositionInWorld(checkChunkPos) &&
-                                _world.GetChunk(checkChunkPos).GetBlock(checkBlockPos) != null)
-                                continue;
-
-                            // Culling 방식
-                            for(var idx = 0; idx < MeshBlockData.FaceNumber.GetLength(1); idx++)
-                            {
-                                var vIdx = MeshBlockData.FaceNumber[dir, idx];
-                                var vPos = blockPos + MeshBlockData.Vertices[vIdx] - new Vector3(_chunkSize.x / 2f, 0, _chunkSize.z / 2f)
-                                    + new Vector3Int(_chunkSize.x / 2, 0, _chunkSize.z / 2);
-                                _vertices.Add(vPos);
-                            }
-
-                            for(var idx = 0; idx < MeshBlockData.Triangles.Length; idx++)
-                            {
-                                _indices.Add(_vertices.Count - 4 + MeshBlockData.Triangles[idx]);
-                            }
-
-                            AddTextureUV(_blockMap[blockPos].GetTextureID(dir));
-                        }
+                        var vIdx = MeshBlockData.FaceNumber[dir, idx];
+                        var vPos = blockPos + MeshBlockData.Vertices[vIdx]
+                            - new Vector3(_chunkSize.x / 2f, 0, _chunkSize.z / 2f)
+                            + new Vector3Int(_chunkSize.x / 2, 0, _chunkSize.z / 2);
+                        _vertices.Add(vPos);
                     }
+
+                    for (var idx = 0; idx < MeshBlockData.Triangles.Length; idx++)
+                    {
+                        _indices.Add(_vertices.Count - 4 + MeshBlockData.Triangles[idx]);
+                    }
+
+                    AddTextureUV(_blockMap[blockPos].GetTextureID(dir));
                 }
             }
-        }   
+        }
     }
 
     private void AddTextureUV(int textureID)
@@ -296,7 +354,7 @@ public class Chunk
         foreach (var block in _damagedBlocks)
         {
             var damagedBlock = block.Value;
-            if (damagedBlock.IsShaking())
+            if (!damagedBlock.CanCombine())
                 continue;
 
             combine[j].mesh = damagedBlock.GetMeshFilter().sharedMesh;
@@ -327,7 +385,7 @@ public class Chunk
         {
             var damagedBlock = block.Value;
             if (damagedBlock == excludeBlock || 
-                damagedBlock.IsShaking())
+                !damagedBlock.CanCombine())
                 continue;
 
             combine[j].mesh = damagedBlock.GetMeshFilter().sharedMesh;

@@ -49,6 +49,10 @@ public class Noise
                     frequency *= lacunarity;
                 }
 
+                // 구조물 느낌 나도록, 이상하면 뺄 예정
+                if (noiseHeight > 0.4)
+                    noiseHeight *= 3;
+
                 if (noiseHeight > maxNoiseHeight)
                 {
                     maxNoiseHeight = noiseHeight;
@@ -105,11 +109,11 @@ public class Noise
         }
     }
 
-    public static float Get3DNoiseValue(float x, float y, float z, float scale, float seed)
+    public static float Get3DNoiseValue(float x, float y, float z, float scale, float seed, Vector3 Offset)
     {
-        float xCoord = (x + seed + 0.1f) * scale;
-        float yCoord = (y + seed + 0.1f) * scale;
-        float zCoord = (z + seed + 0.1f) * scale;
+        float xCoord = (x + seed + 0.1f) * scale + Offset.x;
+        float yCoord = (y + seed + 0.1f) * scale + Offset.y;
+        float zCoord = (z + seed + 0.1f) * scale + Offset.z;
 
         float XY = Mathf.PerlinNoise(xCoord, yCoord);
         float YZ = Mathf.PerlinNoise(yCoord, zCoord);

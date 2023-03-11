@@ -16,13 +16,6 @@ public class WorldManager : Singleton<WorldManager>
     public float Persistance;
     public float Lacunarity;
 
-    /*
-    [Header("3D Noise Setting")]
-    [Space(5f)]
-    public float Scale;
-    public float CaveThreshold;
-    */
-
     [Space(5f)]
     public bool AutoUpdate;
 
@@ -51,6 +44,13 @@ public class WorldManager : Singleton<WorldManager>
     private float[,] _noiseMap;
     private World _world;
 
+    [Header("3D Noise Setting")]
+    [Space(5f)]
+    public Vector3 Offset3D;
+    public float Scale = 0.07f;
+    public float BlockThreshold = 0.47f;
+    public float NoneThreshold = 0.38f;
+
     public void Start()
     {
         _world = new World();
@@ -65,14 +65,6 @@ public class WorldManager : Singleton<WorldManager>
     public void GeneratorMap()
     {
         _noiseMap = Noise.GeneratePerlinNoise(MapWidth, MapHeight, Seed, NoiseScale, Octaves, Persistance, Lacunarity, Offset);
-        /*
-        // ������ �� ��輱 ���� ����
-        Noise.MakeSeamlessNoiseHorizontally(_noiseMap, 30);
-        Noise.MakeSeamlessNoiseVertically(_noiseMap, 30);
-        */
-
-        // MapDisplay display = FindObjectOfType<MapDisplay>();
-        // display.DrawNoiseMap(_noiseMap);
 
         if (Application.isPlaying)
         {
