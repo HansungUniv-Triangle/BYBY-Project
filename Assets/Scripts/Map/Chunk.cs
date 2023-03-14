@@ -112,7 +112,7 @@ public class Chunk
 
         damagedBlock.DecreaseHP(damage);
 
-        if (damagedBlock.isBroken)
+        if (damagedBlock.IsBroken())
         {
             damagedBlock.DestroyGameObject();
             //_damagedBlocks.Remove(pos);
@@ -154,7 +154,7 @@ public class Chunk
 
             damagedBlock.DecreaseHP(damage);
 
-            if (damagedBlock.isBroken)
+            if (damagedBlock.IsBroken())
             {
                 damagedBlock.DestroyGameObject();
                 //_damagedBlocks.Remove(pos);

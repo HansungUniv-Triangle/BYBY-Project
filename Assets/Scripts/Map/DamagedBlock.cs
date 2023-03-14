@@ -10,9 +10,7 @@ public class DamagedBlock
 {
     private GameObject _gameObject;
     private float _hp;
-    
-    public bool isBroken = false;
-
+ 
     private Mesh _mesh;
     private MeshFilter _meshFilter;
 
@@ -32,8 +30,10 @@ public class DamagedBlock
 
     private DG.Tweening.Sequence _sequence;
 
+    private bool _isBreaking = false;
+    private bool _isStartDestroy = false;
+    private bool _isBroken = false;
     private bool _canCombine = false;
-    private bool _startDestroy = false;
 
     public DamagedBlock(Chunk chunk, Block block, Vector3Int position)
     {
@@ -67,45 +67,44 @@ public class DamagedBlock
 
     public void DecreaseHP(float damage)
     {
-        if (_startDestroy)
+        if (_isStartDestroy)
             return;
 
         _gameObject.SetActive(true);
 
-        if (_sequence == null)
-        {
-            _sequence = DOTween.Sequence()
-                .SetAutoKill(false)
-                .Append(_gameObject.transform.DOShakePosition(0.5f, 0.25f, 20, 90))
-                .OnStart(() =>
-                {
-                    _canCombine = false;
-                })
-                .OnComplete(() =>
-                {
-                    ShakingEndEvent();
-                });
-        }
-        else
+        if (_isBreaking)
             _sequence.Restart();
+        else {
+            _sequence = DOTween.Sequence()
+                    .Append(_gameObject.transform.DOShakePosition(0.5f, 0.25f, 20, 90))
+                    .OnStart(() =>
+                    {
+                        _isBreaking = true;
+                        _canCombine = false;
+                    })
+                    .OnComplete(() =>
+                    {
+                        ShakingEndEvent();
+                    });
+        }
 
         _hp -= damage;
 
         if (_hp <= 0)
         {
             _hp = 0;
-            isBroken = true;
+            _isBroken = true;
             return;
         }
     }
 
-    public bool CanCombine()
-    {
-        return _canCombine;
-    }
+    public bool IsBroken() { return _isBroken; }
+
+    public bool CanCombine() { return _canCombine; }
 
     public void ShakingEndEvent()
     {
+        _isBreaking = false;
         _canCombine = true;
         _chunk.CombineOneMesh(_position);
         _gameObject.SetActive(false);
@@ -113,7 +112,7 @@ public class DamagedBlock
 
     public void DestroyGameObject()
     {
-        if (_startDestroy)
+        if (_isStartDestroy)
             return;
 
         _sequence.Kill();
@@ -124,7 +123,7 @@ public class DamagedBlock
             .Join(_gameObject.transform.DOLocalMoveY(-0.5f, 0.7f).SetEase(Ease.InOutQuad)) 
             .OnStart(() =>
             {
-                _startDestroy = true;
+                _isStartDestroy = true;
                 _canCombine = false;
             })
             .OnComplete(() =>

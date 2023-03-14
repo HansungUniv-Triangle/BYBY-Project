@@ -34,7 +34,6 @@ public class WorldManager : Singleton<WorldManager>
     public int WorldChunkHeight;
 
     [Space(5f)]
-    public Material Material;
     public GameObject BlockPrefab;
     public GameObject ChunkPrefab;
 

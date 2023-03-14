@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class World
@@ -190,7 +192,7 @@ public class World
         chunk.HitBlock(blockPos, damage);
     }
 
-    public void ExplodeBlocks(Vector3 center, int radius)
+    public void ExplodeBlocks(Vector3 center, int radius, int damage)
     {
         var chunkBlockPos = new Dictionary<Chunk, List<Vector3Int>>();
 
@@ -218,8 +220,6 @@ public class World
                         {
                             chunkBlockPos[chunk].Add(blockPos);
                         }
-                        //HitBlock(blockPos, 3);
-                        //DestroyBlock(blockPos);
                     }
                 }
             }
@@ -229,9 +229,32 @@ public class World
         for (int i = 0; i < chunkBlockPos.Keys.Count; i++)
         {
             var chunk = keys[i];
-            chunk.HitBlocks(chunkBlockPos[chunk], 3);
+            chunk.HitBlocks(chunkBlockPos[chunk], damage);
         }
 
+        UpdateAroundChunks(center);   // 일괄 처리
+    }
+
+    public void ExplodeBlocksNoAnimation(Vector3 center, int radius)
+    {
+        for (var x = center.x - radius; x < center.x + radius; x++)
+        {
+            for (var y = center.y - radius; y < center.y + radius; y++)
+            {
+                for (var z = center.z - radius; z < center.z + radius; z++)
+                {
+                    var blockPos = GetBlockCoords(x, y, z);
+                    var distSqr = (blockPos.x - center.x) * (blockPos.x - center.x)
+                        + (blockPos.y - center.y) * (blockPos.y - center.y)
+                        + (blockPos.z - center.z) * (blockPos.z - center.z);
+
+                    if (distSqr < radius * radius)
+                    {
+                        DestroyBlock(blockPos);
+                    }
+                }
+            }
+        }
         UpdateAroundChunks(center);   // 일괄 처리
     }
 
@@ -284,7 +307,7 @@ public class World
         {
             if (c == gameObject.transform) continue;
             c.parent = null;
-            Object.Destroy(c.gameObject);
+            UnityEngine.Object.Destroy(c.gameObject);
         }
         ClearWorldMap();
     }
