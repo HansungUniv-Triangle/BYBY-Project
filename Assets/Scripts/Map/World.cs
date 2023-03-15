@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class World
@@ -105,7 +109,7 @@ public class World
                 var noiseHeight = (int)(noiseMap[x, z] * TerrainHeight) + TerrainBaseHeight - 1;
 
                 /*
-                // �� ���� ����, �� ����
+                // 산 같은 지형
                 if (noiseHeight > 45)
                 {
                     var offset = noiseHeight - 45;
@@ -125,31 +129,31 @@ public class World
                 }
             }
         }
+
+        chunk.SetGrassBlock();
     }
 
     private Block GetBlock(int noiseHeight, Vector3Int pos)
     {
+        float Scale = WorldManager.Instance.Scale;
+        float Seed = WorldManager.Instance.Seed;
+        float BlockThreshold = WorldManager.Instance.BlockThreshold;
+        float NoneThreshold = WorldManager.Instance.NoneThreshold;
+        Vector3 Offset3D = WorldManager.Instance.Offset3D;
+
         var Blocks = WorldManager.Instance.Blocks;
 
-        // ���� ��Ÿ���� ���ǵ�
         if (pos.y == 0)
             return Blocks[(int)Block.BlockType.Bedrock];
-        if (pos.y == noiseHeight)
-            return Blocks[(int)Block.BlockType.Grass];
-        else if (pos.y > noiseHeight - 4)
+
+        var probability = Noise.Get3DNoiseValue(pos.x, pos.y, pos.z, Scale, Seed, Offset3D) - noiseHeight * 0.01f * Scale;
+
+        if (probability < NoneThreshold)
+            return null;
+        else if (probability < BlockThreshold)
             return Blocks[(int)Block.BlockType.Dirt];
         else
-        {
             return Blocks[(int)Block.BlockType.Stone];
-            /*
-            if (Noise.Get3DNoiseValue(pos.x, pos.y, pos.z, Scale, Seed) > CaveThreshold)
-            {
-                return Blocks[2];
-            }
-            */
-        }
-
-        //return null;
     }
 
     public void RenderWorld()
@@ -186,10 +190,52 @@ public class World
         var blockPos = GetBlockCoords(pos);
 
         chunk.HitBlock(blockPos, damage);
-        UpdateChunks(chunk, pos);
     }
 
-    public void ExplodeBlocks(Vector3 center, int radius)
+    public void ExplodeBlocks(Vector3 center, int radius, int damage)
+    {
+        var chunkBlockPos = new Dictionary<Chunk, List<Vector3Int>>();
+
+        for (var x = center.x - radius; x < center.x + radius; x++)
+        {
+            for (var y = center.y - radius; y < center.y + radius; y++)
+            {
+                for (var z = center.z - radius; z < center.z + radius; z++)
+                {
+                    var blockPos = GetBlockCoords(x, y, z);
+                    var distSqr = (blockPos.x - center.x) * (blockPos.x - center.x)
+                        + (blockPos.y - center.y) * (blockPos.y - center.y)
+                        + (blockPos.z - center.z) * (blockPos.z - center.z);
+
+                    if (distSqr < radius * radius)
+                    {
+                        var chunk = GetChunk(blockPos);
+                        if (chunk == null) continue;
+
+                        if (!chunkBlockPos.ContainsKey(chunk))
+                        {
+                            chunkBlockPos[chunk] = new List<Vector3Int>();
+                        }
+                        else
+                        {
+                            chunkBlockPos[chunk].Add(blockPos);
+                        }
+                    }
+                }
+            }
+        }
+
+        var keys = chunkBlockPos.Keys.ToList();
+        for (int i = 0; i < chunkBlockPos.Keys.Count; i++)
+        {
+            var chunk = keys[i];
+            chunk.HitBlocks(chunkBlockPos[chunk], damage);
+        }
+
+        UpdateAroundChunks(center);   // 일괄 처리
+    }
+
+    public void ExplodeBlocksNoAnimation(Vector3 center, int radius)
     {
         for (var x = center.x - radius; x < center.x + radius; x++)
         {
@@ -201,7 +247,7 @@ public class World
                     var distSqr = (blockPos.x - center.x) * (blockPos.x - center.x)
                         + (blockPos.y - center.y) * (blockPos.y - center.y)
                         + (blockPos.z - center.z) * (blockPos.z - center.z);
-                    
+
                     if (distSqr < radius * radius)
                     {
                         DestroyBlock(blockPos);
@@ -209,13 +255,14 @@ public class World
                 }
             }
         }
-        UpdateChunks(center);   // �ϰ� ó��
+        UpdateAroundChunks(center);   // 일괄 처리
     }
 
-    private void UpdateChunks(Vector3 pos)
+    private void UpdateAroundChunks(Vector3 pos)
     {
-        // �ش� ��ġ�� ûũ���� �����¿�밢�� ûũ ������Ʈ
+        // 해당 위치의 청크에서 상하좌우대각선 청크 업데이트
         var currentChunkPos = WorldManager.Instance.CalculateChunkCoords(pos);
+       
         for (int i = 0; i < _checkOffsetChunk.Length; i++)
         {
             var nextChunkPos = currentChunkPos + _checkOffsetChunk[i];
@@ -228,13 +275,10 @@ public class World
         }
     }
 
-    private void UpdateChunks(Chunk currentChunk, Vector3 pos)
+    public void UpdateAroundChunks(Chunk currentChunk, Vector3 pos)
     {
-        // �ش� ��ġ�� ������ �����¿� �� ĭ�� �ٸ� ûũ�� ���� ��� ������Ʈ
+        // 해당 위치의 블럭에서 상하좌우 한 칸에 다른 청크가 있을 경우 업데이트
         var chunkPos = currentChunk.GetChunkCoord();
-
-        //currentChunk.CreateChunkMesh();
-        //currentChunk.UpdateChunkMesh();
 
         for (int i = 0; i < _checkOffsetBlock.Length; i++)
         {
@@ -263,7 +307,7 @@ public class World
         {
             if (c == gameObject.transform) continue;
             c.parent = null;
-            Object.Destroy(c.gameObject);
+            UnityEngine.Object.Destroy(c.gameObject);
         }
         ClearWorldMap();
     }

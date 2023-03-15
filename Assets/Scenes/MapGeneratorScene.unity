@@ -171,7 +171,7 @@ MonoBehaviour:
   MapWidth: 20
   MapHeight: 20
   Seed: 0
-  NoiseScale: 27.65
+  NoiseScale: 28.08
   Offset: {x: 0, y: 0}
   Octaves: 3
   Persistance: 0.369
@@ -183,7 +183,6 @@ MonoBehaviour:
   WorldChunkWidth: 2
   WorldChunkHeight: 2
   Material: {fileID: 2100000, guid: f1c2128f50f7ddb42a2ed165213ded38, type: 2}
-  AnimatorController: {fileID: 9100000, guid: 0ba065bd852e8b44c8432eb44f36df69, type: 2}
   BlockPrefab: {fileID: 816225532686834975, guid: 80bff01fa4349dd49ad27151436bf1fe,
     type: 3}
   ChunkPrefab: {fileID: 6540796871913182244, guid: 530366b1a242d9749ad4553f4a9925ef,
@@ -239,6 +238,10 @@ MonoBehaviour:
     _backFaceTextureID: 68
     _leftFaceTextureID: 68
     _bottomFaceTextureID: 68
+  Offset3D: {x: 0, y: 0, z: 0}
+  Scale: 0.07
+  BlockThreshold: 0.47
+  NoneThreshold: 0.38
 --- !u!4 &1025421626
 Transform:
   m_ObjectHideFlags: 0
@@ -647,6 +650,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c80eaec96d05bce45a6ef3fa66574f51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _offset: 100
   HitDamage: 1
   ExplosionRadius: 3
 --- !u!114 &1621907865

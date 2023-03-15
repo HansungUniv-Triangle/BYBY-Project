@@ -44,7 +44,8 @@ public class CameraRay : MonoBehaviour
             if (Physics.Raycast(ray, out var hit, _maxDistance, (int)Layer.World))
             {
                 var point = hit.point - hit.normal * 0.1f;
-                WorldManager.Instance.GetWorld().ExplodeBlocks(point, ExplosionRadius);
+                WorldManager.Instance.GetWorld().ExplodeBlocks(point, ExplosionRadius, 3);
+                //WorldManager.Instance.GetWorld().ExplodeBlocksNoAnimation(point, ExplosionRadius);
             }
         }
 
