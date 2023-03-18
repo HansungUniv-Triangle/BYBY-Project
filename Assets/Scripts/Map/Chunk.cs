@@ -188,15 +188,57 @@ public class Chunk
     public void SetGrassBlock()
     {
         var Blocks = WorldManager.Instance.Blocks;
+        var TreeThreshold = WorldManager.Instance.TreeThreshold;
+        var Seed = WorldManager.Instance.Seed;
 
         foreach (var item in _blockMap.ToList())
         {
             var checkPos = item.Key;
             checkPos.y++;
+
             if (!_blockMap.ContainsKey(checkPos) &&
                 item.Value.GetBlockType() == Block.BlockType.Dirt)
             {
-                SetBlock(item.Key, Blocks[(int)Block.BlockType.Grass]);
+                if (_world.GetRandomValue() < TreeThreshold)
+                {
+                    SetTree(checkPos, Blocks);
+                }
+                else
+                    SetBlock(item.Key, Blocks[(int)Block.BlockType.Grass]);
+            }
+        }
+    }
+
+    public void SetTree(Vector3Int centerPos, Block[] blocks)
+    {
+        var WoodHeight = 5;
+        var LeafLength = 3;
+        var LeafHeight = 3;
+
+        for (var i = 0; i < WoodHeight; i++, centerPos.y++)
+        {
+            SetBlock(centerPos, blocks[(int)Block.BlockType.Wood]);
+        }
+
+        for (var y = 0; y < LeafHeight; y++)
+        {
+            for (var x = 0; x < LeafLength; x++)
+            {
+                for (var z = 0; z < LeafLength; z++)
+                {
+                    var blockPos = new Vector3Int(centerPos.x - 1 + x, centerPos.y - y, centerPos.z - 1 + z);
+                    
+                    // ³ª¹µÀÙ ÇüÅÂ
+                    if (blockPos.x == centerPos.x && blockPos.z == centerPos.z && y != 0)
+                        continue;
+                    if (y == 0 && x != 1 && z != 1)
+                        continue;
+
+                    var chunk = _world.GetChunk(blockPos);
+                    if (chunk?.GetBlock(blockPos) != null)
+                        continue;
+                    chunk?.SetBlock(blockPos, blocks[(int)Block.BlockType.Leaf]);
+                }
             }
         }
     }

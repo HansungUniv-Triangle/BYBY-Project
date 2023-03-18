@@ -12,6 +12,9 @@ public class Block
         Grass,
         Dirt,
         Stone,
+        Sand,
+        Wood,
+        Leaf,
         Bedrock
     };
 

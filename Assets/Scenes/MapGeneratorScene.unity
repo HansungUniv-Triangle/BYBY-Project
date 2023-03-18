@@ -168,8 +168,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6cdd7357cef44014cb458ed6e5e98f14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MapWidth: 20
-  MapHeight: 20
+  MapWidth: 40
+  MapHeight: 40
   Seed: 0
   NoiseScale: 28.08
   Offset: {x: 0, y: 0}
@@ -179,10 +179,9 @@ MonoBehaviour:
   AutoUpdate: 1
   TerrainHeight: 15
   TerrainBaseHeight: 6
-  ChunkSize: {x: 10, y: 64, z: 10}
-  WorldChunkWidth: 2
-  WorldChunkHeight: 2
-  Material: {fileID: 2100000, guid: f1c2128f50f7ddb42a2ed165213ded38, type: 2}
+  ChunkSize: {x: 8, y: 64, z: 8}
+  WorldChunkWidth: 5
+  WorldChunkHeight: 5
   BlockPrefab: {fileID: 816225532686834975, guid: 80bff01fa4349dd49ad27151436bf1fe,
     type: 3}
   ChunkPrefab: {fileID: 6540796871913182244, guid: 530366b1a242d9749ad4553f4a9925ef,
@@ -221,15 +220,45 @@ MonoBehaviour:
   - Name: Stone
     _type: 3
     _solidType: 1
-    _maxHP: 4
+    _maxHP: 5
     _frontFaceTextureID: 39
     _rightFaceTextureID: 39
     _topFaceTextureID: 39
     _backFaceTextureID: 39
     _leftFaceTextureID: 39
     _bottomFaceTextureID: 39
-  - Name: Bedrock
+  - Name: Sand
     _type: 4
+    _solidType: 1
+    _maxHP: 2
+    _frontFaceTextureID: 57
+    _rightFaceTextureID: 57
+    _topFaceTextureID: 57
+    _backFaceTextureID: 57
+    _leftFaceTextureID: 57
+    _bottomFaceTextureID: 57
+  - Name: Wood
+    _type: 5
+    _solidType: 1
+    _maxHP: 4
+    _frontFaceTextureID: 1
+    _rightFaceTextureID: 1
+    _topFaceTextureID: 81
+    _backFaceTextureID: 1
+    _leftFaceTextureID: 1
+    _bottomFaceTextureID: 81
+  - Name: Leaf
+    _type: 6
+    _solidType: 1
+    _maxHP: 1
+    _frontFaceTextureID: 76
+    _rightFaceTextureID: 76
+    _topFaceTextureID: 76
+    _backFaceTextureID: 76
+    _leftFaceTextureID: 76
+    _bottomFaceTextureID: 76
+  - Name: Bedrock
+    _type: 7
     _solidType: 1
     _maxHP: 0
     _frontFaceTextureID: 68
@@ -240,8 +269,10 @@ MonoBehaviour:
     _bottomFaceTextureID: 68
   Offset3D: {x: 0, y: 0, z: 0}
   Scale: 0.07
-  BlockThreshold: 0.47
   NoneThreshold: 0.38
+  SandThreshold: 0.6
+  BlockThreshold: 0.47
+  TreeThreshold: 98
 --- !u!4 &1025421626
 Transform:
   m_ObjectHideFlags: 0

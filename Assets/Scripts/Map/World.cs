@@ -8,7 +8,10 @@ public class World
 {
     public GameObject gameObject;
     private Chunk[,] _worldMap;
-    
+
+    private System.Random rng;
+    private Dictionary<Chunk, List<Vector3Int>> _chunkBlockPos;
+
     private readonly Vector3[] _checkOffsetBlock = {
         Vector3.back, 
         Vector3.forward,
@@ -45,19 +48,21 @@ public class World
     public int GetHeight() => _worldMap.GetLength(1);
     public Vector3Int GetBlockCoords(Vector3 pos) => new((int)(pos.x + 0.5f), (int)(pos.y + 0.5f), (int)(pos.z + 0.5f));
     public Vector3Int GetBlockCoords(float x, float y, float z) => new((int)(x + 0.5f), (int)(y + 0.5f), (int)(z + 0.5f));
+    public double GetRandomValue() => rng.NextDouble();
 
     #endregion
     
     public World()
     {
         gameObject = new GameObject("World", new System.Type[] { });
+        _chunkBlockPos = new Dictionary<Chunk, List<Vector3Int>>();
     }
 
     public void Init(int worldChunkWidth, int worldChunkHeight)
     {
         _worldMap = new Chunk[worldChunkWidth, worldChunkHeight];
+        rng = new System.Random(WorldManager.Instance.Seed);
     }
-
 
     public void SetChunk(int x, int z, Chunk chunk)
     {
@@ -78,6 +83,8 @@ public class World
                 GenerateChunk(noiseMap, x, z);
             }
         }
+
+        SetNatureEnvironment();
     }
 
     private void GenerateChunk(float[,] noiseMap, int xWorld, int zWorld)
@@ -129,8 +136,17 @@ public class World
                 }
             }
         }
+    }
 
-        chunk.SetGrassBlock();
+    private void SetNatureEnvironment()
+    {
+        for (var x = 0; x < _worldMap.GetLength(0); x++)
+        {
+            for (var z = 0; z < _worldMap.GetLength(1); z++)
+            {
+                _worldMap[x, z].SetGrassBlock();
+            }
+        }
     }
 
     private Block GetBlock(int noiseHeight, Vector3Int pos)
@@ -138,6 +154,7 @@ public class World
         float Scale = WorldManager.Instance.Scale;
         float Seed = WorldManager.Instance.Seed;
         float BlockThreshold = WorldManager.Instance.BlockThreshold;
+        float SandThreshold = WorldManager.Instance.SandThreshold;
         float NoneThreshold = WorldManager.Instance.NoneThreshold;
         Vector3 Offset3D = WorldManager.Instance.Offset3D;
 
@@ -152,6 +169,8 @@ public class World
             return null;
         else if (probability < BlockThreshold)
             return Blocks[(int)Block.BlockType.Dirt];
+        else if (probability < SandThreshold)
+            return Blocks[(int)Block.BlockType.Sand];
         else
             return Blocks[(int)Block.BlockType.Stone];
     }
@@ -194,7 +213,7 @@ public class World
 
     public void ExplodeBlocks(Vector3 center, int radius, int damage)
     {
-        var chunkBlockPos = new Dictionary<Chunk, List<Vector3Int>>();
+        _chunkBlockPos.Clear();
 
         for (var x = center.x - radius; x < center.x + radius; x++)
         {
@@ -212,24 +231,24 @@ public class World
                         var chunk = GetChunk(blockPos);
                         if (chunk == null) continue;
 
-                        if (!chunkBlockPos.ContainsKey(chunk))
+                        if (!_chunkBlockPos.ContainsKey(chunk))
                         {
-                            chunkBlockPos[chunk] = new List<Vector3Int>();
+                            _chunkBlockPos[chunk] = new List<Vector3Int>();
                         }
                         else
                         {
-                            chunkBlockPos[chunk].Add(blockPos);
+                            _chunkBlockPos[chunk].Add(blockPos);
                         }
                     }
                 }
             }
         }
 
-        var keys = chunkBlockPos.Keys.ToList();
-        for (int i = 0; i < chunkBlockPos.Keys.Count; i++)
+        var keys = _chunkBlockPos.Keys.ToList();
+        for (int i = 0; i < _chunkBlockPos.Keys.Count; i++)
         {
             var chunk = keys[i];
-            chunk.HitBlocks(chunkBlockPos[chunk], damage);
+            chunk.HitBlocks(_chunkBlockPos[chunk], damage);
         }
 
         UpdateAroundChunks(center);   // 일괄 처리

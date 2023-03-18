@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class WorldManager : Singleton<WorldManager>
 {
+    [Space(5f)]
+    public bool AutoUpdate;
+
     [Header("Noise Setting")]
     [Space(5f)]
     public int MapWidth;
@@ -16,8 +19,14 @@ public class WorldManager : Singleton<WorldManager>
     public float Persistance;
     public float Lacunarity;
 
+    [Header("3D Noise Setting")]
     [Space(5f)]
-    public bool AutoUpdate;
+    public Vector3 Offset3D;
+    public float Scale = 0.07f;
+    public float NoneThreshold = 0.38f;
+    public float SandThreshold = 0.6f;
+    public float BlockThreshold = 0.47f;
+    public float TreeThreshold = 98f;
 
     [Header("Terrain Setting")]
     [Space(5f)]
@@ -42,13 +51,6 @@ public class WorldManager : Singleton<WorldManager>
 
     private float[,] _noiseMap;
     private World _world;
-
-    [Header("3D Noise Setting")]
-    [Space(5f)]
-    public Vector3 Offset3D;
-    public float Scale = 0.07f;
-    public float BlockThreshold = 0.47f;
-    public float NoneThreshold = 0.38f;
 
     public void Start()
     {
