@@ -1,4 +1,4 @@
-﻿using Type;
+﻿using Types;
 using UnityEngine;
 
 [ CreateAssetMenu(fileName = "BulletData", menuName = "SO/BulletData" )]

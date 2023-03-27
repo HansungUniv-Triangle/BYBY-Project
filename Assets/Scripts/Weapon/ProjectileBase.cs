@@ -1,6 +1,6 @@
 using System;
 using GameStatus;
-using Type;
+using Types;
 using UnityEngine;
 using Util;
 
@@ -90,13 +90,6 @@ namespace Weapon
             Distance += Time.deltaTime * TotalVelocity;
             MoveProjectile();
             ChangeScale();
-
-            var guided = _base.GetStat(WeaponStat.Guided).Total;
-            if (guided > 0)
-            {
-                Debug.Log(guided);
-                GuidedTarget(guided);
-            }
         }
 
         private void ChangeScale()

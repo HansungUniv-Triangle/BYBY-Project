@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Type;
+using Types;
 using UnityEngine;
 
 public class CameraRay : MonoBehaviour

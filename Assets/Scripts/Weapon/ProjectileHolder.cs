@@ -36,6 +36,7 @@ namespace Weapon
         public ProjectileBase<T> GetProjectile(Transform position)
         {
             var obj = UnityEngine.Object.Instantiate(_projectileScript, position);
+            obj.transform.SetParent(null);
             obj.Initialized(this);
             _projectileList.Add(obj);
             return obj;

@@ -1,4 +1,4 @@
-﻿using Type;
+﻿using Types;
 
 /* HandGun : WeaponBase
  * 기본적인 권총을 구현한 클래스

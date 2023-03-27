@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using GameStatus;
 using UnityEngine;
-using Type;
+using Types;
 
 [ CreateAssetMenu(fileName = "Synergy", menuName = "SO/Synergy" )]
 public class Synergy : ScriptableObject

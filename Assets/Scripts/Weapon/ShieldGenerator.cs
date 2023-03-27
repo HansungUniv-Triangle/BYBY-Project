@@ -1,6 +1,4 @@
-﻿using GameStatus;
-using Type;
-using UnityEngine;
+﻿using Types;
 
 namespace Weapon
 {

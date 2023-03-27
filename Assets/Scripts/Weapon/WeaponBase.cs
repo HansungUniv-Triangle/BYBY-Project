@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Type;
+using Types;
 using UnityEngine;
 using GameStatus;
 

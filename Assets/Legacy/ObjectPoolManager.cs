@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Type;
+using Types;
 
 public class ObjectPoolManager : Singleton<ObjectPoolManager>
 {

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using System.Globalization;
+using Fusion;
 using GameStatus;
-using Type;
+using Types;
 using UnityEngine;
 using UnityEngine.UI;
 using Weapon;
@@ -59,18 +59,6 @@ public class Move : MonoBehaviour
     {
         statlist2.Add(new Stat<WeaponStat>(WeaponStat.Range, -0.5f, 0));
         AdditionalWork(text, WeaponStat.Range);
-    }
-    
-    public void IncreaseGuided(GameObject text)
-    {
-        statlist2.Add(new Stat<WeaponStat>(WeaponStat.Guided, 0.5f, 0));
-        AdditionalWork(text, WeaponStat.Guided);
-    }
-    
-    public void DecreaseGuided(GameObject text)
-    {
-        statlist2.Add(new Stat<WeaponStat>(WeaponStat.Guided, -0.5f, 0));
-        AdditionalWork(text, WeaponStat.Guided);
     }
 
     public void AdditionalWork(GameObject text, CharStat type)
@@ -139,6 +127,9 @@ public class Move : MonoBehaviour
     #endregion
 
     private GameManager _gameManager;
+
+    [Networked] 
+    public bool Test { get; set; }
     
     private void Awake()
     {
@@ -211,7 +202,7 @@ public class Move : MonoBehaviour
         v = Joystick.Vertical;
 
         // move
-        var speed = _baseCharStat.GetStat(CharStat.Speed).Total;
+        var speed = _baseCharStat.GetStat(CharStat.Speed).Total * 5;
         moveDir = new Vector3(h, 0, v);
         moveDir = _transform.TransformDirection(moveDir);
         moveDir *= speed;
@@ -248,9 +239,13 @@ public class Move : MonoBehaviour
         yVelocity = jumpForce;
     }
 
+    public Transform canvasTarget;
+    public Transform gun;
+    
     private void Update()
     {
         CharacterMove();
+        
         if (Physics.Raycast(transform.position, transform.forward, out _raycast, maxDistance))
         {
             if (_raycast.transform.gameObject.name == "허수아비")
@@ -264,9 +259,12 @@ public class Move : MonoBehaviour
             _isTargetNotNull = false;
             target = null;
         }
-
+        
         // target
         if(_isTargetNotNull) transform.LookAt(target.transform);
+        
+        gun.LookAt(canvasTarget);
+        
         
         // 임시 자동공격
         _weapon.Attack();

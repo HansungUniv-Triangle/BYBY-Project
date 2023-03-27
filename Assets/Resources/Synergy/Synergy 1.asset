@@ -18,7 +18,7 @@ MonoBehaviour:
   priority: 0
   charStatList:
   - <Type>k__BackingField: 1
-    <Amount>k__BackingField: 10
+    <Amount>k__BackingField: 1
     <Ratio>k__BackingField: 0
   weaponStatList:
   - <Type>k__BackingField: 8

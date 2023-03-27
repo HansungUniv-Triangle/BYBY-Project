@@ -1,6 +1,4 @@
-﻿using GameStatus;
-using Type;
-using UnityEngine;
+﻿using Types;
 
 /* HandGun : WeaponBase
  * 핸드건이랑 같은데 총알이 유도탄 추가
@@ -20,12 +18,11 @@ namespace Weapon
         public override void Attack()
         {
             if (!CheckCoolTime()) return;
-            
+
             _projectileHolder.GetProjectile(WeaponPos)
                 .AddBaseStat(BaseWeaponStat.GetStat(WeaponStat.Damage))
                 .AddBaseStat(BaseWeaponStat.GetStat(WeaponStat.Range))
-                .AddBaseStat(BaseWeaponStat.GetStat(WeaponStat.Velocity))
-                .AddBaseStat(BaseWeaponStat.GetStat(WeaponStat.Guided));
+                .AddBaseStat(BaseWeaponStat.GetStat(WeaponStat.Velocity));
             CoolTime = 0;
         }
     }
