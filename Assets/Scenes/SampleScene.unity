@@ -1078,7 +1078,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 477913203}
   m_LocalRotation: {x: 0.043619405, y: 0, z: 0, w: 0.9990483}
-  m_LocalPosition: {x: 2.5, y: 5, z: -10}
+  m_LocalPosition: {x: 2.5, y: 4, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2676,12 +2676,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 7b8e0f607fe4e1347953888d3abd9100, type: 2}
   - {fileID: 11400000, guid: 6201d83668f0ab745bfb55e53cad71c2, type: 2}
   weapons: []
+  GunPos: {fileID: 1594681842}
   ShotLine: {fileID: 1051213434}
   UltLine: {fileID: 157917066}
-  CameraObj: {fileID: 330585546}
-  CameraPos: {fileID: 477913204}
-  CameraFocusPos: {fileID: 1856698286}
-  GunPos: {fileID: 1594681842}
 --- !u!136 &1562452197
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -3116,7 +3113,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1856698285}
   m_LocalRotation: {x: 0.043619405, y: 0, z: 0, w: 0.9990483}
-  m_LocalPosition: {x: 1.3, y: 2, z: -5}
+  m_LocalPosition: {x: 1, y: 2, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
