@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DG.Tweening;
 using GameStatus;
 using Type;
 using UnityEngine;
@@ -30,9 +31,12 @@ public class Move : MonoBehaviour
     private Transform _transform;
     private CharacterController _characterController;
     private Vector3 moveDir;
-    private float gravity = -10.0f;
-    private float jumpForce = 5.0f;
-    public float yVelocity = 0.0f;
+    private float gravity = 15.0f;
+    private float jumpForce = 7.0f;
+    private float dodgeForce = 4.0f;
+    private bool isJump = false;
+    private bool isDodge = false;
+    private float shakeDodgeThreshold = 2.0f;
     #endregion
 
     #region 전투 관련
@@ -41,7 +45,16 @@ public class Move : MonoBehaviour
     public List<WeaponBase> weapons = new List<WeaponBase>();
     private WeaponBase _weapon => weapons[_btnStatus - 1];
     private int _btnStatus = 0;
+
+    public LineRenderer ShotLine;
+    public LineRenderer UltLine;
     #endregion
+
+    public bool isCameraFocused = false;
+    public Transform CameraObj;
+    public Transform CameraPos;
+    public Transform CameraFocusPos;
+    public Transform GunPos;
 
     private GameManager _gameManager;
     
@@ -51,7 +64,8 @@ public class Move : MonoBehaviour
         _transform = gameObject.transform;
         _baseCharStat = new BaseStat<CharStat>();
         _gameManager = GameManager.Instance;
-        _isTargetNotNull = false;
+        _isTargetNotNull = true;
+
         _characterController = GetComponent<CharacterController>();
         
         weapons.Add(gameObject.AddComponent<HandGun>());
@@ -63,7 +77,9 @@ public class Move : MonoBehaviour
 
     private void Start()
     {
+        moveDir = Vector3.zero;
         InitialStatus();
+        CanvasManager.Instance.SwitchUI(CanvasType.GameMoving);
     }
 
     private void InitialStatus()
@@ -102,72 +118,170 @@ public class Move : MonoBehaviour
     
     public void GetUlt()
     {
-        Debug.Log("Ult");
+        isCameraFocused = !isCameraFocused;
+        CanvasManager.Instance.SwitchUI(CanvasType.GameAiming);
+    }
+
+    public void EndUlt()
+    {
+        UltShoot();
+        //_weapon.Attack();
+        isCameraFocused = false;
+        CanvasManager.Instance.SwitchUI(CanvasType.GameMoving);
+    }
+
+    private void UltShoot()
+    {
+        // ultimate shot
+        RaycastHit hit;
+        Ray gunRay;
+
+        var screenCenter = new Vector3(Camera.main.pixelWidth / 2, Camera.main.pixelHeight / 2);        // 화면 중앙 (크로스헤어)
+        var aimRay = Camera.main.ScreenPointToRay(screenCenter);
+        var aimDistance = 30f;
+        
+        if (Physics.Raycast(aimRay, out hit, aimDistance) && hit.transform.gameObject != gameObject)    // 발사하는 주체는 제외
+        {
+            gunRay = new Ray(GunPos.position, (hit.point - GunPos.position).normalized);
+        }
+        else
+        {
+            gunRay = new Ray(GunPos.position, ((aimRay.origin + aimRay.direction * aimDistance) - GunPos.position).normalized);
+        }
+        
+        UltLine.SetPosition(0, gunRay.origin);
+        UltLine.SetPosition(1, gunRay.origin + gunRay.direction * aimDistance);
+        //Debug.DrawRay(gunRay.origin, gunRay.direction * aimDistance, Color.cyan, 5f);
+
+        if (Physics.Raycast(gunRay, out hit, aimDistance))   //if (Physics.Raycast(gunRay, out RaycastHit hit, aimDistance, (int)Layer.World))
+        {
+            var point = hit.point - hit.normal * 0.1f;
+            WorldManager.Instance.GetWorld().ExplodeBlocks(point, 3, 3);
+
+            UltLine.SetPosition(1, hit.point);
+            //Debug.DrawLine(gunRay.origin, hit.point, Color.cyan, 5f);
+        }
+    }
+
+    private void CameraMove()
+    {
+        if (isCameraFocused)
+        {
+            CameraObj.position = Vector3.Lerp(CameraObj.position, CameraFocusPos.position, Time.deltaTime * 4f);
+        }
+        else
+        {
+            CameraObj.position = Vector3.Lerp(CameraObj.position, CameraPos.position, Time.deltaTime * 4f);
+        }
     }
 
     private void CharacterMove()
     {
-        float h, v;
-        h = Joystick.Horizontal;
-        v = Joystick.Vertical;
+        var h = Joystick.Horizontal;
+        var v = Joystick.Vertical;
+
+        var speed = _baseCharStat.GetStat(CharStat.Speed).Total;
 
         // move
-        var speed = _baseCharStat.GetStat(CharStat.Speed).Total;
-        moveDir = new Vector3(h, 0, v);
-        moveDir = _transform.TransformDirection(moveDir);
-        moveDir *= speed;
+        if (_characterController.isGrounded)
+        {    
+            moveDir = new Vector3(h, 0, v);
+            moveDir = _transform.TransformDirection(moveDir);
+            moveDir *= speed;
+        }
+        else
+        {
+            var tmp = new Vector3(h, 0, v);
+            tmp = _transform.TransformDirection(tmp);
+            tmp *= (speed * 0.7f);
 
-        //_characterRigidbody.velocity = new Vector3(h * _base.Speed, 0, v * _base.Speed);
+            moveDir.x = tmp.x;
+            moveDir.z = tmp.z;
+        }
+
+        if (isJump)
+        {
+            moveDir.y = jumpForce;
+            isJump = false;
+        }
+
+        if (isDodge)
+        {
+            moveDir.x *= dodgeForce;
+            moveDir.z *= dodgeForce;
+        }
+
+        moveDir.y -= gravity * Time.deltaTime;
+
+        _characterController.Move(moveDir * Time.deltaTime);
+
         if (_isTargetNotNull == false)
         {
-            if (!(h == 0 && v == 0))
-            {
-                _transform.rotation = Quaternion.Lerp(_transform.rotation, Quaternion.LookRotation(moveDir), Time.deltaTime * (speed * 0.1f));
-            }
+            _transform.rotation = Quaternion.Lerp(_transform.rotation, Quaternion.LookRotation(moveDir), Time.deltaTime * (speed * 0.1f));
         }
-        
-        yVelocity += (gravity * Time.deltaTime);
-        moveDir.y = yVelocity;
-        
-        _characterController.Move(moveDir * Time.deltaTime);
+        else if (isCameraFocused == false)
+        {
+            var relativePosition = target.transform.position - transform.position;
+            var targetRotation = Quaternion.LookRotation(relativePosition);
+
+            _transform.rotation = Quaternion.Lerp(_transform.rotation, targetRotation, Time.deltaTime * 4f);
+            //_transform.localRotation = Quaternion.Lerp(_transform.localRotation, Quaternion.Euler(h * 20, 0, v * 20), Time.deltaTime * 4f);
+        }
     }
 
-    private void OnCollisionEnter()
+    private void OnControllerColliderHit(ControllerColliderHit hit)
     {
-        if (moveDir.x != 0 && moveDir.z != 0)
+        if (hit.gameObject.layer == LayerMask.NameToLayer("World") && hit.normal.y == 0)
         {
-            yVelocity = 0;
             if (_characterController.isGrounded)
             {
-                yVelocity = jumpForce;
+                isJump = true;
             }
         }
     }
 
     private void Update()
     {
-        CharacterMove();
-        if (Physics.Raycast(transform.position, transform.forward, out _raycast, maxDistance))
-        {
-            if (_raycast.transform.gameObject.name == "허수아비")
-            {
-                _isTargetNotNull = true;
-                target = _raycast.transform.gameObject;
-            }
-        }
-        else
-        {
-            _isTargetNotNull = false;
-            target = null;
-        }
+        var shakeMagnitude = Input.acceleration.magnitude;
 
-        // target
-        if(_isTargetNotNull) transform.LookAt(target.transform);
+        if (shakeMagnitude > shakeDodgeThreshold && !isDodge)    //if (Input.GetKeyDown(KeyCode.Space) && !isDodge)
+        {
+            isDodge = true;
+            DOTween.Sequence()
+                .AppendInterval(0.1f)
+                .OnComplete(() =>
+                {
+                    isDodge = false;
+                });
+        }
+        CameraMove();
+        CharacterMove();
         
         // 임시 자동공격
-        _weapon.Attack();
+        if (!isCameraFocused)
+        {
+            BasicShoot();
+            //Debug.DrawLine(GunPos.position, target.transform.position, Color.red);
+            //_weapon.Attack();
+        }
 
         // Todo: 그냥 테스트용 코드
         TestUpdate();
+    }
+
+    private void BasicShoot()
+    {
+        ShotLine.SetPosition(0, GunPos.position);
+        ShotLine.SetPosition(1, target.transform.position);
+
+        var gunRay = new Ray(GunPos.position, target.transform.position - GunPos.position);
+        if (Physics.Raycast(gunRay, out RaycastHit hit, 50))
+        {
+            var point = hit.point - hit.normal * 0.01f;
+            WorldManager.Instance.GetWorld().HitBlock(point, 1);
+
+            ShotLine.SetPosition(1, hit.point);
+            //Debug.DrawLine(gunRay.origin, hit.point, Color.cyan, 5f);
+        }
     }
 }

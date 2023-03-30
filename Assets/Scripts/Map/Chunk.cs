@@ -211,9 +211,9 @@ public class Chunk
 
     public void SetTree(Vector3Int centerPos, Block[] blocks)
     {
-        var WoodHeight = 5;
-        var LeafLength = 3;
-        var LeafHeight = 3;
+        var WoodHeight = WorldManager.Instance.WoodHeight;
+        var LeafLength = WorldManager.Instance.LeafLength;
+        var LeafHeight = WorldManager.Instance.LeafHeight;
 
         for (var i = 0; i < WoodHeight; i++, centerPos.y++)
         {
@@ -288,7 +288,7 @@ public class Chunk
 
                 var checkBlockPos = blockPos + MeshBlockData.CheckDireactions[dir];
 
-                if (!_blockMap.ContainsKey(checkBlockPos) || !_blockMap[checkBlockPos].GetSolidType())
+                if (!_blockMap.ContainsKey(checkBlockPos) || !_blockMap[checkBlockPos].GetSolidType() || _blockMap[checkBlockPos].GetTransparencyType())
                 {
                     // 다음 청크에 있을 수도 있어 예외 처리
                     var checkChunkPos = new Vector2Int(_chunkCoord.x + MeshBlockData.CheckDireactions[dir].x,
@@ -296,7 +296,8 @@ public class Chunk
 
                     // 다음 청크에서 블럭 존재할 경우, 해당 면 그리지 않기
                     if (_world.IsPositionInWorld(checkChunkPos) &&
-                        _world.GetChunk(checkChunkPos).GetBlock(checkBlockPos) != null)
+                        _world.GetChunk(checkChunkPos).GetBlock(checkBlockPos) != null &&
+                        !_world.GetChunk(checkChunkPos).GetBlock(checkBlockPos).GetTransparencyType())
                         continue;
 
                     // Culling 방식

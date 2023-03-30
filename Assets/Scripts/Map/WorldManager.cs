@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class WorldManager : Singleton<WorldManager>
@@ -26,7 +27,7 @@ public class WorldManager : Singleton<WorldManager>
     public float NoneThreshold = 0.38f;
     public float SandThreshold = 0.6f;
     public float BlockThreshold = 0.47f;
-    public float TreeThreshold = 98f;
+    public float TreeThreshold = 0.04f;
 
     [Header("Terrain Setting")]
     [Space(5f)]
@@ -43,6 +44,11 @@ public class WorldManager : Singleton<WorldManager>
     public int WorldChunkHeight;
 
     [Space(5f)]
+    public int WoodHeight = 6;
+    public int LeafLength = 3;
+    public int LeafHeight = 3;
+
+    [Space(5f)]
     public GameObject BlockPrefab;
     public GameObject ChunkPrefab;
 
@@ -54,6 +60,7 @@ public class WorldManager : Singleton<WorldManager>
 
     public void Start()
     {
+        Seed = DateTime.Now.Millisecond;
         _world = new World();
         GeneratorMap();
     }

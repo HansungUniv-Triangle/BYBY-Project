@@ -168,6 +168,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6cdd7357cef44014cb458ed6e5e98f14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  AutoUpdate: 1
   MapWidth: 40
   MapHeight: 40
   Seed: 0
@@ -176,7 +177,12 @@ MonoBehaviour:
   Octaves: 3
   Persistance: 0.369
   Lacunarity: 1.5
-  AutoUpdate: 1
+  Offset3D: {x: 0, y: 0, z: 0}
+  Scale: 0.07
+  NoneThreshold: 0.38
+  SandThreshold: 0.6
+  BlockThreshold: 0.47
+  TreeThreshold: 0.04
   TerrainHeight: 15
   TerrainBaseHeight: 6
   ChunkSize: {x: 8, y: 64, z: 8}
@@ -190,6 +196,7 @@ MonoBehaviour:
   - Name: Air
     _type: 0
     _solidType: 0
+    _transparencyType: 0
     _maxHP: 0
     _frontFaceTextureID: 0
     _rightFaceTextureID: 0
@@ -200,6 +207,7 @@ MonoBehaviour:
   - Name: Grass
     _type: 1
     _solidType: 1
+    _transparencyType: 0
     _maxHP: 3
     _frontFaceTextureID: 43
     _rightFaceTextureID: 43
@@ -210,6 +218,7 @@ MonoBehaviour:
   - Name: Dirt
     _type: 2
     _solidType: 1
+    _transparencyType: 0
     _maxHP: 2
     _frontFaceTextureID: 52
     _rightFaceTextureID: 52
@@ -220,6 +229,7 @@ MonoBehaviour:
   - Name: Stone
     _type: 3
     _solidType: 1
+    _transparencyType: 0
     _maxHP: 5
     _frontFaceTextureID: 39
     _rightFaceTextureID: 39
@@ -230,6 +240,7 @@ MonoBehaviour:
   - Name: Sand
     _type: 4
     _solidType: 1
+    _transparencyType: 0
     _maxHP: 2
     _frontFaceTextureID: 57
     _rightFaceTextureID: 57
@@ -240,6 +251,7 @@ MonoBehaviour:
   - Name: Wood
     _type: 5
     _solidType: 1
+    _transparencyType: 0
     _maxHP: 4
     _frontFaceTextureID: 1
     _rightFaceTextureID: 1
@@ -250,6 +262,7 @@ MonoBehaviour:
   - Name: Leaf
     _type: 6
     _solidType: 1
+    _transparencyType: 1
     _maxHP: 1
     _frontFaceTextureID: 76
     _rightFaceTextureID: 76
@@ -260,6 +273,7 @@ MonoBehaviour:
   - Name: Bedrock
     _type: 7
     _solidType: 1
+    _transparencyType: 0
     _maxHP: 0
     _frontFaceTextureID: 68
     _rightFaceTextureID: 68
@@ -267,12 +281,6 @@ MonoBehaviour:
     _backFaceTextureID: 68
     _leftFaceTextureID: 68
     _bottomFaceTextureID: 68
-  Offset3D: {x: 0, y: 0, z: 0}
-  Scale: 0.07
-  NoneThreshold: 0.38
-  SandThreshold: 0.6
-  BlockThreshold: 0.47
-  TreeThreshold: 98
 --- !u!4 &1025421626
 Transform:
   m_ObjectHideFlags: 0
@@ -596,6 +604,7 @@ GameObject:
   - component: {fileID: 1621907861}
   - component: {fileID: 1621907864}
   - component: {fileID: 1621907865}
+  - component: {fileID: 1621907866}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -717,3 +726,16 @@ MonoBehaviour:
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
   m_Version: 2
+--- !u!65 &1621907866
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1621907860}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.1, y: 0.1, z: 0.1}
+  m_Center: {x: 0, y: 0, z: 0}
