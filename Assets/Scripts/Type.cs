@@ -57,5 +57,11 @@
         GameMoving,
         GameAiming
     }
+
+    public enum AttackType
+    {
+        Basic,
+        Ultimate
+    }
 }
 

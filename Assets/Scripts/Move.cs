@@ -18,7 +18,7 @@ public class Move : MonoBehaviour
         }
     }
     #endregion
-    
+
     #region 타겟 지정 관련 변수
     public GameObject target;
     private bool _isTargetNotNull;
@@ -46,18 +46,15 @@ public class Move : MonoBehaviour
     private WeaponBase _weapon => weapons[_btnStatus - 1];
     private int _btnStatus = 0;
 
+    public Transform GunPos;
+    public static bool isCameraFocused = false;
+
     public LineRenderer ShotLine;
     public LineRenderer UltLine;
     #endregion
 
-    public bool isCameraFocused = false;
-    public Transform CameraObj;
-    public Transform CameraPos;
-    public Transform CameraFocusPos;
-    public Transform GunPos;
-
     private GameManager _gameManager;
-    
+
     private void Awake()
     {
         _btnStatus = 1;
@@ -67,7 +64,7 @@ public class Move : MonoBehaviour
         _isTargetNotNull = true;
 
         _characterController = GetComponent<CharacterController>();
-        
+
         weapons.Add(gameObject.AddComponent<HandGun>());
         weapons.Add(gameObject.AddComponent<ShieldGenerator>());
         // 임시 칸 채우기 용도
@@ -97,25 +94,25 @@ public class Move : MonoBehaviour
         InitialStatus();
         _btnStatus = 1;
     }
-    
+
     public void ChangeGun2()
     {
         InitialStatus();
         _btnStatus = 2;
     }
-    
+
     public void ChangeGun3()
     {
         InitialStatus();
         _btnStatus = 3;
     }
-    
+
     public void ChangeGun4()
     {
         InitialStatus();
         _btnStatus = 4;
     }
-    
+
     public void GetUlt()
     {
         isCameraFocused = !isCameraFocused;
@@ -124,55 +121,10 @@ public class Move : MonoBehaviour
 
     public void EndUlt()
     {
-        UltShoot();
         //_weapon.Attack();
+        Shoot(AttackType.Ultimate, UltLine);
         isCameraFocused = false;
         CanvasManager.Instance.SwitchUI(CanvasType.GameMoving);
-    }
-
-    private void UltShoot()
-    {
-        // ultimate shot
-        RaycastHit hit;
-        Ray gunRay;
-
-        var screenCenter = new Vector3(Camera.main.pixelWidth / 2, Camera.main.pixelHeight / 2);        // 화면 중앙 (크로스헤어)
-        var aimRay = Camera.main.ScreenPointToRay(screenCenter);
-        var aimDistance = 30f;
-        
-        if (Physics.Raycast(aimRay, out hit, aimDistance) && hit.transform.gameObject != gameObject)    // 발사하는 주체는 제외
-        {
-            gunRay = new Ray(GunPos.position, (hit.point - GunPos.position).normalized);
-        }
-        else
-        {
-            gunRay = new Ray(GunPos.position, ((aimRay.origin + aimRay.direction * aimDistance) - GunPos.position).normalized);
-        }
-        
-        UltLine.SetPosition(0, gunRay.origin);
-        UltLine.SetPosition(1, gunRay.origin + gunRay.direction * aimDistance);
-        //Debug.DrawRay(gunRay.origin, gunRay.direction * aimDistance, Color.cyan, 5f);
-
-        if (Physics.Raycast(gunRay, out hit, aimDistance))   //if (Physics.Raycast(gunRay, out RaycastHit hit, aimDistance, (int)Layer.World))
-        {
-            var point = hit.point - hit.normal * 0.1f;
-            WorldManager.Instance.GetWorld().ExplodeBlocks(point, 3, 3);
-
-            UltLine.SetPosition(1, hit.point);
-            //Debug.DrawLine(gunRay.origin, hit.point, Color.cyan, 5f);
-        }
-    }
-
-    private void CameraMove()
-    {
-        if (isCameraFocused)
-        {
-            CameraObj.position = Vector3.Lerp(CameraObj.position, CameraFocusPos.position, Time.deltaTime * 4f);
-        }
-        else
-        {
-            CameraObj.position = Vector3.Lerp(CameraObj.position, CameraPos.position, Time.deltaTime * 4f);
-        }
     }
 
     private void CharacterMove()
@@ -184,7 +136,7 @@ public class Move : MonoBehaviour
 
         // move
         if (_characterController.isGrounded)
-        {    
+        {
             moveDir = new Vector3(h, 0, v);
             moveDir = _transform.TransformDirection(moveDir);
             moveDir *= speed;
@@ -222,10 +174,10 @@ public class Move : MonoBehaviour
         else if (isCameraFocused == false)
         {
             var relativePosition = target.transform.position - transform.position;
+            relativePosition.y = 0; // y축은 바라보지 않도록 함
             var targetRotation = Quaternion.LookRotation(relativePosition);
 
-            _transform.rotation = Quaternion.Lerp(_transform.rotation, targetRotation, Time.deltaTime * 4f);
-            //_transform.localRotation = Quaternion.Lerp(_transform.localRotation, Quaternion.Euler(h * 20, 0, v * 20), Time.deltaTime * 4f);
+            _transform.rotation = Quaternion.Lerp(_transform.rotation, targetRotation, Time.deltaTime * 8f);
         }
     }
 
@@ -254,13 +206,12 @@ public class Move : MonoBehaviour
                     isDodge = false;
                 });
         }
-        CameraMove();
         CharacterMove();
-        
+
         // 임시 자동공격
         if (!isCameraFocused)
         {
-            BasicShoot();
+            Shoot(AttackType.Basic, ShotLine);
             //Debug.DrawLine(GunPos.position, target.transform.position, Color.red);
             //_weapon.Attack();
         }
@@ -269,19 +220,49 @@ public class Move : MonoBehaviour
         TestUpdate();
     }
 
-    private void BasicShoot()
+    private void Shoot(AttackType attackType, LineRenderer lineRenderer)    // 라인렌더러는 임시
     {
-        ShotLine.SetPosition(0, GunPos.position);
-        ShotLine.SetPosition(1, target.transform.position);
+        RaycastHit hit;
+        Ray gunRay;
 
-        var gunRay = new Ray(GunPos.position, target.transform.position - GunPos.position);
-        if (Physics.Raycast(gunRay, out RaycastHit hit, 50))
+        var screenCenter = new Vector3(Camera.main.pixelWidth / 2, Camera.main.pixelHeight / 2);        // 화면 중앙 (크로스헤어)
+        var aimRay = Camera.main.ScreenPointToRay(screenCenter);
+        var aimDistance = 30f;
+
+        // 화면 중앙으로 쏘는 레이는 원점이 플레이어 앞에서 시작되어야 한다.
+        // 그렇지 않으면 플레이어는 크로스헤어에는 걸렸지만, 뒤에 있는 물체를 부수게 된다.
+        // 발사하는 주체는 제외
+        if (Physics.Raycast(aimRay.origin + aimRay.direction * 10, aimRay.direction, out hit, aimDistance) && hit.transform.gameObject != gameObject)
+        {
+            gunRay = new Ray(GunPos.position, (hit.point - GunPos.position).normalized);
+        }
+        else
+        {
+            gunRay = new Ray(GunPos.position, ((aimRay.origin + aimRay.direction * 10 + aimRay.direction * aimDistance) - GunPos.position).normalized);
+        }
+
+        lineRenderer.SetPosition(0, gunRay.origin);
+        lineRenderer.SetPosition(1, gunRay.origin + gunRay.direction * aimDistance);
+
+        if (Physics.Raycast(gunRay, out hit, aimDistance))
         {
             var point = hit.point - hit.normal * 0.01f;
-            WorldManager.Instance.GetWorld().HitBlock(point, 1);
 
-            ShotLine.SetPosition(1, hit.point);
-            //Debug.DrawLine(gunRay.origin, hit.point, Color.cyan, 5f);
+            switch (attackType)
+            {
+                case AttackType.Basic:
+                    WorldManager.Instance.GetWorld().HitBlock(point, 1);
+                    break;
+
+                case AttackType.Ultimate:
+                    WorldManager.Instance.GetWorld().ExplodeBlocks(point, 3, 3);
+                    break;
+
+                default:
+                    break;
+            }
+
+            lineRenderer.SetPosition(1, hit.point);
         }
     }
 }

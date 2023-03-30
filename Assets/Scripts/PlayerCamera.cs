@@ -1,19 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
+using static UnityEditor.SceneView;
+using static UnityEngine.GraphicsBuffer;
 
 public class PlayerCamera : MonoBehaviour
 {
-    public Transform PlayerPos;
+    public Transform Target;
+    public Transform Player;
 
     public Transform CameraPos;
     public Transform CameraFocusPos;
 
     public Vector3 _orignalCameraPos;
     public Vector3 _orignalCameraFocusPos;
-
-    public float a;
-    public float b;
 
     private void Awake()
     {
@@ -23,8 +24,8 @@ public class PlayerCamera : MonoBehaviour
 
     void Update()
     {
-        var dir = (transform.position - PlayerPos.position).normalized;
-        var ray = new Ray(PlayerPos.position, dir);
+        var dir = (CameraPos.position - Player.position).normalized;
+        var ray = new Ray(Player.position, dir);
 
         //Debug.DrawRay(ray.origin, ray.direction * 10, Color.white);
         if (Physics.Raycast(ray, out RaycastHit hit, 10, (int)Type.Layer.World))
@@ -41,15 +42,25 @@ public class PlayerCamera : MonoBehaviour
                 CameraFocusPos.localPosition = _orignalCameraFocusPos;
         }
 
-        /*
-        // 조준할 때의 카메라 위치도 변경 그러나 버그 존재
-        a = Vector3.Distance(PlayerPos.position, CameraFocusPos.position);
-        b = Vector3.Distance(PlayerPos.position, hit.point);
+        CameraMovement();
+    }
 
-        if (a > b)
-            CameraFocusPos.position = hit.point;
+    private void CameraMovement()
+    {
+        var cameraSpeed = 10f;
+
+        if (Move.isCameraFocused)
+        {
+            transform.position = Vector3.Lerp(transform.position, CameraFocusPos.position, Time.deltaTime * cameraSpeed);
+            transform.rotation = Quaternion.Lerp(transform.rotation, CameraFocusPos.rotation, Time.deltaTime * cameraSpeed);
+        }
         else
-            CameraFocusPos.localPosition = _orignalCameraFocusPos;
-        */
+        {
+            transform.position = Vector3.Lerp(transform.position, CameraPos.position, Time.deltaTime * cameraSpeed);
+
+            var relativePosition = Target.position - transform.position;
+            var targetRotation = Quaternion.LookRotation(relativePosition);
+            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * cameraSpeed);
+        }
     }
 }
