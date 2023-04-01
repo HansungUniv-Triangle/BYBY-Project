@@ -270,9 +270,6 @@ public class Move : MonoBehaviour
 
     private Vector3 GetCrosshairPointInScreen()
     {
-        // 카메라 중앙 원점 + 조준점 앵커 기반 위치 * 0.75f
-        // 0.75f는 임시 하드 코딩. 수정해야 함
-        return new Vector3(Camera.main.pixelWidth * 0.5f + CrossHairTransform.anchoredPosition.x * 0.75f, 
-            Camera.main.pixelHeight * 0.5f + CrossHairTransform.anchoredPosition.y * 0.75f);
+        return new Vector3(CrossHairTransform.transform.position.x, CrossHairTransform.transform.position.y, 0);
     }
 }
