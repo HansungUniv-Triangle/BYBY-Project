@@ -3,6 +3,7 @@ using DG.Tweening;
 using GameStatus;
 using Type;
 using UnityEngine;
+using UnityEngine.UI;
 using Weapon;
 
 public class Move : MonoBehaviour
@@ -51,6 +52,8 @@ public class Move : MonoBehaviour
 
     public LineRenderer ShotLine;
     public LineRenderer UltLine;
+    
+    public RectTransform CrossHairTransform;
     #endregion
 
     private GameManager _gameManager;
@@ -220,13 +223,15 @@ public class Move : MonoBehaviour
         TestUpdate();
     }
 
+    // ReSharper disable Unity.PerformanceAnalysis
     private void Shoot(AttackType attackType, LineRenderer lineRenderer)    // 라인렌더러는 임시
     {
         RaycastHit hit;
         Ray gunRay;
 
-        var screenCenter = new Vector3(Camera.main.pixelWidth / 2, Camera.main.pixelHeight / 2);        // 화면 중앙 (크로스헤어)
-        var aimRay = Camera.main.ScreenPointToRay(screenCenter);
+        //var screenCenter = new Vector3(Camera.main.pixelWidth / 2, Camera.main.pixelHeight / 2);        // 화면 중앙 (크로스헤어)
+        //var aimRay = Camera.main.ScreenPointToRay(screenCenter);
+        var aimRay = Camera.main.ScreenPointToRay(GetCrosshairPointInScreen());
         var aimDistance = 30f;
 
         // 화면 중앙으로 쏘는 레이는 원점이 플레이어 앞에서 시작되어야 한다.
@@ -257,12 +262,17 @@ public class Move : MonoBehaviour
                 case AttackType.Ultimate:
                     WorldManager.Instance.GetWorld().ExplodeBlocks(point, 3, 3);
                     break;
-
-                default:
-                    break;
             }
 
             lineRenderer.SetPosition(1, hit.point);
         }
+    }
+
+    private Vector3 GetCrosshairPointInScreen()
+    {
+        // 카메라 중앙 원점 + 조준점 앵커 기반 위치 * 0.75f
+        // 0.75f는 임시 하드 코딩. 수정해야 함
+        return new Vector3(Camera.main.pixelWidth * 0.5f + CrossHairTransform.anchoredPosition.x * 0.75f, 
+            Camera.main.pixelHeight * 0.5f + CrossHairTransform.anchoredPosition.y * 0.75f);
     }
 }
