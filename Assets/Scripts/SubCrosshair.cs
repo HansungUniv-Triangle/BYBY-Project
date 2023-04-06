@@ -10,9 +10,10 @@ public class SubCrosshair : MonoBehaviour
     public VariableJoystick Joystick;
     
     public int MaxMoveOffset;
-    public int Speed;
+    public float Speed;
     public bool ReverseMove;
     public bool OnlyHorizontal;
+    
     private void Update()
     {
         var reverse = ReverseMove ? -1 : 1;
@@ -22,8 +23,12 @@ public class SubCrosshair : MonoBehaviour
         
         var start = SubCrossHairTransform.anchoredPosition;
         var dest = new Vector3(h * MaxMoveOffset, v * MaxMoveOffset);
-        
-        SubCrossHairTransform.anchoredPosition = 
-            Vector3.Lerp(start, dest, Time.deltaTime * Speed);
+
+        var distance = Vector3.Distance(start, dest);
+        if (distance != 0)
+        {
+            SubCrossHairTransform.anchoredPosition = 
+                distance <= 0.01f ? dest : Vector3.Lerp(start, dest, Time.deltaTime * Speed);
+        }
     }
 }

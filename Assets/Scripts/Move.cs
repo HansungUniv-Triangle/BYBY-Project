@@ -35,6 +35,7 @@ public class Move : MonoBehaviour
     private float gravity = 15.0f;
     private float jumpForce = 7.0f;
     private float dodgeForce = 4.0f;
+    public bool ReverseHorizontalMove = false;
     private bool isJump = false;
     private bool isDodge = false;
     private float shakeDodgeThreshold = 2.0f;
@@ -132,7 +133,7 @@ public class Move : MonoBehaviour
 
     private void CharacterMove()
     {
-        var h = Joystick.Horizontal;
+        var h = ReverseHorizontalMove ? -Joystick.Horizontal : Joystick.Horizontal;
         var v = Joystick.Vertical;
 
         var speed = _baseCharStat.GetStat(CharStat.Speed).Total;
