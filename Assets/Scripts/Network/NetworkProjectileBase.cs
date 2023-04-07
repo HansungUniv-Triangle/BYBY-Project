@@ -46,7 +46,7 @@ namespace Network
             
             transform.localScale = new Vector3(TotalScale, TotalScale, TotalScale);
         }
-        
+
         public override void FixedUpdateNetwork()
         {
             if (!Object.HasInputAuthority) return;

@@ -1,25 +1,95 @@
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 using Util;
 
 public class GameManager : Singleton<GameManager>
 {
+    private GameObject _uiLoadingPrefab;
+    private GameObject _uiLoading;
+
+    [SerializeField]
+    private UIHolder _uiHolder;
+    public UIHolder UIHolder
+    {
+        get
+        {
+            if (_uiHolder is null)
+            {
+                _uiHolder = FindObjectOfType<UIHolder>();
+            }
+            return _uiHolder;
+        }
+    }
+
     [SerializeField]
     private Synergy[] _synergyList;
     public int SynergyCount => _synergyList.Length;
-    
+
     protected override void Initiate()
     {
         _synergyList = Resources.LoadAll<Synergy>(Path.Synergy);
+        _uiLoadingPrefab = Resources.Load(Path.Loading) as GameObject;
     }
 
-    public Synergy GetSynergy(int index)
+    public void ClearSceneChange()
+    {
+
+    }
+
+    public bool GetSynergy(int index, out Synergy synergy)
     {
         if (index >= SynergyCount)
         {
-            throw new ArgumentOutOfRangeException(Message.OutOfSynergyLength);
+            synergy = null;
+            
+            return false;
+        }
+        synergy = _synergyList[index];
+        return true;
+    }
+
+    public void SetUICanvasHolder(UIHolder uiHolder)
+    {
+        _uiHolder = uiHolder;
+    }
+
+    private void AddLoadingUI()
+    {
+        GameObject canvas = GameObject.Find("Canvas");
+        if (canvas)
+        { 
+            _uiLoading = Instantiate(_uiLoadingPrefab, canvas.transform);
+            return;
         }
 
-        return _synergyList[index];
+        throw new Exception("로딩 UI, 캔버스가 없음");
+    }
+    
+    public void ActiveLoadingUI()
+    {
+        if (_uiLoading)
+        {
+            _uiLoading.SetActive(true);
+        }
+        else
+        {
+            AddLoadingUI();
+            _uiLoading.SetActive(true);
+        }
+    }
+    
+    public void DeActiveLoadingUI()
+    {
+        if (_uiLoading)
+        {
+            _uiLoading.SetActive(false);
+        }
+        else
+        {
+            AddLoadingUI();
+            _uiLoading.SetActive(false);
+        }
     }
 }

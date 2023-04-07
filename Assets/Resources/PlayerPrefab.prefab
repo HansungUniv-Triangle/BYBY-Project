@@ -68,7 +68,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ObjectInterest: 1
   DefaultInterestGroups: []
-  DestroyWhenStateAuthorityLeaves: 0
+  DestroyWhenStateAuthorityLeaves: 1
   AllowStateAuthorityOverride: 0
   AoiPositionSource: {fileID: 0}
   Flags: 2305
@@ -128,12 +128,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interpolationDataSource: 0
-  target: {fileID: 0}
-  maxDistance: 10
-  _joystick: {fileID: 0}
-  yVelocity: 0
   synergyList:
   - {fileID: 11400000, guid: 4dd813c273201e3499f90b7ed0bdda15, type: 2}
+  target: {fileID: 0}
+  maxDistance: 10
+  check: 0
+  _NetworkSynergyList: 
 --- !u!1 &3038427903061544975
 GameObject:
   m_ObjectHideFlags: 0

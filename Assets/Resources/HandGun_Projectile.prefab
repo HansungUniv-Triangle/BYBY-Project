@@ -106,9 +106,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6339508871230178698}
-  - component: {fileID: 6339508871230178696}
   - component: {fileID: 6339508871230178697}
   - component: {fileID: 6339508871230178699}
+  - component: {fileID: 731377849170397947}
   m_Layer: 0
   m_Name: HandGun_Projectile
   m_TagString: Untagged
@@ -132,31 +132,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6339508871230178696
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6339508871230178710}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ObjectInterest: 1
-  DefaultInterestGroups: []
-  DestroyWhenStateAuthorityLeaves: 0
-  AllowStateAuthorityOverride: 1
-  AoiPositionSource: {fileID: 0}
-  Flags: 2305
-  NetworkGuid:
-    RawGuidValue: 2a259965b1266844f92f128fef025bf9
-  NestedObjects: []
-  NetworkedBehaviours:
-  - {fileID: 6339508871230178697}
-  - {fileID: 6339508871230178699}
-  SimulationBehaviours: []
 --- !u!114 &6339508871230178697
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -198,3 +173,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interpolationDataSource: 0
+--- !u!114 &731377849170397947
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6339508871230178710}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObjectInterest: 1
+  DefaultInterestGroups: []
+  DestroyWhenStateAuthorityLeaves: 1
+  AllowStateAuthorityOverride: 0
+  AoiPositionSource: {fileID: 0}
+  Flags: 2305
+  NetworkGuid:
+    RawGuidValue: 2a259965b1266844f92f128fef025bf9
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 6339508871230178697}
+  - {fileID: 6339508871230178699}
+  SimulationBehaviours: []
