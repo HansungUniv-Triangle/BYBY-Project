@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using DG.Tweening;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -11,12 +10,14 @@ public class Player : MonoBehaviour
 
     private WorldManager _worldGenerator;
 
+    /*
     private void Start()
     {
         _worldGenerator = WorldManager.Instance;
         _toRemoveChunkCoord = new List<Vector2Int>();
     }
 
+    
     private void Update()
     {
         ActivatesAllChunks();
@@ -31,7 +32,8 @@ public class Player : MonoBehaviour
         //      DectivatesChunks();
         //  }
     }
-    
+    */
+
     private void ActivatesAllChunks()
     {
         if (_worldGenerator.GetWorld() == null)

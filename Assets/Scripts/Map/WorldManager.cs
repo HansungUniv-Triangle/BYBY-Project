@@ -1,8 +1,11 @@
+using System;
 using UnityEngine;
-using Random = System.Random;
 
 public class WorldManager : Singleton<WorldManager>
 {
+    [Space(5f)]
+    public bool AutoUpdate;
+
     [Header("Noise Setting")]
     [Space(5f)]
     public int MapWidth;
@@ -17,15 +20,14 @@ public class WorldManager : Singleton<WorldManager>
     public float Persistance;
     public float Lacunarity;
 
-    /*
     [Header("3D Noise Setting")]
     [Space(5f)]
-    public float Scale;
-    public float CaveThreshold;
-    */
-
-    [Space(5f)]
-    public bool AutoUpdate;
+    public Vector3 Offset3D;
+    public float Scale = 0.07f;
+    public float NoneThreshold = 0.38f;
+    public float SandThreshold = 0.6f;
+    public float BlockThreshold = 0.47f;
+    public float TreeThreshold = 0.04f;
 
     [Header("Terrain Setting")]
     [Space(5f)]
@@ -42,10 +44,15 @@ public class WorldManager : Singleton<WorldManager>
     public int WorldChunkHeight;
 
     [Space(5f)]
-    public Material Material;
+    public int WoodHeight = 6;
+    public int LeafLength = 3;
+    public int LeafHeight = 3;
+
+    [Space(5f)]
     public GameObject BlockPrefab;
     public GameObject ChunkPrefab;
-
+    public GameObject BarrierPrefab;
+    
     [Space(5f)]
     public Block[] Blocks;
 
@@ -54,8 +61,9 @@ public class WorldManager : Singleton<WorldManager>
 
     public void Start()
     {
-        //_world = new World();
-        //GeneratorMap();
+        Seed = DateTime.Now.Millisecond;
+        _world = new World();
+        GeneratorMap();
     }
 
     public World GetWorld()
@@ -66,27 +74,47 @@ public class WorldManager : Singleton<WorldManager>
     public void GeneratorMap()
     {
         _noiseMap = Noise.GeneratePerlinNoise(MapWidth, MapHeight, Seed, NoiseScale, Octaves, Persistance, Lacunarity, Offset);
-        /*
-        // ������ �� ��輱 ���� ����
-        Noise.MakeSeamlessNoiseHorizontally(_noiseMap, 30);
-        Noise.MakeSeamlessNoiseVertically(_noiseMap, 30);
-        */
-
-        // MapDisplay display = FindObjectOfType<MapDisplay>();
-        // display.DrawNoiseMap(_noiseMap);
 
         if (Application.isPlaying)
         {
             _world.DestroyWorld();
             _world.GenerateWorld(_noiseMap);
             _world.RenderWorld();
+
+            GenerateBarrier();
         }
     }
 
-    public void ChangeRandomSeed()
+    private void GenerateBarrier()
     {
-        Seed = new Random().Next(1, 10000);
-        GeneratorMap();
+        var mapWidth = ChunkSize.x * WorldChunkWidth;
+        var mapHeight = ChunkSize.z * WorldChunkHeight;
+        
+        // 하드 코딩
+        var a = Instantiate(BarrierPrefab, _world.gameObject.transform).transform;
+        a.position = new Vector3(mapWidth / 2f - 0.5f, ChunkSize.y / 2f - 0.5f, -0.5f);
+        a.localScale = new Vector3(mapWidth, ChunkSize.y, 1);
+        a.rotation = Quaternion.Euler(0, 180, 0);
+        
+        var b = Instantiate(BarrierPrefab, _world.gameObject.transform).transform;
+        b.position = new Vector3(mapWidth / 2f - 0.5f, ChunkSize.y / 2f - 0.5f, mapHeight - 0.5f);
+        b.localScale = new Vector3(mapWidth, ChunkSize.y, 1);
+        b.rotation = Quaternion.Euler(0, 0, 0);
+        
+        var c = Instantiate(BarrierPrefab, _world.gameObject.transform).transform;
+        c.position = new Vector3(mapWidth - 0.5f, ChunkSize.y / 2f - 0.5f, mapHeight / 2f - 0.5f);
+        c.localScale = new Vector3(mapHeight, ChunkSize.y, 1);
+        c.rotation = Quaternion.Euler(0, 90, 0);
+        
+        var d = Instantiate(BarrierPrefab, _world.gameObject.transform).transform;
+        d.position = new Vector3(-0.5f, ChunkSize.y / 2f - 0.5f, mapHeight / 2f - 0.5f);
+        d.localScale = new Vector3(mapHeight, ChunkSize.y, 1);
+        d.rotation = Quaternion.Euler(0, -90, 0);
+        
+        var e = Instantiate(BarrierPrefab, _world.gameObject.transform).transform;
+        e.position = new Vector3(mapWidth / 2f - 0.5f, ChunkSize.y - 0.5f, mapHeight / 2f - 0.5f);
+        e.localScale = new Vector3(mapWidth, mapHeight, 1);
+        e.rotation = Quaternion.Euler(-90, 0, 0);
     }
 
     public Vector2Int CalculateChunkCoords(Vector3 pos)

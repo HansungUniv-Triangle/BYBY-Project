@@ -10,9 +10,7 @@ public class DamagedBlock
 {
     private GameObject _gameObject;
     private float _hp;
-    
-    public bool isBroken = false;
-
+ 
     private Mesh _mesh;
     private MeshFilter _meshFilter;
 
@@ -30,7 +28,12 @@ public class DamagedBlock
 
     private Vector3Int _position;
 
-    private DG.Tweening.Sequence _shakingSequence;
+    private DG.Tweening.Sequence _sequence;
+
+    private bool _isBreaking = false;
+    private bool _isStartDestroy = false;
+    private bool _isBroken = false;
+    private bool _canCombine = false;
 
     public DamagedBlock(Chunk chunk, Block block, Vector3Int position)
     {
@@ -38,20 +41,11 @@ public class DamagedBlock
         _chunk = chunk;
         _hp = block.GetMaxHP();
 
-        _gameObject = Object.Instantiate(WorldManager.Instance.BlockPrefab, position, Quaternion.identity);
+        _gameObject = Object.Instantiate(WorldManager.Instance.BlockPrefab, position, Quaternion.identity, _chunk.GetGameObject().transform);
         _gameObject.name = $"Block {position.x} {position.y} {position.z}";
-        _gameObject.transform.SetParent(_chunk.GetGameObject().transform);
 
         _mesh = new Mesh();
         _meshFilter = _gameObject.GetComponent<MeshFilter>();
-
-        _shakingSequence = DOTween.Sequence()
-            .SetAutoKill(false)
-            .Append(_gameObject.transform.DOShakePosition(0.5f, 0.25f, 20, 90))
-            .OnComplete(() =>
-            {
-                ShakingEndEvent();
-            });
 
         textureAtlasCellWidth = 1f / textureAtlasWidth;
         textureAtlasCellHeight = 1f / textureAtlasHeight;
@@ -66,36 +60,78 @@ public class DamagedBlock
 
     public MeshFilter GetMeshFilter() { return _meshFilter; }
 
+    public void SetCanCombine(bool state)
+    {
+        _canCombine = state;
+    }
+
     public void DecreaseHP(float damage)
     {
+        if (_isStartDestroy)
+            return;
+
         _gameObject.SetActive(true);
-        _shakingSequence.Restart();
+
+        if (_isBreaking)
+            _sequence.Restart();
+        else {
+            _sequence = DOTween.Sequence()
+                    .Append(_gameObject.transform.DOShakePosition(0.5f, 0.25f, 20, 90))
+                    .OnStart(() =>
+                    {
+                        _isBreaking = true;
+                        _canCombine = false;
+                    })
+                    .OnComplete(() =>
+                    {
+                        ShakingEndEvent();
+                    });
+        }
 
         _hp -= damage;
 
         if (_hp <= 0)
         {
             _hp = 0;
-            isBroken = true;
+            _isBroken = true;
+            return;
         }
     }
 
-    public bool IsShaking()
-    {
-        return _shakingSequence.IsPlaying();
-    }
+    public bool IsBroken() { return _isBroken; }
+
+    public bool CanCombine() { return _canCombine; }
 
     public void ShakingEndEvent()
     {
+        _isBreaking = false;
+        _canCombine = true;
         _chunk.CombineOneMesh(_position);
         _gameObject.SetActive(false);
     }
 
     public void DestroyGameObject()
     {
-        _shakingSequence.Kill();
-        _gameObject.transform.parent = null;
-        Object.Destroy(_gameObject);
+        if (_isStartDestroy)
+            return;
+
+        _sequence.Kill();
+        _sequence = DOTween.Sequence()
+            .Append(_gameObject.transform.DOShakePosition(0.5f, 0.25f, 20, 90))
+            .Join(_gameObject.transform.DOScale(0, 0.5f))
+            .Join(_gameObject.transform.DORotate(new Vector3(0, 0, 360), 0.5f, RotateMode.FastBeyond360))
+            .Join(_gameObject.transform.DOLocalMoveY(-0.5f, 0.7f).SetEase(Ease.InOutQuad)) 
+            .OnStart(() =>
+            {
+                _isStartDestroy = true;
+                _canCombine = false;
+            })
+            .OnComplete(() =>
+            {
+                _chunk.RemoveDamagedBlocks(_position);
+                _gameObject.transform.parent = null;
+                Object.Destroy(_gameObject);
+            });
     }
 
     public void SetMeshRendererEnable(bool state)

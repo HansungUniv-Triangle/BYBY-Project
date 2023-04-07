@@ -49,5 +49,18 @@
         Pierce, // 관통수
         MaxLevel, // 최대 성장 레벨
     }
+
+    public enum CanvasType 
+    { 
+        None,
+        GameMoving,
+        GameAiming
+    }
+
+    public enum AttackType
+    {
+        Basic,
+        Ultimate
+    }
 }
 
