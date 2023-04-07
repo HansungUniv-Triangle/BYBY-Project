@@ -1,7 +1,7 @@
 {
     "Version": 1,
     "TypeId": "NetworkProjectConfig",
-    "PeerMode": 1,
+    "PeerMode": 0,
     "PhysicsEngine": 0,
     "ServerPhysicsMode": 1,
     "UseLagCompensation": true,
