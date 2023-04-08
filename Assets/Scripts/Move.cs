@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using DG.Tweening;
 using GameStatus;
-using Type;
+using Types;
 using UnityEngine;
 using UnityEngine.UI;
 using Weapon;
@@ -63,7 +63,7 @@ public class Move : MonoBehaviour
     {
         _btnStatus = 1;
         _transform = gameObject.transform;
-        _baseCharStat = new BaseStat<CharStat>();
+        _baseCharStat = new BaseStat<CharStat>(1, 1);
         _gameManager = GameManager.Instance;
         _isTargetNotNull = true;
 

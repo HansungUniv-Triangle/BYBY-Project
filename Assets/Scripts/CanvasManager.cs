@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using Type;
+using Types;
 using UnityEngine;
 
 public class CanvasManager : Singleton<CanvasManager>
@@ -11,7 +11,7 @@ public class CanvasManager : Singleton<CanvasManager>
 
     protected override void Initiate()
     {
-        // юс╫ц
+        // О©╫с╫О©╫
         _canvas = GameObject.Find("Canvas");
         _canvasControllers = _canvas.GetComponentsInChildren<CanvasController>();
         foreach (var canvas in _canvasControllers)

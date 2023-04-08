@@ -26,7 +26,7 @@ public class PlayerCamera : MonoBehaviour
         var ray = new Ray(Player.position, dir);
 
         //Debug.DrawRay(ray.origin, ray.direction * 10, Color.white);
-        if (Physics.Raycast(ray, out RaycastHit hit, 10, (int)Type.Layer.World))
+        if (Physics.Raycast(ray, out RaycastHit hit, 10, (int)Types.Layer.World))
         {
             CameraPos.position = hit.point;
             CameraFocusPos.position = hit.point;

@@ -113,6 +113,8 @@ public class NetworkRoom : NetworkBehaviour
     
     private bool IsAllPlayerReady()
     {
+        if (RoomPlayerList.Count < 2) return false;
+        
         foreach (var (_, playerData) in RoomPlayerList)
         {
             if (playerData.IsReady.Equals(false))
@@ -132,7 +134,7 @@ public class NetworkRoom : NetworkBehaviour
             roomPlayerData.IsReady = !roomPlayerData.IsReady;
             RoomPlayerList.Set(playerRef, roomPlayerData);
 
-            if (IsAllPlayerReady())
+            if (HasStateAuthority && IsAllPlayerReady())
             {
                 RPCStart();
             }
@@ -146,6 +148,7 @@ public class NetworkRoom : NetworkBehaviour
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void RPCStart()
     {
+        Runner.SessionInfo.IsOpen = false;
         GameManager.Instance.ActiveLoadingUI();
         StartCoroutine(LoadYourAsyncScene());
     }
