@@ -36,6 +36,8 @@ public class PuppetMove : MonoBehaviour
     #region UI Settings
     public void IncreaseSpeed(GameObject text) { text.GetComponent<TextMeshProUGUI>().text = (++Speed).ToString(); }
     public void DecreaseSpeed(GameObject text) { text.GetComponent<TextMeshProUGUI>().text = (--Speed).ToString(); }
+    public void IncreaseJump(GameObject text) { text.GetComponent<TextMeshProUGUI>().text = (++jumpForce).ToString(); }
+    public void DecreaseJump(GameObject text) { text.GetComponent<TextMeshProUGUI>().text = (--jumpForce).ToString(); }
     public void IncreaseDodge(GameObject text) { text.GetComponent<TextMeshProUGUI>().text = (++dodgeForce).ToString(); }
     public void DecreaseDodge(GameObject text) { text.GetComponent<TextMeshProUGUI>().text = (--dodgeForce).ToString(); }
 

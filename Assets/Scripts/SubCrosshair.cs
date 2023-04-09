@@ -7,8 +7,9 @@ using UnityEngine.Serialization;
 
 public class SubCrosshair : MonoBehaviour
 {
+    public Move move;
     public RectTransform SubCrossHairTransform;
-    public VariableJoystick Joystick;
+    private Joystick Joystick;
     
     public int MaxAimingRange = 120;
     public float Speed = 15;
@@ -16,7 +17,6 @@ public class SubCrosshair : MonoBehaviour
     public bool OnlyHorizontal;
     
     #region UI Settings
-
     public void IncreaseSpeed(GameObject text) { text.GetComponent<TextMeshProUGUI>().text = (++Speed).ToString(); }
     public void DecreaseSpeed(GameObject text) { text.GetComponent<TextMeshProUGUI>().text = (--Speed).ToString(); }
     public void IncreaseMaxMoveOffset(GameObject text)
@@ -37,7 +37,17 @@ public class SubCrosshair : MonoBehaviour
         OnlyHorizontal = !OnlyHorizontal;
     }
     #endregion
-    
+
+    public void SetJoystick()
+    {
+        Joystick = move.Joystick;
+    }
+
+    private void Awake()
+    {
+        SetJoystick();
+    }
+
     private void Update()
     {
         var reverse = ReverseMove ? -1 : 1;

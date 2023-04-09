@@ -32,7 +32,7 @@ public class Move : MonoBehaviour
     #endregion
 
     #region 움직임 관련 변수
-    public VariableJoystick Joystick;
+    public Joystick Joystick;
     private Transform _transform;
     private CharacterController _characterController;
     private Vector3 moveDir;
@@ -59,6 +59,7 @@ public class Move : MonoBehaviour
     public LineRenderer UltLine;
     
     public RectTransform CrossHairTransform;
+    private float _shootDistance = 30f;
     #endregion
 
     private GameManager _gameManager;
@@ -90,19 +91,53 @@ public class Move : MonoBehaviour
         var total = _baseCharStat.GetStat(type).Total;
         text.GetComponent<TextMeshProUGUI>().text = total.ToString();
     }
-    
+
+    public void IncreaseJump(GameObject text) { text.GetComponent<TextMeshProUGUI>().text = (++jumpForce).ToString(); }
+    public void DecreaseJump(GameObject text) { text.GetComponent<TextMeshProUGUI>().text = (--jumpForce).ToString(); }
+
     public void IncreaseDodge(GameObject text){ text.GetComponent<TextMeshProUGUI>().text = (++dodgeForce).ToString(); }
     public void DecreaseDodge(GameObject text){ text.GetComponent<TextMeshProUGUI>().text = (--dodgeForce).ToString(); }
 
+    public void IncreaseShootDistance(GameObject text) { text.GetComponent<TextMeshProUGUI>().text = (_shootDistance += 5).ToString(); }
+    public void DecreaseShootDistance(GameObject text) { text.GetComponent<TextMeshProUGUI>().text = (_shootDistance -= 5).ToString(); }
+
     public void IncreaseShakeSensitivity(GameObject text)
     {
-        text.GetComponent<TextMeshProUGUI>().text = (++shakeDodgeThreshold).ToString();
+        text.GetComponent<TextMeshProUGUI>().text = (shakeDodgeThreshold += 0.1f).ToString("F1");
     }
     public void DecreaseShakeSensitivity(GameObject text)
     {
-        text.GetComponent<TextMeshProUGUI>().text = (--shakeDodgeThreshold).ToString();
+        text.GetComponent<TextMeshProUGUI>().text = (shakeDodgeThreshold -= 0.1f).ToString("F1");
     }
     public void ToggleReverseHorizontalMove() { ReverseHorizontalMove = !ReverseHorizontalMove; }
+
+    private JoystickSettingType joystickType = JoystickSettingType.Variable;
+    [Space(5f)]
+    public VariableJoystick variableJoystick;
+    public FloatingJoystick floatingJoystick;
+    public void ChangeJoystick(GameObject text)
+    {
+        switch (joystickType) 
+        {
+            case JoystickSettingType.Variable:
+                floatingJoystick.gameObject.SetActive(true);
+                joystickType = JoystickSettingType.Floating;
+                Joystick = floatingJoystick;
+                variableJoystick.gameObject.SetActive(false);
+
+                text.GetComponent<TextMeshProUGUI>().text = "floating";
+                break;
+
+            case JoystickSettingType.Floating:
+                variableJoystick.gameObject.SetActive(true);
+                joystickType = JoystickSettingType.Variable;
+                Joystick = variableJoystick;
+                floatingJoystick.gameObject.SetActive(false);
+
+                text.GetComponent<TextMeshProUGUI>().text = "variable";
+                break;
+        }
+    }
 
     private Vector3 _initPos;
     public void InitPosition()
@@ -300,24 +335,23 @@ public class Move : MonoBehaviour
         //var screenCenter = new Vector3(Camera.main.pixelWidth / 2, Camera.main.pixelHeight / 2);        // 화면 중앙 (크로스헤어)
         //var aimRay = Camera.main.ScreenPointToRay(screenCenter);
         var aimRay = Camera.main.ScreenPointToRay(GetCrosshairPointInScreen());
-        var aimDistance = 30f;
 
         // 화면 중앙으로 쏘는 레이는 원점이 플레이어 앞에서 시작되어야 한다.
         // 그렇지 않으면 플레이어는 크로스헤어에는 걸렸지만, 뒤에 있는 물체를 부수게 된다.
         // 발사하는 주체는 제외
-        if (Physics.Raycast(aimRay.origin + aimRay.direction * 10, aimRay.direction, out hit, aimDistance) && hit.transform.gameObject != gameObject)
+        if (Physics.Raycast(aimRay.origin + aimRay.direction * 10, aimRay.direction, out hit, _shootDistance) && hit.transform.gameObject != gameObject)
         {
             gunRay = new Ray(GunPos.position, (hit.point - GunPos.position).normalized);
         }
         else
         {
-            gunRay = new Ray(GunPos.position, ((aimRay.origin + aimRay.direction * 10 + aimRay.direction * aimDistance) - GunPos.position).normalized);
+            gunRay = new Ray(GunPos.position, ((aimRay.origin + aimRay.direction * 10 + aimRay.direction * _shootDistance) - GunPos.position).normalized);
         }
 
         lineRenderer.SetPosition(0, gunRay.origin);
-        lineRenderer.SetPosition(1, gunRay.origin + gunRay.direction * aimDistance);
+        lineRenderer.SetPosition(1, gunRay.origin + gunRay.direction * _shootDistance);
 
-        if (Physics.Raycast(gunRay, out hit, aimDistance))
+        if (Physics.Raycast(gunRay, out hit, _shootDistance))
         {
             var point = hit.point - hit.normal * 0.01f;
 

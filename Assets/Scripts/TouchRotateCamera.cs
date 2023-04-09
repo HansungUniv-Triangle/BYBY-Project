@@ -32,7 +32,7 @@ public class TouchRotateCamera : MonoBehaviour, IBeginDragHandler, IDragHandler,
     private void OnEnable()
     {
         Quaternion rotation = camPivot.rotation;
-        xAngle = rotation.eulerAngles.x;
+        xAngle = 0;
         yAngle = rotation.eulerAngles.y;
 
         //Debug.Log(camPivot.name + ": " + xAngle + ", " + yAngle);
@@ -52,7 +52,7 @@ public class TouchRotateCamera : MonoBehaviour, IBeginDragHandler, IDragHandler,
         yAngle = yAngleTemp + (draggingPos.x - beginPos.x) * rotationSpeed * 2 / Screen.width;
         xAngle = xAngleTemp - (draggingPos.y - beginPos.y) * rotationSpeed * 2 / Screen.height;
         
-        if (xAngle > 40) xAngle = 40;
+        if (xAngle > 50) xAngle = 50;
         if (xAngle < -60) xAngle = -60;
 
         camPivot.rotation = Quaternion.Euler(xAngle, yAngle, 0.0f);
