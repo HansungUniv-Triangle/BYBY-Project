@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using DG.Tweening;
 using GameStatus;
+using TMPro;
 using Type;
 using UnityEngine;
-using UnityEngine.UI;
 using Weapon;
 
 public class Move : MonoBehaviour
@@ -22,6 +22,10 @@ public class Move : MonoBehaviour
 
     #region 타겟 지정 관련 변수
     public GameObject target;
+
+    public static float targetDistance;
+    public const float MaxCalculateDistance = 5f;
+
     private bool _isTargetNotNull;
     private RaycastHit _raycast;
     public float maxDistance = 10.0f;
@@ -59,6 +63,56 @@ public class Move : MonoBehaviour
 
     private GameManager _gameManager;
 
+    #region UI Settings
+    private List<Stat<CharStat>> _statlist = new();
+    
+    public void IncreaseSpeed(GameObject text)
+    {
+        _statlist.Add(new Stat<CharStat>(CharStat.Speed, 1).SetRatio(0));
+        AdditionalWork(text, CharStat.Speed);
+    }
+
+    public void DecreaseSpeed(GameObject text)
+    {
+        _statlist.Add(new Stat<CharStat>(CharStat.Speed, -1).SetRatio(0));
+        AdditionalWork(text, CharStat.Speed);
+    }
+
+    private void AdditionalWork(GameObject text, CharStat type)
+    {
+        InitialStatus();
+
+        foreach (var s in _statlist)
+        {
+            _baseCharStat.AddStat(s);
+        }
+        
+        var total = _baseCharStat.GetStat(type).Total;
+        text.GetComponent<TextMeshProUGUI>().text = total.ToString();
+    }
+    
+    public void IncreaseDodge(GameObject text){ text.GetComponent<TextMeshProUGUI>().text = (++dodgeForce).ToString(); }
+    public void DecreaseDodge(GameObject text){ text.GetComponent<TextMeshProUGUI>().text = (--dodgeForce).ToString(); }
+
+    public void IncreaseShakeSensitivity(GameObject text)
+    {
+        text.GetComponent<TextMeshProUGUI>().text = (++shakeDodgeThreshold).ToString();
+    }
+    public void DecreaseShakeSensitivity(GameObject text)
+    {
+        text.GetComponent<TextMeshProUGUI>().text = (--shakeDodgeThreshold).ToString();
+    }
+    public void ToggleReverseHorizontalMove() { ReverseHorizontalMove = !ReverseHorizontalMove; }
+
+    private Vector3 _initPos;
+    public void InitPosition()
+    {
+        _characterController.enabled = false;
+        transform.position = _initPos;
+        _characterController.enabled = true;
+    }
+    #endregion
+    
     private void Awake()
     {
         _btnStatus = 1;
@@ -66,6 +120,7 @@ public class Move : MonoBehaviour
         _baseCharStat = new BaseStat<CharStat>();
         _gameManager = GameManager.Instance;
         _isTargetNotNull = true;
+        _initPos = transform.position;
 
         _characterController = GetComponent<CharacterController>();
 
@@ -131,13 +186,24 @@ public class Move : MonoBehaviour
         CanvasManager.Instance.SwitchUI(CanvasType.GameMoving);
     }
 
+    public static float SpeedCalculateByDistance(float Speed)
+    {
+        var calculateByDist = targetDistance < MaxCalculateDistance ? 
+            (targetDistance + 1) / (MaxCalculateDistance) : 1;
+        var speed = Speed * calculateByDist;
+        return speed;
+    }
+
     private void CharacterMove()
     {
+        if (target)
+            targetDistance = Vector3.Distance(_transform.position, target.transform.position);
+        
         var h = ReverseHorizontalMove ? -Joystick.Horizontal : Joystick.Horizontal;
         var v = Joystick.Vertical;
-
-        var speed = _baseCharStat.GetStat(CharStat.Speed).Total;
-
+        
+        var speed = SpeedCalculateByDistance(_baseCharStat.GetStat(CharStat.Speed).Total);
+        
         // move
         if (_characterController.isGrounded)
         {
@@ -181,7 +247,7 @@ public class Move : MonoBehaviour
             relativePosition.y = 0; // y축은 바라보지 않도록 함
             var targetRotation = Quaternion.LookRotation(relativePosition);
 
-            _transform.rotation = Quaternion.Lerp(_transform.rotation, targetRotation, Time.deltaTime * 8f);
+            _transform.rotation = Quaternion.Lerp(_transform.rotation, targetRotation, Time.deltaTime * speed);
         }
     }
 
@@ -210,6 +276,7 @@ public class Move : MonoBehaviour
                     isDodge = false;
                 });
         }
+        
         CharacterMove();
 
         // 임시 자동공격

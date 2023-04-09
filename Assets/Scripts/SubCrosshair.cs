@@ -1,18 +1,42 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.Serialization;
 
 public class SubCrosshair : MonoBehaviour
 {
     public RectTransform SubCrossHairTransform;
     public VariableJoystick Joystick;
     
-    public int MaxMoveOffset;
-    public float Speed;
+    public int MaxAimingRange = 120;
+    public float Speed = 15;
     public bool ReverseMove;
     public bool OnlyHorizontal;
+    
+    #region UI Settings
+
+    public void IncreaseSpeed(GameObject text) { text.GetComponent<TextMeshProUGUI>().text = (++Speed).ToString(); }
+    public void DecreaseSpeed(GameObject text) { text.GetComponent<TextMeshProUGUI>().text = (--Speed).ToString(); }
+    public void IncreaseMaxMoveOffset(GameObject text)
+    {
+        text.GetComponent<TextMeshProUGUI>().text = (MaxAimingRange += 10).ToString();
+    }
+    public void DecreaseMaxMoveOffset(GameObject text)
+    {
+        text.GetComponent<TextMeshProUGUI>().text = (MaxAimingRange -= 10).ToString();
+    }
+
+    public void ToggleReverseMove()
+    {
+        ReverseMove = !ReverseMove;
+    }
+    public void ToggleOnlyHorizontal()
+    {
+        OnlyHorizontal = !OnlyHorizontal;
+    }
+    #endregion
     
     private void Update()
     {
@@ -22,7 +46,7 @@ public class SubCrosshair : MonoBehaviour
         v = OnlyHorizontal ? 0 : v;
         
         var start = SubCrossHairTransform.anchoredPosition;
-        var dest = new Vector3(h * MaxMoveOffset, v * MaxMoveOffset);
+        var dest = new Vector3(h * MaxAimingRange, v * MaxAimingRange);
 
         var distance = Vector3.Distance(start, dest);
         if (distance != 0)
