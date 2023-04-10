@@ -121,8 +121,12 @@ public class Move : MonoBehaviour
         {
             case JoystickSettingType.Variable:
                 floatingJoystick.gameObject.SetActive(true);
+                floatingJoystick.GetComponent<CanvasController>().canvasType = CanvasType.GameMoving;
+
                 joystickType = JoystickSettingType.Floating;
                 Joystick = floatingJoystick;
+
+                variableJoystick.GetComponent<CanvasController>().canvasType = CanvasType.None;
                 variableJoystick.gameObject.SetActive(false);
 
                 text.GetComponent<TextMeshProUGUI>().text = "floating";
@@ -130,9 +134,13 @@ public class Move : MonoBehaviour
 
             case JoystickSettingType.Floating:
                 variableJoystick.gameObject.SetActive(true);
+                variableJoystick.GetComponent<CanvasController>().canvasType = CanvasType.GameMoving;
+
                 joystickType = JoystickSettingType.Variable;
                 Joystick = variableJoystick;
+
                 floatingJoystick.gameObject.SetActive(false);
+                floatingJoystick.GetComponent<CanvasController>().canvasType = CanvasType.None;
 
                 text.GetComponent<TextMeshProUGUI>().text = "variable";
                 break;
