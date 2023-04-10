@@ -145,6 +145,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interpolationDataSource: 0
+  _projectileObject: {fileID: 731377849170397947, guid: 2a259965b1266844f92f128fef025bf9,
+    type: 3}
 --- !u!114 &5565578386045293377
 MonoBehaviour:
   m_ObjectHideFlags: 0

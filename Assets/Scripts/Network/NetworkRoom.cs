@@ -14,26 +14,49 @@ using Random = UnityEngine.Random;
 
 public class NetworkRoom : NetworkBehaviour
 {
-    public struct RoomPlayerData : INetworkStruct
+    private struct RoomPlayerData : INetworkStruct
     {
         public NetworkString<_16> NickName;
         public NetworkBool IsReady;
+        public NetworkBool DoneLoading;
         public Color PlayerColor;
     }
     
     [Networked(OnChanged = nameof(UpdateCanvasData)), Capacity(8)]
-    public NetworkDictionary<PlayerRef, RoomPlayerData> RoomPlayerList { get; }
-
+    private NetworkDictionary<PlayerRef, RoomPlayerData> RoomPlayerList { get; }
+    
+    [Networked]
+    private TickTimer _timer { get; set; }
+    
     private RoomUI _roomUI;
 
+    // Player
+    [SerializeField] private NetworkPrefabRef _playerPrefab;
+    [SerializeField] private NetworkPrefabRef _handGun;
+    
     private readonly Color32 _ready = Color.green;
     private readonly Color32 _notReady = Color.red;
 
-    private void Start()
+    public override void Spawned()
     {
+        DontDestroyOnLoad(this);
+        GameManager.Instance.DeActiveLoadingUI();
         _roomUI = GameManager.Instance.UIHolder as RoomUI;
         _roomUI.readyButton.onClick.AddListener(OnReady);
         RPCAddPlayer(Runner.LocalPlayer, $"Nick{Random.Range(1,100)}", Random.ColorHSV());
+    }
+    
+    public override void FixedUpdateNetwork()
+    {
+        if (_timer.Expired(Runner))
+        {
+            _timer = TickTimer.None;
+            GameObject.Find("테스트입니다").SetActive(false);
+        }
+        else if (_timer.IsRunning)
+        {
+            GameObject.Find("테스트입니다").GetComponent<TMP_Text>().text = _timer.RemainingTime(Runner).ToString();
+        }
     }
 
     public static void UpdateCanvasData(Changed<NetworkRoom> changed)
@@ -83,7 +106,6 @@ public class NetworkRoom : NetworkBehaviour
         RPCReady(Runner.LocalPlayer);
     }
     
-    
     public void OnPlayerLeft(PlayerRef playerRef)
     {
         if (RoomPlayerList.ContainsKey(playerRef))
@@ -107,13 +129,15 @@ public class NetworkRoom : NetworkBehaviour
         RoomPlayerList.Add(playerRef, new RoomPlayerData {
             NickName = nick,
             IsReady = false,
+            DoneLoading = false,
             PlayerColor = color
         });
     }
     
     private bool IsAllPlayerReady()
     {
-        if (RoomPlayerList.Count < 2) return false;
+        // 혼자서도 인게임 들어갈 수 있게 임시 주석
+        // if (RoomPlayerList.Count < 2) return false;
         
         foreach (var (_, playerData) in RoomPlayerList)
         {
@@ -145,12 +169,49 @@ public class NetworkRoom : NetworkBehaviour
         }
     }
 
+    private void AllPlayerInGame()
+    {
+        _timer = TickTimer.CreateFromSeconds(Runner, 5f);
+    }
+    
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    private void RPCLoadSceneComplete(PlayerRef playerRef)
+    {
+        if (RoomPlayerList.TryGet(playerRef, out RoomPlayerData roomPlayerData))
+        {
+            roomPlayerData.DoneLoading = true;
+            RoomPlayerList.Set(playerRef, roomPlayerData);
+            
+            if (HasStateAuthority && IsAllPlayerReady())
+            {
+                AllPlayerInGame();
+            }
+        }
+        else
+        {
+            throw new Exception("플레이어 준비, 해당 플레이어 리스트에 없음");
+        }
+    }
+
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void RPCStart()
     {
         Runner.SessionInfo.IsOpen = false;
         GameManager.Instance.ActiveLoadingUI();
         StartCoroutine(LoadYourAsyncScene());
+    }
+    
+    public void SpawnPlayerCharacter(PlayerRef playerRef)
+    {
+        //Vector3 spawnPosition = new Vector3((playerRef.RawEncoded % Runner.Config.Simulation.DefaultPlayers) * 3,1,0);
+        Vector3 spawnPosition = new Vector3((playerRef.RawEncoded % Runner.Config.Simulation.DefaultPlayers) + 20, 30, 10);
+        NetworkObject networkPlayerObject = Runner.Spawn(_playerPrefab, spawnPosition, Quaternion.identity, playerRef);
+            
+        NetworkObject gun = Runner.Spawn(_handGun, spawnPosition + Vector3.up, Quaternion.identity, playerRef);
+        gun.transform.SetParent(networkPlayerObject.transform);
+            
+        // _networkObjectList.Add(networkPlayerObject);
+        // _networkObjectList.Add(gun);
     }
     
     IEnumerator LoadYourAsyncScene()
@@ -161,7 +222,9 @@ public class NetworkRoom : NetworkBehaviour
         {
             yield return null;
         }
-        
+
+        SpawnPlayerCharacter(Runner.LocalPlayer);
+        RPCLoadSceneComplete(Runner.LocalPlayer);
         GameManager.Instance.DeActiveLoadingUI();
     }
 }

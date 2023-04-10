@@ -50,10 +50,8 @@ public class Move : MonoBehaviour
 
     public Transform GunPos;
     public static bool isCameraFocused = false;
-
     public LineRenderer ShotLine;
     public LineRenderer UltLine;
-    
     public RectTransform CrossHairTransform;
     #endregion
 

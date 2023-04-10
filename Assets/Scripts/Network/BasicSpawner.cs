@@ -13,16 +13,10 @@ namespace Network
     {
         // Network
         private NetworkRunner _runner;
-    
-        // Player
-        [SerializeField] private NetworkPrefabRef _playerPrefab;
-        [SerializeField] private NetworkPrefabRef _handGun;
-        [SerializeField] private NetworkPrefabRef _roomManager;
+        private NetworkRoom _room;
 
         private List<NetworkObject> _networkObjectList = new List<NetworkObject>();
         
-        //private Dictionary<PlayerRef, NetworkObject> _spawnedCharacters = new Dictionary<PlayerRef, NetworkObject>();
-
         private void OnGUI()
         {
             if (_runner == null)
@@ -37,7 +31,7 @@ namespace Network
                 }
             }
         }
-        
+
         #region Fusion
         public async void StartGame(GameMode mode)
         {
@@ -51,36 +45,18 @@ namespace Network
                 GameMode = mode,
                 Scene = SceneManager.GetActiveScene().buildIndex,
             });
-            
-            GameManager.Instance.DeActiveLoadingUI();
         }
 
         public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
         {
-            if (runner.ActivePlayers.Count() == 1)
-            {
-                runner.Spawn(_roomManager, Vector3.zero, Quaternion.identity);
-            }
             
-            if (runner.LocalPlayer.Equals(player))
-            {
-                Vector3 spawnPosition = new Vector3((player.RawEncoded % runner.Config.Simulation.DefaultPlayers) * 3,1,0);
-                NetworkObject networkPlayerObject = runner.Spawn(_playerPrefab, spawnPosition, Quaternion.identity, player);
-                
-                NetworkObject gun = runner.Spawn(_handGun, spawnPosition + Vector3.up, Quaternion.identity, player);
-                gun.transform.SetParent(networkPlayerObject.transform);
-                
-                _networkObjectList.Add(networkPlayerObject);
-                _networkObjectList.Add(gun);
-            }
         }
         
         public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
         {
-            var networkRoom = FindObjectOfType<NetworkRoom>();
-            if (networkRoom)
+            if (_room)
             {
-                networkRoom.OnPlayerLeft(player);
+                _room.OnPlayerLeft(player);
             }
             else
             {

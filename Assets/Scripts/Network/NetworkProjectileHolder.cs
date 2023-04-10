@@ -15,6 +15,7 @@ namespace Network
         private Transform _weaponTransform;
         private int _level;
         private List<NetworkObject> _projectileList;
+        [SerializeField]
         private NetworkObject _projectileObject;
         
         [Networked] private TickTimer delay { get; set; }
@@ -24,7 +25,6 @@ namespace Network
             _level = 1;
             _baseWeaponStat = new BaseStat<WeaponStat>(1, 1);
             _projectileList = new List<NetworkObject>();
-            _projectileObject = Resources.Load<NetworkObject>("HandGun_Projectile");
             _weaponTransform = gameObject.transform;
         }
 
