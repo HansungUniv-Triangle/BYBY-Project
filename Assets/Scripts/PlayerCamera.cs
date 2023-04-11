@@ -14,10 +14,14 @@ public class PlayerCamera : MonoBehaviour
     public Vector3 _orignalCameraPos;
     public Vector3 _orignalCameraFocusPos;
 
+    private float cameraSpeed;
+    private Move _playerMove;
+
     private void Awake()
     {
         _orignalCameraPos= CameraPos.localPosition;
         _orignalCameraFocusPos = CameraFocusPos.localPosition;
+        _playerMove = Player.GetComponent<Move>();
     }
 
     void Update()
@@ -45,7 +49,7 @@ public class PlayerCamera : MonoBehaviour
 
     private void CameraMovement()
     {
-        var cameraSpeed = 10f;
+        cameraSpeed = _playerMove.GetSpeed();
 
         if (Move.isCameraFocused)
         {

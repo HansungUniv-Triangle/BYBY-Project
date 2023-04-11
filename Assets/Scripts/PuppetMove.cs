@@ -22,6 +22,7 @@ public class PuppetMove : MonoBehaviour
     public bool ReverseHorizontalMove = false;
     
     private float h, v;
+    private float inputH, inputV;
     private Vector3 moveDir;
     private bool isJump = false;
     private bool isDodge = false;
@@ -59,14 +60,16 @@ public class PuppetMove : MonoBehaviour
     private void Awake()
     {
         _initPos = transform.position;
+        _characterController = GetComponent<CharacterController>();
+        _oneSec = new WaitForSeconds(1.0f);
     }
 
     void Start()
     {
         h = v = 0;
+        inputH = inputV = 0;
         moveDir = Vector3.zero;
-        _characterController = GetComponent<CharacterController>();
-        _oneSec = new WaitForSeconds(1.0f);
+        
         if (!_characterController.isGrounded)
             isJump = true;
 
@@ -77,8 +80,8 @@ public class PuppetMove : MonoBehaviour
     {
         while (true)
         {
-            h = Random.Range(-1f, 1f);
-            v = Random.Range(-1f, 1f);
+            inputH = Random.Range(-1f, 1f);
+            inputV = Random.Range(-1f, 1f);
 
             if (Random.Range(0, 1f) > 1f - dodgeFrequency && !isDodge)
             {
@@ -103,9 +106,13 @@ public class PuppetMove : MonoBehaviour
     {
         //h = ReverseHorizontalMove ? -Input.GetAxis("Horizontal") : Input.GetAxis("Horizontal");
         //v = Input.GetAxis("Vertical");
-        
-        var speed = global::Move.SpeedCalculateByDistance(Speed);
-        
+
+        h = inputH;
+        v = inputV;
+        v = (global::Move.targetDistance < 2f && v > 0) ? 0 : v;
+
+        var speed = Speed;
+
         // move
         if (_characterController.isGrounded)
         {

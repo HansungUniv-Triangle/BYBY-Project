@@ -22,24 +22,21 @@ public class Move : MonoBehaviour
 
     #region 타겟 지정 관련 변수
     public GameObject target;
-
     public static float targetDistance;
-    public const float MaxCalculateDistance = 5f;
 
-    private bool _isTargetNotNull;
-    private RaycastHit _raycast;
-    public float maxDistance = 10.0f;
+    private RaycastHit _hit;
+    private Ray _gunRay;
     #endregion
 
     #region 움직임 관련 변수
     public Joystick Joystick;
-    private Transform _transform;
+
     private CharacterController _characterController;
     private Vector3 moveDir;
     private float gravity = 15.0f;
     private float jumpForce = 7.0f;
     private float dodgeForce = 4.0f;
-    public bool ReverseHorizontalMove = false;
+    private bool ReverseHorizontalMove = false;
     private bool isJump = false;
     private bool isDodge = false;
     private float shakeDodgeThreshold = 2.0f;
@@ -62,11 +59,34 @@ public class Move : MonoBehaviour
     private float _shootDistance = 30f;
     #endregion
 
-    private GameManager _gameManager;
-
     #region UI Settings
+    private CanvasManager _canvasManager;
     private List<Stat<CharStat>> _statlist = new();
-    
+
+    public void ChangeGun1()
+    {
+        InitialStatus();
+        _btnStatus = 1;
+    }
+
+    public void ChangeGun2()
+    {
+        InitialStatus();
+        _btnStatus = 2;
+    }
+
+    public void ChangeGun3()
+    {
+        InitialStatus();
+        _btnStatus = 3;
+    }
+
+    public void ChangeGun4()
+    {
+        InitialStatus();
+        _btnStatus = 4;
+    }
+
     public void IncreaseSpeed(GameObject text)
     {
         _statlist.Add(new Stat<CharStat>(CharStat.Speed, 1).SetRatio(0));
@@ -111,7 +131,7 @@ public class Move : MonoBehaviour
     }
     public void ToggleReverseHorizontalMove() { ReverseHorizontalMove = !ReverseHorizontalMove; }
 
-    private JoystickSettingType joystickType = JoystickSettingType.Variable;
+    private JoystickSettingType joystickType = JoystickSettingType.Floating;
     [Space(5f)]
     public VariableJoystick variableJoystick;
     public FloatingJoystick floatingJoystick;
@@ -155,16 +175,20 @@ public class Move : MonoBehaviour
         _characterController.enabled = true;
     }
     #endregion
-    
+
+    private GameManager _gameManager;
+
     private void Awake()
     {
         _btnStatus = 1;
-        _transform = gameObject.transform;
-        _baseCharStat = new BaseStat<CharStat>();
-        _gameManager = GameManager.Instance;
-        _isTargetNotNull = true;
         _initPos = transform.position;
 
+        _baseCharStat = new BaseStat<CharStat>();
+        _gunRay = new Ray();
+
+        _gameManager = GameManager.Instance;
+        _canvasManager = CanvasManager.Instance;
+        
         _characterController = GetComponent<CharacterController>();
 
         weapons.Add(gameObject.AddComponent<HandGun>());
@@ -178,7 +202,7 @@ public class Move : MonoBehaviour
     {
         moveDir = Vector3.zero;
         InitialStatus();
-        CanvasManager.Instance.SwitchUI(CanvasType.GameMoving);
+        _canvasManager.SwitchUI(CanvasType.GameMoving);
     }
 
     private void InitialStatus()
@@ -191,34 +215,10 @@ public class Move : MonoBehaviour
         }
     }
 
-    public void ChangeGun1()
-    {
-        InitialStatus();
-        _btnStatus = 1;
-    }
-
-    public void ChangeGun2()
-    {
-        InitialStatus();
-        _btnStatus = 2;
-    }
-
-    public void ChangeGun3()
-    {
-        InitialStatus();
-        _btnStatus = 3;
-    }
-
-    public void ChangeGun4()
-    {
-        InitialStatus();
-        _btnStatus = 4;
-    }
-
     public void GetUlt()
     {
         isCameraFocused = !isCameraFocused;
-        CanvasManager.Instance.SwitchUI(CanvasType.GameAiming);
+        _canvasManager.SwitchUI(CanvasType.GameAiming);
     }
 
     public void EndUlt()
@@ -226,38 +226,42 @@ public class Move : MonoBehaviour
         //_weapon.Attack();
         Shoot(AttackType.Ultimate, UltLine);
         isCameraFocused = false;
-        CanvasManager.Instance.SwitchUI(CanvasType.GameMoving);
+        _canvasManager.SwitchUI(CanvasType.GameMoving);
     }
 
-    public static float SpeedCalculateByDistance(float Speed)
+    public float GetSpeed()
     {
-        var calculateByDist = targetDistance < MaxCalculateDistance ? 
-            (targetDistance + 1) / (MaxCalculateDistance) : 1;
-        var speed = Speed * calculateByDist;
-        return speed;
+        return _baseCharStat.GetStat(CharStat.Speed).Total;
     }
 
     private void CharacterMove()
     {
         if (target)
-            targetDistance = Vector3.Distance(_transform.position, target.transform.position);
+        {
+            // y값은 고려하지 않음
+            var playerPos = new Vector3(transform.position.x, 0, transform.position.z);
+            var targetPos = new Vector3(target.transform.position.x, 0, target.transform.position.z);
+
+            targetDistance = Vector3.Distance(playerPos, targetPos);
+        }
         
         var h = ReverseHorizontalMove ? -Joystick.Horizontal : Joystick.Horizontal;
         var v = Joystick.Vertical;
-        
-        var speed = SpeedCalculateByDistance(_baseCharStat.GetStat(CharStat.Speed).Total);
-        
+        v = (targetDistance < 2f && v > 0) ? 0 : v;
+
+        var speed = GetSpeed();
+
         // move
         if (_characterController.isGrounded)
         {
             moveDir = new Vector3(h, 0, v);
-            moveDir = _transform.TransformDirection(moveDir);
+            moveDir = transform.TransformDirection(moveDir);
             moveDir *= speed;
         }
         else
         {
             var tmp = new Vector3(h, 0, v);
-            tmp = _transform.TransformDirection(tmp);
+            tmp = transform.TransformDirection(tmp);
             tmp *= (speed * 0.7f);
 
             moveDir.x = tmp.x;
@@ -280,17 +284,13 @@ public class Move : MonoBehaviour
 
         _characterController.Move(moveDir * Time.deltaTime);
 
-        if (_isTargetNotNull == false)
-        {
-            _transform.rotation = Quaternion.Lerp(_transform.rotation, Quaternion.LookRotation(moveDir), Time.deltaTime * (speed * 0.1f));
-        }
-        else if (isCameraFocused == false)
+        if (isCameraFocused == false)
         {
             var relativePosition = target.transform.position - transform.position;
             relativePosition.y = 0; // y축은 바라보지 않도록 함
             var targetRotation = Quaternion.LookRotation(relativePosition);
 
-            _transform.rotation = Quaternion.Lerp(_transform.rotation, targetRotation, Time.deltaTime * speed);
+            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * speed);
         }
     }
 
@@ -326,7 +326,6 @@ public class Move : MonoBehaviour
         if (!isCameraFocused)
         {
             Shoot(AttackType.Basic, ShotLine);
-            //Debug.DrawLine(GunPos.position, target.transform.position, Color.red);
             //_weapon.Attack();
         }
 
@@ -337,31 +336,27 @@ public class Move : MonoBehaviour
     // ReSharper disable Unity.PerformanceAnalysis
     private void Shoot(AttackType attackType, LineRenderer lineRenderer)    // 라인렌더러는 임시
     {
-        RaycastHit hit;
-        Ray gunRay;
-
-        //var screenCenter = new Vector3(Camera.main.pixelWidth / 2, Camera.main.pixelHeight / 2);        // 화면 중앙 (크로스헤어)
-        //var aimRay = Camera.main.ScreenPointToRay(screenCenter);
         var aimRay = Camera.main.ScreenPointToRay(GetCrosshairPointInScreen());
-
+        
+        _gunRay.origin = GunPos.position;
         // 화면 중앙으로 쏘는 레이는 원점이 플레이어 앞에서 시작되어야 한다.
         // 그렇지 않으면 플레이어는 크로스헤어에는 걸렸지만, 뒤에 있는 물체를 부수게 된다.
         // 발사하는 주체는 제외
-        if (Physics.Raycast(aimRay.origin + aimRay.direction * 10, aimRay.direction, out hit, _shootDistance) && hit.transform.gameObject != gameObject)
+        if (Physics.Raycast(aimRay.origin + aimRay.direction * 10, aimRay.direction, out _hit, _shootDistance) && _hit.transform.gameObject != gameObject)
         {
-            gunRay = new Ray(GunPos.position, (hit.point - GunPos.position).normalized);
+            _gunRay.direction = (_hit.point - GunPos.position).normalized;
         }
         else
         {
-            gunRay = new Ray(GunPos.position, ((aimRay.origin + aimRay.direction * 10 + aimRay.direction * _shootDistance) - GunPos.position).normalized);
+            _gunRay.direction = ((aimRay.origin + aimRay.direction * 10 + aimRay.direction * _shootDistance) - GunPos.position).normalized;
         }
 
-        lineRenderer.SetPosition(0, gunRay.origin);
-        lineRenderer.SetPosition(1, gunRay.origin + gunRay.direction * _shootDistance);
+        lineRenderer.SetPosition(0, _gunRay.origin);
+        lineRenderer.SetPosition(1, _gunRay.origin + _gunRay.direction * _shootDistance);
 
-        if (Physics.Raycast(gunRay, out hit, _shootDistance))
+        if (Physics.Raycast(_gunRay, out _hit, _shootDistance))
         {
-            var point = hit.point - hit.normal * 0.01f;
+            var point = _hit.point - _hit.normal * 0.01f;
 
             switch (attackType)
             {
@@ -374,7 +369,7 @@ public class Move : MonoBehaviour
                     break;
             }
 
-            lineRenderer.SetPosition(1, hit.point);
+            lineRenderer.SetPosition(1, _hit.point);
         }
     }
 

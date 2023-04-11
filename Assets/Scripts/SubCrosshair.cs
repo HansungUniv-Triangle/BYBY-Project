@@ -13,7 +13,7 @@ public class SubCrosshair : MonoBehaviour
     
     public int MaxAimingRange = 120;
     public float Speed = 15;
-    public bool ReverseMove;
+    public bool ReverseMove = true;
     public bool OnlyHorizontal;
     
     #region UI Settings
