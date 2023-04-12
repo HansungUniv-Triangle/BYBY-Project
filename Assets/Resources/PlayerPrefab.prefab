@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8604529168564603563}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: CameraPos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -42,9 +42,9 @@ GameObject:
   - component: {fileID: 3038427902770430635}
   - component: {fileID: 3038427902770430637}
   - component: {fileID: 3038427902770430636}
-  - component: {fileID: 3038427902770430638}
+  - component: {fileID: 8706605853572743626}
   - component: {fileID: -4384871101208360548}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: PlayerPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -109,10 +109,10 @@ MonoBehaviour:
     RawGuidValue: e1433cb2b6135a94e92c3f1283df80b1
   NestedObjects: []
   NetworkedBehaviours:
-  - {fileID: 3038427902770430638}
+  - {fileID: 8706605853572743626}
   - {fileID: -4384871101208360548}
   SimulationBehaviours: []
---- !u!114 &3038427902770430638
+--- !u!114 &8706605853572743626
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -121,7 +121,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3038427902770430639}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 378411a89480da345945c2f888327a2d, type: 3}
+  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _interpolationDataSource: 0
@@ -140,14 +140,6 @@ MonoBehaviour:
     RotTeleportRadians: 1.5
   UseLegacySharedModeInterpolation: 0
   TargetInterpolationDelay: 0.03
-  gravity: -9.81
-  jumpImpulse: 8
-  acceleration: 10
-  braking: 10
-  maxSpeed: 2
-  rotationSpeed: 15
-  _IsGrounded: 0
-  _Velocity: {x: 0, y: 0, z: 0}
 --- !u!114 &-4384871101208360548
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -170,6 +162,7 @@ MonoBehaviour:
   target: {fileID: 0}
   maxDistance: 10
   ReverseHorizontalMove: 0
+  targetPoint: {x: 0, y: 0, z: 0}
   _NetworkSynergyList: 
 --- !u!1 &3038427903061544975
 GameObject:
@@ -182,7 +175,7 @@ GameObject:
   - component: {fileID: 3038427903061544974}
   - component: {fileID: 3038427903061544972}
   - component: {fileID: 3038427903061544973}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -263,7 +256,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3742861202700099361}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: CameraFocusPos
   m_TagString: Untagged
   m_Icon: {fileID: 0}

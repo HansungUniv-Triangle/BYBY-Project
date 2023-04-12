@@ -17,6 +17,8 @@ namespace Network
         private List<NetworkObject> _projectileList;
         [SerializeField]
         private NetworkObject _projectileObject;
+
+        public Vector3 target;
         
         [Networked] private TickTimer delay { get; set; }
 
@@ -26,6 +28,9 @@ namespace Network
             _baseWeaponStat = new BaseStat<WeaponStat>(1, 1);
             _projectileList = new List<NetworkObject>();
             _weaponTransform = gameObject.transform;
+            target = gameObject.transform.forward;
+            _baseWeaponStat.AddStat(new Stat<WeaponStat>(WeaponStat.Velocity, 20, 0));
+            _baseWeaponStat.AddStat(new Stat<WeaponStat>(WeaponStat.Range, 10, 0));
         }
 
         private void Start()
@@ -54,13 +59,19 @@ namespace Network
             _projectileList.Remove(projectile);
             Runner.Despawn(projectile);
         }
-        
+
+        // private void OnDrawGizmos()
+        // {
+        //     Gizmos.color = Color.blue;
+        //     Gizmos.DrawRay(gameObject.transform.position, );
+        // }
+
         protected void SpawnProjectile(Transform position)
         {
             var obj = Runner.Spawn(
                 _projectileObject, 
                 position.position + Vector3.forward, 
-                Quaternion.LookRotation(_weaponTransform.forward), 
+                Quaternion.LookRotation(target - gameObject.transform.position), 
                 Runner.LocalPlayer,
                 InitializeProjectile
             );

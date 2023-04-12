@@ -3,7 +3,7 @@ using UnityEngine;
 
 using Fusion;
 using Types;
-using Util;
+using Utils;
 
 namespace Network
 {
@@ -17,8 +17,6 @@ namespace Network
 
         // 변동 스탯
         protected float Distance;
-        
-        protected Vector3 Direction;
         private float _additionalVelocity;
         private float _additionalScale;
         private float _additionalDamage;
@@ -39,14 +37,13 @@ namespace Network
             
             _projectileHolder = holder;
             _projectileNetworkObject = GetComponent<NetworkObject>();
-            Direction = Vector3.forward;
             _additionalVelocity = 0;
             _additionalScale = 0;
             _additionalDamage = 0;
             
             transform.localScale = new Vector3(TotalScale, TotalScale, TotalScale);
         }
-
+        
         public override void FixedUpdateNetwork()
         {
             if (!Object.HasInputAuthority) return;

@@ -2,7 +2,7 @@ using System;
 using GameStatus;
 using Types;
 using UnityEngine;
-using Util;
+using Utils;
 
 /* ProjectileBase
  * 투사체에 사용하는 클래스
@@ -105,15 +105,15 @@ namespace Weapon
 
         private void GuidedTarget(float guided)
         {
-            var ray = Physics.SphereCastAll(transform.position, guided, transform.forward, 0, (int)Layer.Entity);
-            
-            foreach (var raycastHit in ray)
-            {
-                if (raycastHit.transform.gameObject.name == "허수아비")
-                {
-                    transform.LookAt(raycastHit.transform);
-                }
-            }
+            // var ray = Physics.SphereCastAll(transform.position, guided, transform.forward, 0, (int)Layer.Entity);
+            //
+            // foreach (var raycastHit in ray)
+            // {
+            //     if (raycastHit.transform.gameObject.name == "허수아비")
+            //     {
+            //         transform.LookAt(raycastHit.transform);
+            //     }
+            // }
         }
 
         #region 오버라이드 메소드 (abstract, virtual)

@@ -70,7 +70,10 @@ namespace Network
         private bool isJump = false;
         private bool isDodge = false;
         private float shakeDodgeThreshold = 2.0f;
-        private NetworkCharacterControllerPrototype _characterController;
+        private CharacterController _characterController;
+
+        public Vector3 targetPoint;
+        
         #endregion
         
         private GameManager _gameManager;
@@ -85,8 +88,8 @@ namespace Network
             target = GameObject.Find("허수아비");
             _transform = gameObject.transform;
             _baseCharStat = new BaseStat<CharStat>(1, 1);
-            _characterController = GetComponent<NetworkCharacterControllerPrototype>();
-            GunPos = transform.GetChild(0).transform;
+            _characterController = GetComponent<CharacterController>();
+            GunPos = transform.GetChild(2).transform;
 
             ShotLine = Instantiate(ShotLine);
             UltLine = Instantiate(UltLine);
@@ -96,6 +99,7 @@ namespace Network
                 //_joystick = RoomUI.Joystick;
                 _gameManager = GameManager.Instance;
                 RoomUI = GameManager.Instance.UIHolder as RoomUI;
+                gameObject.layer = LayerMask.NameToLayer("Player");
             }
             
             InitialStatus();
@@ -144,7 +148,8 @@ namespace Network
             // 화면 중앙으로 쏘는 레이는 원점이 플레이어 앞에서 시작되어야 한다.
             // 그렇지 않으면 플레이어는 크로스헤어에는 걸렸지만, 뒤에 있는 물체를 부수게 된다.
             // 발사하는 주체는 제외
-            if (Physics.Raycast(aimRay.origin + aimRay.direction * 10, aimRay.direction, out hit, aimDistance) && hit.transform.gameObject != gameObject)
+            
+            if (Physics.Raycast(aimRay.origin + aimRay.direction * 10, aimRay.direction, out hit, aimDistance, (int)(Layer.World | Layer.Enemy)) && hit.transform.gameObject != gameObject)
             {
                 gunRay = new Ray(GunPos.position, (hit.point - GunPos.position).normalized);
             }
@@ -153,10 +158,11 @@ namespace Network
                 gunRay = new Ray(GunPos.position, ((aimRay.origin + aimRay.direction * 10 + aimRay.direction * aimDistance) - GunPos.position).normalized);
             }
 
+            targetPoint = gunRay.origin + gunRay.direction * aimDistance;
             lineRenderer.SetPosition(0, gunRay.origin);
-            lineRenderer.SetPosition(1, gunRay.origin + gunRay.direction * aimDistance);
+            lineRenderer.SetPosition(1, targetPoint);
 
-            if (Physics.Raycast(gunRay, out hit, aimDistance))
+            if (Physics.Raycast(gunRay, out hit, aimDistance, (int)(Layer.World | Layer.Enemy)))
             {
                 var point = hit.point - hit.normal * 0.01f;
 
@@ -171,8 +177,11 @@ namespace Network
                         break;
                 }
 
-                lineRenderer.SetPosition(1, hit.point);
+                targetPoint = hit.point;
+                lineRenderer.SetPosition(1, targetPoint);
             }
+
+            var gun = GetComponentInChildren<NetworkProjectileHolder>().target = targetPoint;
         }
 
         private Vector3 GetCrosshairPointInScreen()
@@ -186,9 +195,9 @@ namespace Network
             var v = _joystick.Vertical;
 
             var speed = _baseCharStat.GetStat(CharStat.Speed).Total;
-
+            
             // move
-            if (_characterController.IsGrounded)
+            if (_characterController.isGrounded)
             {
                 moveDir = new Vector3(h, 0, v);
                 moveDir = _transform.TransformDirection(moveDir);
@@ -199,7 +208,7 @@ namespace Network
                 var tmp = new Vector3(h, 0, v);
                 tmp = _transform.TransformDirection(tmp);
                 tmp *= (speed * 0.7f);
-
+            
                 moveDir.x = tmp.x;
                 moveDir.z = tmp.z;
             }
@@ -217,7 +226,6 @@ namespace Network
             }
 
             moveDir.y -= gravity * Runner.DeltaTime;
-
             _characterController.Move(moveDir * Runner.DeltaTime);
 
             if (_isTargetNotNull == false)
@@ -238,7 +246,7 @@ namespace Network
         {
             if (hit.gameObject.layer == LayerMask.NameToLayer("World") && hit.normal.y == 0)
             {
-                if (_characterController.IsGrounded)
+                if (_characterController.isGrounded)
                 {
                     isJump = true;
                 }

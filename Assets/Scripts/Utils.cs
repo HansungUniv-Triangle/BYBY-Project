@@ -1,4 +1,4 @@
-﻿namespace Util
+﻿namespace Utils
 {
     public static class Path
     {

@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
-using Util;
+using Utils;
 
 public class GameManager : Singleton<GameManager>
 {

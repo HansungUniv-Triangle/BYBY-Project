@@ -9,7 +9,7 @@
 
         protected override void UpdateProjectile()
         {
-            transform.position += Direction * (TotalVelocity * Runner.DeltaTime);
+            transform.position += gameObject.transform.forward * (TotalVelocity * Runner.DeltaTime);
         }
     }
 }

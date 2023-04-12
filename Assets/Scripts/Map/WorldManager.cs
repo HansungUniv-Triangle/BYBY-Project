@@ -61,7 +61,8 @@ public class WorldManager : Singleton<WorldManager>
 
     public void Start()
     {
-        Seed = DateTime.Now.Millisecond;
+        //Seed = DateTime.Now.Millisecond;
+        Seed = 230412;
         _world = new World();
         GeneratorMap();
     }

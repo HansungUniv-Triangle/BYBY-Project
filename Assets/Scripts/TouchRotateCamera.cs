@@ -47,7 +47,7 @@ public class TouchRotateCamera : MonoBehaviour, IBeginDragHandler, IDragHandler,
         yAngle = yAngleTemp + (draggingPos.x - beginPos.x) * rotationSpeed * 2 / Screen.width;
         xAngle = xAngleTemp - (draggingPos.y - beginPos.y) * rotationSpeed * 2 / Screen.height;
 
-        /* °¢µµ Á¦ÇÑ ±×·¯³ª ¹ö±×°¡ Á¸Àç
+        /* ê°ë„ ì œí•œ ê·¸ëŸ¬ë‚˜ ë²„ê·¸ê°€ ì¡´ìž¬
         if (xAngle > 30) xAngle = 30;
         if (xAngle < -60) xAngle = -60;
         */

@@ -1,4 +1,6 @@
-﻿namespace Types
+﻿using System;
+
+namespace Types
 {
     public enum PoolObject
     {
@@ -8,11 +10,12 @@
         EnemyBullet
     }
 
+    [Flags]
     public enum Layer
     {
         World = 1 << 6,
-        Entity = 1 << 7,
-        Block = 1 << 8,
+        Player = 1 << 7,
+        Enemy = 1 << 8,
     }
 
     public enum Character

@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using DG.Tweening;
 using Types;
 using UnityEngine;
@@ -45,10 +42,10 @@ public class UIManager : MonoBehaviour
             var ray = _camera.ScreenPointToRay(_aim.transform.position);
             Debug.DrawRay(ray.origin, ray.direction * 100, Color.red);
             
-            if (Physics.Raycast(ray, out var hit, Mathf.Infinity, (int)Layer.Entity))
-            {
-                testObj.transform.position = hit.point;
-            }
+            // if (Physics.Raycast(ray, out var hit, Mathf.Infinity, (int)Layer.Entity))
+            // {
+            //     testObj.transform.position = hit.point;
+            // }
         }
         else
         {
