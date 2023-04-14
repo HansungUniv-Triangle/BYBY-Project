@@ -219,6 +219,7 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
     {
         if (order > 0 && isSwipe == false)
         {
+            isSwipe = true;
             order--;
             ValueInit();
             //전체 페이지 왼쪽으로 옮기고 현재 페이지 연결 ,order 수정
@@ -238,6 +239,7 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
     {
         if (order < 6 && isSwipe == false)
         {
+            isSwipe = true;
             order++;
             ValueInit();
             synergyPageList[6].transform.DOMove(spawnPoint[order + 6].transform.position, 1);
@@ -269,7 +271,6 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
     {
         if (swipeStartPos != Vector2.zero)
         {
-            isSwipe = true;
             Vector2 swipeDelta = eventData.position - swipeStartPos;
             float swipeDuration = Time.time - swipeStartTime;
 
