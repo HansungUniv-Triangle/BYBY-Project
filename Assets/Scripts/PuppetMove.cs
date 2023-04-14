@@ -25,7 +25,7 @@ public class PuppetMove : MonoBehaviour
     void Update()
     {
         Move();
-        Jump();
+        //Jump();
     }
     private void Move()
     {
@@ -36,26 +36,23 @@ public class PuppetMove : MonoBehaviour
         moveDir = headTransform.TransformDirection(moveDir);
         moveDir *= moveSpeed;
 
-
+        yVelocity += (gravity * Time.deltaTime);
+        moveDir.y = yVelocity;
+        charactercontroller.Move(moveDir * Time.deltaTime);
 
     }
 
     private void Jump()
     {
-        yVelocity += (gravity * Time.deltaTime);
-        moveDir.y = yVelocity;
-        charactercontroller.Move(moveDir * Time.deltaTime);
-    }
-
-    private void OnCollisionEnter()
-    {
-        if (moveDir.x != 0 && moveDir.z != 0)
+        if (Input.GetKeyDown(KeyCode.Space))
         {
             yVelocity = 0;
             if (charactercontroller.isGrounded)
             {
                 yVelocity = jumpForce;
             }
+            
         }
     }
+
 }

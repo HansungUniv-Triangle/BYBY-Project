@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Synergy 1
   m_EditorClassIdentifier: 
   sprite: {fileID: 0}
-  synergyName: "\uC2DC\uB108\uC9C01"
+  synergyName: "\uCEE4\uBA3C \uC2DC\uB108\uC9C01"
   priority: 0
   statList:
   - statType: 1

@@ -34,24 +34,30 @@ public class Move : MonoBehaviour
     public float maxDistance = 10.0f;
 
     #region Target
-    public GameObject target;
+    public Transform target;
+    public Transform enemy;
     private bool _isTargetNotNull;
     #endregion
 
     #region Start
     public Transform _transform;
+    public Transform _puppet;
     private CharacterController _characterController;
     private Gun _gun;
     #endregion
-
+ 
     private GameManager _gameManager;
     public List<Synergy> synergyList = new List<Synergy>();
     private int BtnStatus = 0;
+    private bool isBtnClicked = false;
 
     private Vector3 moveDir;
     private float gravity = -10.0f;
     private float jumpForce = 5.0f;
     public float yVelocity = 0.0f;
+
+    Vector3 viewPos;
+    Camera _camera;
 
     private void Awake()
     {
@@ -61,6 +67,7 @@ public class Move : MonoBehaviour
         _isTargetNotNull = false;
         _characterController = GetComponent<CharacterController>();
         _gun = transform.GetComponentInChildren<Gun>();
+        _camera = GameObject.Find("Main Camera").GetComponent<Camera>();
     }
 
     private void Start()
@@ -143,9 +150,29 @@ public class Move : MonoBehaviour
             BtnStatus = 4;
         }
     }
+
     public void GetUlt()
     {
-        Debug.Log("Ult");
+        if (isBtnClicked == false)
+        {
+            Debug.Log(viewPos);
+            isBtnClicked = true;
+        }
+        else
+        {
+            isBtnClicked = false;
+        }
+    }
+
+    public void EnemyAppear()
+    {
+        _isTargetNotNull = true;
+    }
+
+    public void EnemyDismiss()
+    {
+        target = null;
+        _isTargetNotNull = false;
     }
 
     private void CharacterMove()
@@ -158,9 +185,8 @@ public class Move : MonoBehaviour
         moveDir = new Vector3(h, 0, v);
         moveDir = _transform.TransformDirection(moveDir);
         moveDir *= _base.Speed;
-
-        //_characterRigidbody.velocity = new Vector3(h * _base.Speed, 0, v * _base.Speed);
-        if (_isTargetNotNull == false)
+        
+        if(_isTargetNotNull == false)
         {
             if (!(h == 0 && v == 0))
             {
@@ -175,6 +201,8 @@ public class Move : MonoBehaviour
 
     }
 
+    
+
     private void OnCollisionEnter()
     {
         if (moveDir.x != 0 && moveDir.z != 0)
@@ -187,22 +215,35 @@ public class Move : MonoBehaviour
         }
     }
 
-    private void Update()
+    void Update()
     {
         CharacterMove();
-        if (Physics.Raycast(transform.position, transform.forward, out _raycast, maxDistance))
+        
+        viewPos = _camera.WorldToViewportPoint(enemy.position);
+        Collider[] cols = Physics.OverlapSphere(transform.position, 10f);
+      
+        if (isBtnClicked == true)
         {
-            if (_raycast.transform.gameObject.name == "허수아비")
+            if (viewPos.x > 0.3f && viewPos.x < 0.7f)
             {
-                _isTargetNotNull = true;
-                target = _raycast.transform.gameObject;
+                if (cols.Length > 0)
+                {
+                    for (int i = 0; i < cols.Length; i++)
+                    {
+                        if (cols[i].tag == "Player")
+                        {
+                            target = cols[i].gameObject.transform;
+                            EnemyAppear();
+                        }
+                    }
+                }   
             }
         }
         else
         {
-            _isTargetNotNull = false;
-            target = null;
+            EnemyDismiss();
         }
+
         var inputSpace = Input.GetButton("Jump");
         // fire gun
         _fireCoolTime += Time.deltaTime;
@@ -211,11 +252,21 @@ public class Move : MonoBehaviour
             _gun.Shoot(_base.ShotAtOnce);
             _fireCoolTime = 0;
         }
-        
+
         // target
-        if(_isTargetNotNull) transform.LookAt(target.transform);
+        //if(_isTargetNotNull) transform.LookAt(target.transform);
         
+
         // Todo: 그냥 테스트용 코드
         TestUpdate();
+    }
+
+    void LateUpdate()
+    {
+        if (target != null)
+        {
+            Vector3 dir = target.position - transform.position;
+            transform.LookAt(dir);
+        }
     }
 }
