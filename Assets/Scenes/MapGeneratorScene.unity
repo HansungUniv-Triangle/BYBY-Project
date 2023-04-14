@@ -168,22 +168,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6cdd7357cef44014cb458ed6e5e98f14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MapWidth: 20
-  MapHeight: 20
+  AutoUpdate: 1
+  MapWidth: 40
+  MapHeight: 40
   Seed: 0
-  NoiseScale: 27.65
+  NoiseScale: 28.08
   Offset: {x: 0, y: 0}
   Octaves: 3
-  Persistance: 0.33
+  Persistance: 0.369
   Lacunarity: 1.5
-  AutoUpdate: 1
+  Offset3D: {x: 0, y: 0, z: 0}
+  Scale: 0.07
+  NoneThreshold: 0.38
+  SandThreshold: 0.6
+  BlockThreshold: 0.47
+  TreeThreshold: 0.04
   TerrainHeight: 15
   TerrainBaseHeight: 6
-  ChunkSize: {x: 10, y: 64, z: 10}
-  WorldChunkWidth: 2
-  WorldChunkHeight: 2
-  Material: {fileID: 2100000, guid: f1c2128f50f7ddb42a2ed165213ded38, type: 2}
-  AnimatorController: {fileID: 9100000, guid: 0ba065bd852e8b44c8432eb44f36df69, type: 2}
+  ChunkSize: {x: 8, y: 64, z: 8}
+  WorldChunkWidth: 5
+  WorldChunkHeight: 5
   BlockPrefab: {fileID: 816225532686834975, guid: 80bff01fa4349dd49ad27151436bf1fe,
     type: 3}
   ChunkPrefab: {fileID: 6540796871913182244, guid: 530366b1a242d9749ad4553f4a9925ef,
@@ -192,6 +196,7 @@ MonoBehaviour:
   - Name: Air
     _type: 0
     _solidType: 0
+    _transparencyType: 0
     _maxHP: 0
     _frontFaceTextureID: 0
     _rightFaceTextureID: 0
@@ -202,6 +207,7 @@ MonoBehaviour:
   - Name: Grass
     _type: 1
     _solidType: 1
+    _transparencyType: 0
     _maxHP: 3
     _frontFaceTextureID: 43
     _rightFaceTextureID: 43
@@ -212,6 +218,7 @@ MonoBehaviour:
   - Name: Dirt
     _type: 2
     _solidType: 1
+    _transparencyType: 0
     _maxHP: 2
     _frontFaceTextureID: 52
     _rightFaceTextureID: 52
@@ -222,16 +229,51 @@ MonoBehaviour:
   - Name: Stone
     _type: 3
     _solidType: 1
-    _maxHP: 4
+    _transparencyType: 0
+    _maxHP: 5
     _frontFaceTextureID: 39
     _rightFaceTextureID: 39
     _topFaceTextureID: 39
     _backFaceTextureID: 39
     _leftFaceTextureID: 39
     _bottomFaceTextureID: 39
-  - Name: Bedrock
+  - Name: Sand
     _type: 4
     _solidType: 1
+    _transparencyType: 0
+    _maxHP: 2
+    _frontFaceTextureID: 57
+    _rightFaceTextureID: 57
+    _topFaceTextureID: 57
+    _backFaceTextureID: 57
+    _leftFaceTextureID: 57
+    _bottomFaceTextureID: 57
+  - Name: Wood
+    _type: 5
+    _solidType: 1
+    _transparencyType: 0
+    _maxHP: 4
+    _frontFaceTextureID: 1
+    _rightFaceTextureID: 1
+    _topFaceTextureID: 81
+    _backFaceTextureID: 1
+    _leftFaceTextureID: 1
+    _bottomFaceTextureID: 81
+  - Name: Leaf
+    _type: 6
+    _solidType: 1
+    _transparencyType: 1
+    _maxHP: 1
+    _frontFaceTextureID: 76
+    _rightFaceTextureID: 76
+    _topFaceTextureID: 76
+    _backFaceTextureID: 76
+    _leftFaceTextureID: 76
+    _bottomFaceTextureID: 76
+  - Name: Bedrock
+    _type: 7
+    _solidType: 1
+    _transparencyType: 0
     _maxHP: 0
     _frontFaceTextureID: 68
     _rightFaceTextureID: 68
@@ -562,6 +604,7 @@ GameObject:
   - component: {fileID: 1621907861}
   - component: {fileID: 1621907864}
   - component: {fileID: 1621907865}
+  - component: {fileID: 1621907866}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -647,6 +690,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c80eaec96d05bce45a6ef3fa66574f51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _offset: 100
   HitDamage: 1
   ExplosionRadius: 3
 --- !u!114 &1621907865
@@ -682,3 +726,16 @@ MonoBehaviour:
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
   m_Version: 2
+--- !u!65 &1621907866
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1621907860}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.1, y: 0.1, z: 0.1}
+  m_Center: {x: 0, y: 0, z: 0}

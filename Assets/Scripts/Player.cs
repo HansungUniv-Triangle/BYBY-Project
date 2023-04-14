@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using DG.Tweening;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -11,46 +10,62 @@ public class Player : MonoBehaviour
 
     private WorldManager _worldGenerator;
 
-    void Start()
+    /*
+    private void Start()
     {
         _worldGenerator = WorldManager.Instance;
         _toRemoveChunkCoord = new List<Vector2Int>();
-        transform.DOMove(new Vector3(1,2,3), 1);
     }
 
-    void Update()
+    
+    private void Update()
     {
-        _chunkCoord = _worldGenerator.CalculateChunkCoords(transform.position);
+        ActivatesAllChunks();
+        
+        // ActivatesChunks();
+        // _chunkCoord = _worldGenerator.CalculateChunkCoords(transform.position);
+        //
+        //  if(_chunkCoord != _prevChunkCoord)
+        //  {
+        //      _prevChunkCoord = _chunkCoord;
+        //      ActivatesChunks();
+        //      DectivatesChunks();
+        //  }
+    }
+    */
 
-        if(_chunkCoord != _prevChunkCoord)
+    private void ActivatesAllChunks()
+    {
+        if (_worldGenerator.GetWorld() == null)
+            return;
+    
+        foreach (var chunk in _worldGenerator.GetWorld().GetChunkAll)
         {
-            _prevChunkCoord = _chunkCoord;
-            DectivatesChunks();
-            ActivatesChunks();
+            chunk.ActivatesMesh();
         }
     }
+    
     private void ActivatesChunks()
     {
         if (_worldGenerator.GetWorld() == null)
             return;
-
+    
         for (var x = _chunkCoord.x - ActiveChunksRange; x <= _chunkCoord.x + ActiveChunksRange; x++)
         {
             for (var z = _chunkCoord.y - ActiveChunksRange; z <= _chunkCoord.y + ActiveChunksRange; z++)
             {
                 var pos = new Vector2Int(x, z);
-
+    
                 if (_worldGenerator.GetWorld().IsPositionInWorld(pos))
                 {
                     _toRemoveChunkCoord.Add(pos);
-
+    
                     var chunk = _worldGenerator.GetWorld().GetChunk(pos);
                     chunk.ActivatesMesh();
                 }
             }
         }
     }
-
     private void DectivatesChunks()
     {
         foreach(var chunkCoord in _toRemoveChunkCoord)

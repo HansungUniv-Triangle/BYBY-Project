@@ -36,5 +36,5 @@ public abstract class Singleton<T> : MonoBehaviour where T : Component
         }
     }
 
-    protected virtual void Initiate() { }
+    protected abstract void Initiate();
 }

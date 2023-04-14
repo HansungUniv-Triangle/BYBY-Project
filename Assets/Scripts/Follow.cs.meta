@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+<<<<<<<< Updated upstream:Assets/Scripts/Joystick.cs.meta
+guid: ec2cbb4c2537d014588bb746caed2d37
+========
+guid: 4d51306c61efd88439442b49a476ff4e
+>>>>>>>> Stashed changes:Assets/Scripts/Follow.cs.meta
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
