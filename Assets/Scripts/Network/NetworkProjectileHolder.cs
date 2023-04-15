@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Fusion;
 using GameStatus;
 using Types;
 using UnityEngine;
-using Unity.VisualScripting;
-using Weapon;
 
 namespace Network
 {
@@ -60,12 +57,6 @@ namespace Network
             Runner.Despawn(projectile);
         }
 
-        // private void OnDrawGizmos()
-        // {
-        //     Gizmos.color = Color.blue;
-        //     Gizmos.DrawRay(gameObject.transform.position, );
-        // }
-
         protected void SpawnProjectile(Transform position)
         {
             var obj = Runner.Spawn(
@@ -75,6 +66,7 @@ namespace Network
                 Runner.LocalPlayer,
                 InitializeProjectile
             );
+            
             _projectileList.Add(obj);
         }
         

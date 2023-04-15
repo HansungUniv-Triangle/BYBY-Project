@@ -1,4 +1,5 @@
 using System;
+using Network;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
@@ -10,18 +11,20 @@ public class GameManager : Singleton<GameManager>
     private GameObject _uiLoading;
 
     [SerializeField]
-    private UIHolder _uiHolder;
-    public UIHolder UIHolder
+    private UIHolder.UIHolder _uiHolder;
+    public UIHolder.UIHolder UIHolder
     {
         get
         {
             if (_uiHolder is null)
             {
-                _uiHolder = FindObjectOfType<UIHolder>();
+                _uiHolder = FindObjectOfType<UIHolder.UIHolder>();
             }
             return _uiHolder;
         }
     }
+
+    public NetworkManager NetworkManager { get; private set; }
 
     [SerializeField]
     private Synergy[] _synergyList;
@@ -31,11 +34,7 @@ public class GameManager : Singleton<GameManager>
     {
         _synergyList = Resources.LoadAll<Synergy>(Path.Synergy);
         _uiLoadingPrefab = Resources.Load(Path.Loading) as GameObject;
-    }
-
-    public void ClearSceneChange()
-    {
-
+        NetworkManager = FindObjectOfType<NetworkManager>();
     }
 
     public bool GetSynergy(int index, out Synergy synergy)
@@ -50,7 +49,7 @@ public class GameManager : Singleton<GameManager>
         return true;
     }
 
-    public void SetUICanvasHolder(UIHolder uiHolder)
+    public void SetUICanvasHolder(UIHolder.UIHolder uiHolder)
     {
         _uiHolder = uiHolder;
     }

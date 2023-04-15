@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 /* ProjectileHolder
@@ -45,7 +44,7 @@ namespace Weapon
         public void RemoveProjectile(ProjectileBase<T> projectile)
         {
             _projectileList.Remove(projectile);
-            UnityEngine.Object.Destroy(projectile.GameObject());
+            //UnityEngine.Object.Destroy(projectile.GameObject());
         }
     }
 }

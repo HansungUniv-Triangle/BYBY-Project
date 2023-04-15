@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Network;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -180,7 +181,6 @@ public class Chunk
             if (_damagedBlocks.ContainsKey(pos))
             {
                 _damagedBlocks[pos].DestroyGameObject();
-                //_damagedBlocks.Remove(pos);
             }
         }
     }
@@ -228,7 +228,7 @@ public class Chunk
                 {
                     var blockPos = new Vector3Int(centerPos.x - 1 + x, centerPos.y - y, centerPos.z - 1 + z);
                     
-                    // ³ª¹µÀÙ ÇüÅÂ
+                    // ë‚˜ë­‡ìžŽ í˜•íƒœ
                     if (blockPos.x == centerPos.x && blockPos.z == centerPos.z && y != 0)
                         continue;
                     if (y == 0 && x != 1 && z != 1)
@@ -283,24 +283,24 @@ public class Chunk
 
             for (var dir = 0; dir < MeshBlockData.CheckDireactions.Length; dir++)
             {
-                // ¸Ç ¾Æ·¡ (y == 0) ºí·°ÀÇ ¹Ø¸éÀÇ °æ¿ì, ±×¸®Áö ¾Ê±â
+                // ë§¨ ì•„ëž˜ (y == 0) ë¸”ëŸ­ì˜ ë°‘ë©´ì˜ ê²½ìš°, ê·¸ë¦¬ì§€ ì•Šê¸°
                 if (blockPos.y == 0 && dir == 5) { continue; }
 
                 var checkBlockPos = blockPos + MeshBlockData.CheckDireactions[dir];
 
                 if (!_blockMap.ContainsKey(checkBlockPos) || !_blockMap[checkBlockPos].GetSolidType() || _blockMap[checkBlockPos].GetTransparencyType())
                 {
-                    // ´ÙÀ½ Ã»Å©¿¡ ÀÖÀ» ¼öµµ ÀÖ¾î ¿¹¿Ü Ã³¸®
+                    // ë‹¤ìŒ ì²­í¬ì— ìžˆì„ ìˆ˜ë„ ìžˆì–´ ì˜ˆì™¸ ì²˜ë¦¬
                     var checkChunkPos = new Vector2Int(_chunkCoord.x + MeshBlockData.CheckDireactions[dir].x,
                                                        _chunkCoord.y + MeshBlockData.CheckDireactions[dir].z);
 
-                    // ´ÙÀ½ Ã»Å©¿¡¼­ ºí·° Á¸ÀçÇÒ °æ¿ì, ÇØ´ç ¸é ±×¸®Áö ¾Ê±â
+                    // ë‹¤ìŒ ì²­í¬ì—ì„œ ë¸”ëŸ­ ì¡´ìž¬í•  ê²½ìš°, í•´ë‹¹ ë©´ ê·¸ë¦¬ì§€ ì•Šê¸°
                     if (_world.IsPositionInWorld(checkChunkPos) &&
                         _world.GetChunk(checkChunkPos).GetBlock(checkBlockPos) != null &&
                         !_world.GetChunk(checkChunkPos).GetBlock(checkBlockPos).GetTransparencyType())
                         continue;
 
-                    // Culling ¹æ½Ä
+                    // Culling ë°©ì‹
                     for (var idx = 0; idx < MeshBlockData.FaceNumber.GetLength(1); idx++)
                     {
                         var vIdx = MeshBlockData.FaceNumber[dir, idx];

@@ -43,7 +43,13 @@ namespace Network
             
             transform.localScale = new Vector3(TotalScale, TotalScale, TotalScale);
         }
-        
+
+        public override void Spawned()
+        {
+            if (!Object.HasStateAuthority)
+                GetComponent<Rigidbody>().isKinematic = true;
+        }
+
         public override void FixedUpdateNetwork()
         {
             if (!Object.HasInputAuthority) return;

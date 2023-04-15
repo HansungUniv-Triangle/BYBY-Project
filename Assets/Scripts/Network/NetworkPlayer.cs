@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
 using Fusion;
 using GameStatus;
@@ -48,13 +50,12 @@ namespace Network
         public static bool isCameraFocused = false;
         public LineRenderer ShotLine;
         public LineRenderer UltLine;
-        public RectTransform CrossHairTransform;
+        private RectTransform _crossHair;
         
         #endregion
 
         #region 타겟 지정 관련 변수
-        public GameObject target;
-        private bool _isTargetNotNull;
+        private GameObject _target;
         private RaycastHit _raycast;
         public float maxDistance = 10.0f;
         #endregion
@@ -77,63 +78,81 @@ namespace Network
         #endregion
         
         private GameManager _gameManager;
-        private RoomUI RoomUI;
+        private GameUI _gameUI;
 
         public override void Spawned()
         {
-            _isTargetNotNull = true;
+            if (HasStateAuthority)
+            {
+                Camera.main.GetComponent<PlayerCamera>().AddPlayer(transform);
+                _target = GameObject.Find("허수아비");
+                
+                // 혼자 테스트용 코드
+                if (Runner.ActivePlayers.Count() == 1)
+                {
+                    _target = GameObject.Find("허수아비");
+                    Camera.main.GetComponent<PlayerCamera>().AddEnemy(_target.transform);
+                }
+            }
+            else
+            {
+                _target = GameObject.Find("허수아비");
+                Camera.main.GetComponent<PlayerCamera>().AddEnemy(_target.transform);
+                return;
+            }
+            
             moveDir = Vector3.zero;
-            CrossHairTransform = GameObject.Find("SubCrosshair").GetComponent<RectTransform>();
-            _joystick = GameObject.Find("Variable Joystick").GetComponent<VariableJoystick>();
-            target = GameObject.Find("허수아비");
-            _transform = gameObject.transform;
-            _baseCharStat = new BaseStat<CharStat>(1, 1);
-            _characterController = GetComponent<CharacterController>();
             GunPos = transform.GetChild(2).transform;
-
+            
             ShotLine = Instantiate(ShotLine);
             UltLine = Instantiate(UltLine);
 
-            if (HasInputAuthority)
-            {
-                //_joystick = RoomUI.Joystick;
-                _gameManager = GameManager.Instance;
-                RoomUI = GameManager.Instance.UIHolder as RoomUI;
-                gameObject.layer = LayerMask.NameToLayer("Player");
-            }
+            _transform = gameObject.transform;
+            _baseCharStat = new BaseStat<CharStat>(1, 1);
+            _characterController = GetComponent<CharacterController>();
             
+            _gameManager = GameManager.Instance;
+            _gameUI = _gameManager.UIHolder as GameUI;
+
+            if (_gameUI == null)
+            {
+                throw new Exception("ui holder가 null임");
+            }
+            _crossHair = _gameUI.crossHair;
+            _joystick = _gameUI.joystick;
+            
+            // 자신은 타겟팅 되지 않기 위해 레이어 변경
+            gameObject.layer = LayerMask.NameToLayer("Player");
+
             InitialStatus();
         }
-
+        
         public override void FixedUpdateNetwork()
         {
-            if (HasInputAuthority)
-            {
-                var shakeMagnitude = Input.acceleration.magnitude;
-
-                if (shakeMagnitude > shakeDodgeThreshold && !isDodge)    //if (Input.GetKeyDown(KeyCode.Space) && !isDodge)
-                {
-                    isDodge = true;
-                    DOTween.Sequence()
-                        .AppendInterval(0.1f)
-                        .OnComplete(() =>
-                        {
-                            isDodge = false;
-                        });
-                }
+            if(!HasStateAuthority) return;
             
-                // 임시 자동공격
-                if (!isCameraFocused)
-                {
-                    Shoot(AttackType.Basic, ShotLine);
-                    //Debug.DrawLine(GunPos.position, target.transform.position, Color.red);
-                    //_weapon.Attack();
-                }
-                
-                if (_joystick is not null)
-                {
-                    CharacterMove();
-                }
+            var shakeMagnitude = Input.acceleration.magnitude;
+
+            if (shakeMagnitude > shakeDodgeThreshold && !isDodge)    //if (Input.GetKeyDown(KeyCode.Space) && !isDodge)
+            {
+                isDodge = true;
+                DOTween.Sequence()
+                    .AppendInterval(0.1f)
+                    .OnComplete(() =>
+                    {
+                        isDodge = false;
+                    });
+            }
+        
+            // 임시 자동공격
+            if (!isCameraFocused)
+            {
+                Shoot(AttackType.Basic, ShotLine);
+            }
+            
+            if (_joystick is not null)
+            {
+                CharacterMove();
             }
         }
         
@@ -142,7 +161,7 @@ namespace Network
             RaycastHit hit;
             Ray gunRay;
             
-            var aimRay = Camera.main.ScreenPointToRay(GetCrosshairPointInScreen());
+            var aimRay = Camera.main.ScreenPointToRay(GetCrossHairPointInScreen());
             var aimDistance = 30f;
 
             // 화면 중앙으로 쏘는 레이는 원점이 플레이어 앞에서 시작되어야 한다.
@@ -159,9 +178,18 @@ namespace Network
             }
 
             targetPoint = gunRay.origin + gunRay.direction * aimDistance;
+            GetComponentInChildren<NetworkProjectileHolder>().target = targetPoint;
+            
+            //LaserBeam(gunRay, aimDistance, attackType, lineRenderer);
+        }
+
+        private void LaserBeam(Ray gunRay, float aimDistance, AttackType attackType, LineRenderer lineRenderer)
+        {
+            RaycastHit hit;
+            
             lineRenderer.SetPosition(0, gunRay.origin);
             lineRenderer.SetPosition(1, targetPoint);
-
+            
             if (Physics.Raycast(gunRay, out hit, aimDistance, (int)(Layer.World | Layer.Enemy)))
             {
                 var point = hit.point - hit.normal * 0.01f;
@@ -180,13 +208,11 @@ namespace Network
                 targetPoint = hit.point;
                 lineRenderer.SetPosition(1, targetPoint);
             }
-
-            var gun = GetComponentInChildren<NetworkProjectileHolder>().target = targetPoint;
         }
 
-        private Vector3 GetCrosshairPointInScreen()
+        private Vector3 GetCrossHairPointInScreen()
         {
-            return new Vector3(CrossHairTransform.transform.position.x, CrossHairTransform.transform.position.y, 0);
+            return new Vector3(_crossHair.transform.position.x, _crossHair.transform.position.y, 0);
         }
         
         private void CharacterMove()
@@ -228,13 +254,9 @@ namespace Network
             moveDir.y -= gravity * Runner.DeltaTime;
             _characterController.Move(moveDir * Runner.DeltaTime);
 
-            if (_isTargetNotNull == false)
+            if (isCameraFocused == false)
             {
-                _transform.rotation = Quaternion.Lerp(_transform.rotation, Quaternion.LookRotation(moveDir), Runner.DeltaTime * (speed * 0.1f));
-            }
-            else if (isCameraFocused == false)
-            {
-                var relativePosition = target.transform.position - transform.position;
+                var relativePosition = _target.transform.position - transform.position;
                 relativePosition.y = 0; // y축은 바라보지 않도록 함
                 var targetRotation = Quaternion.LookRotation(relativePosition);
 

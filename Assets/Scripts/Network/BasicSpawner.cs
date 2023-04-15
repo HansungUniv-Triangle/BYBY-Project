@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Fusion;
 using Fusion.Sockets;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -13,7 +11,7 @@ namespace Network
     {
         // Network
         private NetworkRunner _runner;
-        private NetworkRoom _room;
+        private NetworkManager _manager;
 
         private List<NetworkObject> _networkObjectList = new List<NetworkObject>();
         
@@ -54,9 +52,9 @@ namespace Network
         
         public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
         {
-            if (_room)
+            if (_manager)
             {
-                _room.OnPlayerLeft(player);
+                _manager.OnPlayerLeft(player);
             }
             else
             {
