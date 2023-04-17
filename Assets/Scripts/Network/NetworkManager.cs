@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening.Core;
 using Fusion;
 using TMPro;
@@ -17,62 +19,11 @@ namespace Network
             public NetworkString<_16> NickName;
             public NetworkBool IsReady;
             public NetworkBool DoneLoading;
+            public NetworkBehaviourId Character;
             public Color PlayerColor;
         }
-    
-        private struct DestroyBlockData : INetworkStruct
-        {
-            public int Tick { get; set; }
-            [Networked] public Vector3 BlockPos { get; set; }
-            [Networked] public float Damage { get; set; }
-        }
-    }
 
-    // 블록 지우기
-    public partial class NetworkManager
-    {
-        [Networked(OnChanged = nameof(UpdateDestroyBlock)), Capacity(50)] 
-        private NetworkLinkedList<DestroyBlockData> HitList1 { get; }
-        
-        [Networked(OnChanged = nameof(UpdateDestroyBlock)), Capacity(50)] 
-        private NetworkLinkedList<DestroyBlockData> HitList2 { get; }
-        
-        private int _lastTick = 0;
-        
-        public static void UpdateDestroyBlock(Changed<NetworkManager> changed)
-        {
-            changed.Behaviour.UpdateDestroyBlock();
-        }
-
-        private void UpdateDestroyBlock()
-        {
-            if (Runner.GetPlayerActorId(Runner.LocalPlayer) == 1)
-            {
-                int tick = 0;
-                for (var i = 0; i < HitList2.Count; i++)
-                {
-                    var data = HitList2.Get(i);
-                    tick = data.Tick;
-                    if(_lastTick < data.Tick)
-                        WorldManager.Instance.GetWorld().HitBlock(data.BlockPos, (int)data.Damage);
-                }
-
-                _lastTick = tick;
-            }
-            else if (Runner.GetPlayerActorId(Runner.LocalPlayer) == 2)
-            {
-                int tick = 0;
-                for (var i = 0; i < HitList1.Count; i++)
-                {
-                    var data = HitList1.Get(i);
-                    tick = data.Tick;
-                    if(_lastTick < data.Tick)
-                        WorldManager.Instance.GetWorld().HitBlock(data.BlockPos, (int)data.Damage);
-                }
-
-                _lastTick = tick;
-            }
-        }
+        private NetworkPlayer _localCharacter;
     }
 
     // 룸 데이터 기반 UI 업데이트
@@ -124,6 +75,36 @@ namespace Network
         }
     }
 
+    // 네트워크 오브젝트 보관
+    public partial class NetworkManager
+    {
+        private readonly List<NetworkObject> _networkObjectList = new List<NetworkObject>();
+        
+        public void AddNetworkObjectInList(NetworkObject networkObject)
+        {
+            if (_networkObjectList.Count > 10)
+            {
+                RemoveNetworkObjectInList(_networkObjectList[0]);
+            }
+            _networkObjectList.Add(networkObject);
+        }
+        
+        public void RemoveNetworkObjectInList(NetworkObject networkObject)
+        {
+            Runner.Despawn(networkObject);
+        }
+        
+        public void RemoveDeSpawnNetworkObject(NetworkObject networkObject)
+        {
+            _networkObjectList.Remove(networkObject);
+        }
+        
+        public NetworkObject FindNetworkObject(NetworkId networkId)
+        {
+            return _networkObjectList.FirstOrDefault(networkObject => networkObject.Id.Equals(networkId));
+        }
+    }
+    
     public partial class NetworkManager : NetworkBehaviour
     {
         [Networked]
@@ -149,17 +130,15 @@ namespace Network
     
         public override void FixedUpdateNetwork()
         {
-            Debug.Log(Runner.GetPlayerActorId(Runner.LocalPlayer));
-            
-            if (_timer.Expired(Runner))
-            {
-                _timer = TickTimer.None;
-                GameObject.Find("테스트입니다").SetActive(false);
-            }
-            else if (_timer.IsRunning)
-            {
-                GameObject.Find("테스트입니다").GetComponent<TMP_Text>().text = _timer.RemainingTime(Runner).ToString();
-            }
+            // if (_timer.Expired(Runner))
+            // {
+            //     _timer = TickTimer.None;
+            //     GameObject.Find("테스트입니다").SetActive(false);
+            // }
+            // else if (_timer.IsRunning)
+            // {
+            //     GameObject.Find("테스트입니다").GetComponent<TMP_Text>().text = _timer.RemainingTime(Runner).ToString();
+            // }
         }
         
         // Mono에서는 Runner를 가져올 수 없어서 만든 Adapter 역할
@@ -167,13 +146,7 @@ namespace Network
         {
             RPCReady(Runner.LocalPlayer);
         }
-        
-        // Mono에서는 Runner를 가져올 수 없어서 만든 Adapter 역할
-        public void SendHitData(Vector3 pos, float damage)
-        {
-            RPCSendHitData(Runner.LocalPlayer, pos, damage);
-        }
-    
+
         public void OnPlayerLeft(PlayerRef playerRef)
         {
             if (RoomPlayerList.ContainsKey(playerRef))
@@ -216,8 +189,28 @@ namespace Network
             NetworkObject gun = Runner.Spawn(_handGun, spawnPosition + Vector3.up, Quaternion.identity, playerRef);
             gun.transform.SetParent(networkPlayerObject.transform);
         
-            // _networkObjectList.Add(networkPlayerObject);
-            // _networkObjectList.Add(gun);
+            RPCAddCharacterInPlayerData(playerRef, networkPlayerObject.GetComponent<NetworkPlayer>());
+        }
+        
+        public void AddHitData(PlayerRef playerRef, Vector3 pos, float damage)
+        {
+            if (_localCharacter is null)
+            {
+                if (RoomPlayerList.TryGet(playerRef, out RoomPlayerData roomPlayerData))
+                {
+                    Runner.TryFindBehaviour(roomPlayerData.Character, out NetworkPlayer networkPlayer);
+                    _localCharacter = networkPlayer;
+                    if (networkPlayer is null)
+                    {
+                        throw new Exception("networkplayer를 찾을 수 없었음");
+                    }
+                }
+                else
+                {
+                    throw new Exception("히트 데이터 전송 시, 플레이어 데이터 없음");
+                }
+            }
+            _localCharacter.AddBlockHitData(pos, damage);
         }
 
         private void InitialGame()
@@ -244,39 +237,6 @@ namespace Network
     public partial class NetworkManager
     {
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        private void RPCSendHitData(PlayerRef playerRef, Vector3 pos, float damage)
-        {
-            if (Runner.GetPlayerActorId(playerRef) == 1)
-            {
-                if (HitList1.Count == HitList1.Capacity)
-                {
-                    HitList1.Remove(HitList1.Get(0));
-                }
-
-                HitList1.Add(new DestroyBlockData
-                {
-                    Tick = Runner.Tick,
-                    BlockPos = pos,
-                    Damage = damage
-                });
-            }
-            else if (Runner.GetPlayerActorId(playerRef) == 2)
-            {
-                if (HitList2.Count == HitList2.Capacity)
-                {
-                    HitList2.Remove(HitList2.Get(0));
-                }
-                
-                HitList2.Add(new DestroyBlockData
-                {
-                    Tick = Runner.Tick,
-                    BlockPos = pos,
-                    Damage = damage
-                });
-            }
-        }
-        
-        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         private void RPCAddPlayer(PlayerRef playerRef, NetworkString<_16> nick, Color color)
         {
             if (RoomPlayerList.ContainsKey(playerRef))
@@ -290,6 +250,20 @@ namespace Network
                 DoneLoading = false,
                 PlayerColor = color
             });
+        }
+        
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        private void RPCAddCharacterInPlayerData(PlayerRef playerRef, NetworkBehaviourId networkBehaviourId)
+        {
+            if (RoomPlayerList.TryGet(playerRef, out RoomPlayerData roomPlayerData))
+            {
+                roomPlayerData.Character = networkBehaviourId;
+                RoomPlayerList.Set(playerRef, roomPlayerData);
+            }
+            else
+            {
+                throw new Exception("캐릭터 추가 시, 플레이어의 데이터가 존재하지 않음");
+            }
         }
         
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]

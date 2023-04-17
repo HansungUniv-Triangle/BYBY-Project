@@ -9,8 +9,22 @@ namespace Network
 {
     public abstract class NetworkProjectileBase : NetworkBehaviour
     {
+        [Networked(OnChanged = nameof(DeActiveNetworkObject))] 
+        protected NetworkBool NetworkActive { get; set; } = true;
+
+        private static void DeActiveNetworkObject(Changed<NetworkProjectileBase> changed)
+        {
+            changed.Behaviour.DeActiveNetworkObject();
+        }
+        
+        private void DeActiveNetworkObject()
+        {
+            if(_projectileHolder)
+                _projectileHolder.RemoveProjectile(Object, NetworkActive);
+            gameObject.SetActive(NetworkActive);
+        }
+        
         private NetworkProjectileHolder _projectileHolder;
-        private NetworkObject _projectileNetworkObject;
 
         // 기본 스탯
         private float _baseStat(WeaponStat weaponStat) => _projectileHolder.GetWeaponStatTotal(weaponStat);
@@ -27,6 +41,10 @@ namespace Network
         public float TotalDamage => _baseStat(WeaponStat.Damage) + _additionalDamage;
         protected float MaxRange => _baseStat(WeaponStat.Range);
         
+        // 네트워크 관련
+        [Networked] protected NetworkBool IsHit { get; set; }
+        [Networked] public float Damage { get; set; }
+         
         // 초기화
         public void Initialized(NetworkProjectileHolder holder)
         {
@@ -36,7 +54,6 @@ namespace Network
             }
             
             _projectileHolder = holder;
-            _projectileNetworkObject = GetComponent<NetworkObject>();
             _additionalVelocity = 0;
             _additionalScale = 0;
             _additionalDamage = 0;
@@ -46,8 +63,12 @@ namespace Network
 
         public override void Spawned()
         {
-            if (!Object.HasStateAuthority)
-                GetComponent<Rigidbody>().isKinematic = true;
+            GameManager.Instance.NetworkManager.AddNetworkObjectInList(Object);
+        }
+
+        public override void Despawned(NetworkRunner runner, bool hasState)
+        {
+            GameManager.Instance.NetworkManager.RemoveDeSpawnNetworkObject(Object);
         }
 
         public override void FixedUpdateNetwork()
@@ -55,6 +76,7 @@ namespace Network
             if (!Object.HasInputAuthority) return;
             
             Distance += Runner.DeltaTime * TotalVelocity;
+            Damage = TotalDamage;
             UpdateProjectile();
             
             if (IsExpirationProjectile())
@@ -69,7 +91,8 @@ namespace Network
             {
                 throw new Exception($"{nameof(gameObject)} : {Message.CantAssignHolder}");
             }
-            _projectileHolder.RemoveProjectile(_projectileNetworkObject);
+
+            NetworkActive = false;
         }
 
         protected void AddScale(float scale)
@@ -86,6 +109,24 @@ namespace Network
         protected void AddDamage(float damage)
         {
             _additionalDamage += damage;
+        }
+
+        protected NetworkPlayer GetNetworkPlayer(GameObject character)
+        {
+            if (character.TryGetComponent<NetworkPlayer>(out var networkPlayer))
+            {
+                return networkPlayer;
+            }
+            else
+            {
+                throw new Exception("히트 플레이어, 게임오브젝트에서 네트워크 플레이어를 찾을 수 없었음");
+            }
+        }
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        protected void RPCHitPlayer()
+        {
+            IsHit = true;
         }
         
         #region 오버라이드 메소드 (abstract, virtual)

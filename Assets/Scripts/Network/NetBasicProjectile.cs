@@ -1,5 +1,6 @@
 ﻿using System;
 using Fusion;
+using TMPro;
 using UnityEngine;
 using Types;
 
@@ -7,11 +8,9 @@ namespace Network
 {
     public class NetBasicProjectile : NetworkProjectileBase
     {
-        private bool _isHit;
-        
         protected override bool IsExpirationProjectile()
         {
-            if (_isHit) return true;
+            if (IsHit) return true;
             return Distance > MaxRange;
         }
 
@@ -22,19 +21,29 @@ namespace Network
 
         private void OnCollisionEnter(Collision collision)
         {
-            if(_isHit) return;
-            if (collision.collider.gameObject.layer.Equals(LayerMask.NameToLayer("World")))
+            if(IsHit) return;
+            var objectLayer = collision.collider.gameObject.layer;
+
+            if (objectLayer.Equals(LayerMask.NameToLayer("World")))
             {
                 var hit = collision.contacts[0];
                 var point = hit.point - hit.normal * 0.01f;
+
+                point.x = (float)Math.Round(point.x, 3);
+                point.y = (float)Math.Round(point.y, 3);
+                point.z = (float)Math.Round(point.z, 3);
+
                 WorldManager.Instance.GetWorld().HitBlock(point, 1);
-                GameManager.Instance.NetworkManager.SendHitData(point, 1);
-                _isHit = true;
+                GameManager.Instance.NetworkManager.AddHitData(Runner.LocalPlayer, point, 1);
+                IsHit = true;
             }
-            else if (collision.collider.gameObject.layer.Equals(LayerMask.NameToLayer("Enemy")))
+            else if (objectLayer.Equals(LayerMask.NameToLayer("Player")))
             {
-                Debug.Log("적을 맞춤");
-                _isHit = true;
+                if (!Object.HasStateAuthority)
+                {
+                    GetNetworkPlayer(collision.gameObject).NetworkOnHit(Object);
+                    RPCHitPlayer();
+                }
             }
         }
     }

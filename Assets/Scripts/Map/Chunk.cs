@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Network;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -116,6 +117,9 @@ public class Chunk
         if (damagedBlock.IsBroken())
         {
             damagedBlock.DestroyGameObject();
+
+            GameObject.Find("테스트입니다").GetComponent<TMP_Text>().text += '\n' + pos.ToString();
+
             //_damagedBlocks.Remove(pos);
         }
     }

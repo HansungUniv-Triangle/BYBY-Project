@@ -51,10 +51,10 @@ namespace Network
             objInit.Initialized(this);
         }
 
-        public void RemoveProjectile(NetworkObject projectile)
+        public void RemoveProjectile(NetworkObject projectile, bool networkActive)
         {
+            if (networkActive) return;
             _projectileList.Remove(projectile);
-            Runner.Despawn(projectile);
         }
 
         protected void SpawnProjectile(Transform position)
@@ -66,7 +66,6 @@ namespace Network
                 Runner.LocalPlayer,
                 InitializeProjectile
             );
-            
             _projectileList.Add(obj);
         }
         

@@ -4,15 +4,144 @@ using System.Linq;
 using DG.Tweening;
 using Fusion;
 using GameStatus;
+using TMPro;
 using Types;
 using UnityEngine;
 
 namespace Network
 {
-    public class NetworkPlayer : NetworkBehaviour
+    public partial class NetworkPlayer
     {
-        #region 전투 관련
-        private BaseStat<CharStat> _baseCharStat;
+        [Networked(OnChanged = nameof(UpdateBlockHitList)), Capacity(10)]
+        private NetworkLinkedList<BlockHitData> _blockHitList => default;
+        private int _blockHitLastTick = 0;
+
+        private struct BlockHitData : INetworkStruct
+        {
+            public int Tick { get; set; }
+            [Networked] public Vector3 BlockPos { get; set; }
+            [Networked] public float Damage { get; set; }
+        }
+        
+        public static void UpdateBlockHitList(Changed<NetworkPlayer> changed)
+        {
+            changed.Behaviour.UpdateBlockHitList();
+        }
+
+        private void UpdateBlockHitList()
+        {
+            if (!Object.HasStateAuthority)
+            {
+                int tick = 0;
+                for (var i = 0; i < _blockHitList.Count; i++)
+                {
+                    var data = _blockHitList.Get(i);
+                    tick = data.Tick;
+                    if (_blockHitLastTick < data.Tick)
+                    {
+                        WorldManager.Instance.GetWorld().HitBlock(data.BlockPos, (int)data.Damage);
+                    }
+                }
+
+                _blockHitLastTick = tick;
+            }
+        }
+
+        public void AddBlockHitData(Vector3 pos, float damage)
+        {
+            if (_blockHitList.Count == _blockHitList.Capacity)
+            {
+                _blockHitList.Remove(_blockHitList.Get(0));
+            }
+
+            _blockHitList.Add(new BlockHitData
+            {
+                Tick = Runner.Tick,
+                BlockPos = pos,
+                Damage = damage
+            });
+        }
+    }
+    
+    // 데미지 입힘
+    public partial class NetworkPlayer
+    {
+        [Networked(OnChanged = nameof(UpdateCharacterHit)), Capacity(10)]
+        private NetworkLinkedList<CharacterHitData> _characterHitList => default;
+        private int _characterHitLastTick = 0;
+
+        private struct CharacterHitData : INetworkStruct
+        {
+            public int Tick { get; set; }
+            public NetworkId NetworkId { get; set; }
+        }
+        
+        public static void UpdateCharacterHit(Changed<NetworkPlayer> changed)
+        {
+            changed.Behaviour.UpdateCharacterHit();
+        }
+
+        private void UpdateCharacterHit()
+        {
+            if (!Object.HasStateAuthority)
+            {
+                int tick = 0;
+                for (var i = 0; i < _characterHitList.Count; i++)
+                {
+                    var data = _characterHitList.Get(i);
+                    
+                    if (_characterHitLastTick < data.Tick)
+                    {
+                        var networkObject = _gameManager.NetworkManager.FindNetworkObject(data.NetworkId);
+                        if (networkObject is null)
+                        {
+                            Debug.LogError("해당 오브젝트가 리스트에 없음");
+                        }
+                        else
+                        {
+                            OnHit(networkObject);
+                        }
+                    }
+                    
+                    tick = data.Tick;
+                }
+
+                _characterHitLastTick = tick;
+            }
+        }
+
+        private void AddCharacterHitData(NetworkObject networkObject)
+        {
+            if (_characterHitList.Count == _characterHitList.Capacity)
+            {
+                _characterHitList.Remove(_characterHitList.Get(0));
+            }
+
+            _characterHitList.Add(new CharacterHitData
+            {
+                Tick = Runner.Tick,
+                NetworkId = networkObject
+            });
+        }
+
+        public void OnHit(NetworkObject projectile)
+        {
+            var damage = projectile.GetComponent<NetworkProjectileBase>().Damage;
+            var armor = _baseCharStat.GetStat(CharStat.Armor).Total;
+            var calcDamage = damage * (100 / (100 + armor));
+            _nowHP -= calcDamage;
+        }
+        
+        public void NetworkOnHit(NetworkObject networkObject)
+        {
+            OnHit(networkObject);
+            AddCharacterHitData(networkObject);
+        }
+    }
+
+    // 시너지
+    public partial class NetworkPlayer
+    {
         public List<Synergy> synergyList = new List<Synergy>();
 
         [Networked(OnChanged = nameof(OnSynergyChange)), Capacity(30)]
@@ -24,7 +153,7 @@ namespace Network
             changed.Behaviour.OnSynergyChange();
         }
         
-        public void OnSynergyChange()
+        private void OnSynergyChange()
         {
             synergyList.Clear();
             foreach (var num in NetworkSynergyList)
@@ -41,9 +170,46 @@ namespace Network
 
             InitialStatus();
         }
+    }
 
-        #endregion
-        
+    // 스탯
+    public partial class NetworkPlayer
+    {
+        public void InitialStatus()
+        {
+            InitialCharacterStatus();
+            InitialWeaponStatus();
+        }
+
+        private void InitialCharacterStatus()
+        {
+            _baseCharStat.ClearStatList();
+            foreach (var synergy in synergyList)
+            {
+                _baseCharStat.AddStatList(synergy.charStatList);
+            }
+
+            _maxHP = _nowHP = _baseCharStat.GetStat(CharStat.Health).Total;
+        }
+
+        private void InitialWeaponStatus()
+        {
+            var weaponList = GetComponentsInChildren<NetworkProjectileHolder>();
+            foreach (var weapon in weaponList)
+            {
+                foreach (var synergy in synergyList)
+                {
+                    _baseCharStat.AddStatList(synergy.charStatList);
+                    weapon.AddWeaponStatList(synergy.weaponStatList);
+                }
+            }
+        }
+    }
+    
+    public partial class NetworkPlayer : NetworkBehaviour
+    {
+        private BaseStat<CharStat> _baseCharStat;
+
         #region 에임
         
         public Transform GunPos;
@@ -80,8 +246,15 @@ namespace Network
         private GameManager _gameManager;
         private GameUI _gameUI;
 
+        public float _maxHP;
+        public float _nowHP;
+
         public override void Spawned()
         {
+            _gameManager = GameManager.Instance;
+            _baseCharStat = new BaseStat<CharStat>(1, 1);
+            InitialStatus();
+            
             if (HasStateAuthority)
             {
                 Camera.main.GetComponent<PlayerCamera>().AddPlayer(transform);
@@ -103,15 +276,10 @@ namespace Network
             
             moveDir = Vector3.zero;
             GunPos = transform.GetChild(2).transform;
-            
-            ShotLine = Instantiate(ShotLine);
-            UltLine = Instantiate(UltLine);
 
             _transform = gameObject.transform;
-            _baseCharStat = new BaseStat<CharStat>(1, 1);
             _characterController = GetComponent<CharacterController>();
             
-            _gameManager = GameManager.Instance;
             _gameUI = _gameManager.UIHolder as GameUI;
 
             if (_gameUI == null)
@@ -123,8 +291,6 @@ namespace Network
             
             // 자신은 타겟팅 되지 않기 위해 레이어 변경
             gameObject.layer = LayerMask.NameToLayer("Player");
-
-            InitialStatus();
         }
         
         public override void FixedUpdateNetwork()
@@ -282,38 +448,5 @@ namespace Network
             isCameraFocused = false;
             CanvasManager.Instance.SwitchUI(CanvasType.GameMoving);
         }
-        
-
-        #region 스탯
-        
-        public void InitialStatus()
-        {
-            InitialCharacterStatus();
-            InitialWeaponStatus();
-        }
-
-        private void InitialCharacterStatus()
-        {
-            _baseCharStat.ClearStatList();
-            foreach (var synergy in synergyList)
-            {
-                _baseCharStat.AddStatList(synergy.charStatList);
-            }
-        }
-
-        private void InitialWeaponStatus()
-        {
-            var weaponList = GetComponentsInChildren<NetworkProjectileHolder>();
-            foreach (var weapon in weaponList)
-            {
-                foreach (var synergy in synergyList)
-                {
-                    _baseCharStat.AddStatList(synergy.charStatList);
-                    weapon.AddWeaponStatList(synergy.weaponStatList);
-                }
-            }
-        }
-        
-        #endregion
     }
 }

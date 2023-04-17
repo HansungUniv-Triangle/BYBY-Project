@@ -158,7 +158,6 @@ MonoBehaviour:
   GunPos: {fileID: 0}
   ShotLine: {fileID: 619845798768815705, guid: 4cb0cccc0e5c3ee4ea6eac51e71ebfb7, type: 3}
   UltLine: {fileID: 8321005384874206421, guid: d3c13645ed15bf54f9f9d163e3cda645, type: 3}
-  target: {fileID: 0}
   maxDistance: 10
   ReverseHorizontalMove: 0
   targetPoint: {x: 0, y: 0, z: 0}
