@@ -174,9 +174,53 @@ public class Move : MonoBehaviour
         transform.position = _initPos;
         _characterController.enabled = true;
     }
+
+    private bool attacking = true;
+    public void ToggleAttacking()
+    {
+        attacking = !attacking;
+    }
+
+    public void vibrate()
+    {
+        long[] pattern = 
+            { 0, 60, 20, 30, 20, 5};
+        int[] amplitudes = 
+            { 0, 2, 0, 1, 0, 1 };
+
+        RDG.Vibration.Vibrate(pattern, amplitudes, -1, true);
+
+        if (isVibrateBeat)
+        {
+            isVibrateBeat = false;
+            vibrateBeat();
+        }
+    }
+
+    private bool isVibrateBeat = false;
+
+    public void vibrateBeat()
+    {
+        if (isVibrateBeat)
+        {
+            RDG.Vibration.Cancel();
+            isVibrateBeat = false;
+        }
+        else
+        {
+            long[] pattern = { 1000, 20, 1000, 20 };
+            int[] amplitudes = { 0, 1 };
+
+            RDG.Vibration.Vibrate(pattern, amplitudes, 0);
+            isVibrateBeat = true;
+        }
+    }
+
     #endregion
 
     private GameManager _gameManager;
+
+    public TextMeshProUGUI HitDamageTextMesh;
 
     private void Awake()
     {
@@ -319,19 +363,22 @@ public class Move : MonoBehaviour
                     isDodge = false;
                 });
         }
-        
+
         CharacterMove();
 
         // 임시 자동공격
         if (!isCameraFocused)
         {
-            Shoot(AttackType.Basic, ShotLine);
+            if (attacking)
+                Shoot(AttackType.Basic, ShotLine);
             //_weapon.Attack();
         }
 
         // Todo: 그냥 테스트용 코드
         TestUpdate();
     }
+
+    public int damage = 1;
 
     // ReSharper disable Unity.PerformanceAnalysis
     private void Shoot(AttackType attackType, LineRenderer lineRenderer)    // 라인렌더러는 임시
@@ -358,6 +405,15 @@ public class Move : MonoBehaviour
         {
             var point = _hit.point - _hit.normal * 0.01f;
 
+            if (_hit.transform.gameObject == target.gameObject)
+            {
+                bool isCritical = false;
+                if (_hit.point.y - (target.transform.position.y - 1) > 1.25f)
+                    isCritical = true;
+
+                HitDamageTextMesh.GetComponent<HitDamage>().HitDamageAnimation(damage, isCritical);
+            }
+
             switch (attackType)
             {
                 case AttackType.Basic:
@@ -366,6 +422,7 @@ public class Move : MonoBehaviour
 
                 case AttackType.Ultimate:
                     WorldManager.Instance.GetWorld().ExplodeBlocks(point, 3, 3);
+                    vibrate();
                     break;
             }
 
