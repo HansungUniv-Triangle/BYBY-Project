@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using TMPro;
 using UnityEngine.EventSystems;
-using Status;
 
 public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
 {
-    private BaseStat baseStat;
     public List<Synergy> commonSynergyList = new List<Synergy>();
     public List<Synergy> uncommonSynergyList = new List<Synergy>();
     public List<Synergy> rareSynergyList = new List<Synergy>();
@@ -16,6 +15,8 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
     public List<GameObject> synergyBtn = new List<GameObject>();
     public List<Synergy> currentSynergyList = new List<Synergy>();
     public List<GameObject> synergyPageList = new List<GameObject>();
+    private List<List<Synergy>> totalPageList = new List<List<Synergy>>();
+    //private NetworkPlayer _NetworkPlayer = GetComponent<NetworkPlayer>();
 
     public GameObject prefabBtn;
     private GameObject synergyPage;
@@ -42,7 +43,6 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
 
     void Awake()
     {
-        baseStat = new BaseStat();
         synergyPage = GameObject.Find("ItemPage");
         synergyListText = GameObject.Find("ItemPageText");
         synergyOrder = GameObject.Find("ItemOrder");
@@ -52,21 +52,26 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
     // Start is called before the first frame update
     void Start()
     {
-        for(int i = 0; i < spawnPoint.Length; i++)
-        {
-            spawnPoint[i] = GameObject.Find("ItemBtnSpawn ("+(i+1)+")");
-        }
-        for(int i = 0; i < 7; i++)
-        {
-            SpawnSynergy(spawnPoint[i + 6]);
-        }
-        SetCurrentPage(spawnNum);
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+      
+    }
+
+    public void MakeSynergyPage()
+    { 
+        for (int i = 0; i < spawnPoint.Length; i++)
+        {
+            spawnPoint[i] = GameObject.Find("ItemBtnSpawn (" + (i + 1) + ")");
+        }
+        for (int i = 0; i < 7; i++)
+        {
+            SpawnSynergy(spawnPoint[i + 6]);
+        }
+        SetCurrentPage(spawnNum);
     }
 
     private void GetSynergyList()
@@ -75,18 +80,19 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
         if (synergyPageRnd <= 50)
         {
             currentSynergyList = commonSynergyList;
-            synergyListText.GetComponent<Text>().text = "Common";
+            synergyListText.GetComponent<TextMeshProUGUI>().text = "Common";
         }
         else if(synergyPageRnd > 50 && synergyPageRnd < 80)
         {
             currentSynergyList = uncommonSynergyList;
-            synergyListText.GetComponent<Text>().text = "Uncommon";
+            synergyListText.GetComponent<TextMeshProUGUI>().text = "Uncommon";
         }
         else
         {
             currentSynergyList = rareSynergyList;
-            synergyListText.GetComponent<Text>().text = "Rare";
+            synergyListText.GetComponent<TextMeshProUGUI>().text = "Rare";
         }
+        totalPageList.Add(currentSynergyList);
     }
 
     private void GetSynergy()
@@ -97,7 +103,7 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
             if (isNumIn.Contains(rnd) == false)
             {
                 isNumIn.Add(rnd);
-                synergyBtn[synergyBtnStatus].GetComponentsInChildren<Text>()[0].text = currentSynergyList[rnd].synergyName;
+                synergyBtn[synergyBtnStatus].GetComponentsInChildren<TextMeshProUGUI>()[0].text = currentSynergyList[rnd].synergyName;
                 synergyBtnStatus += 1;
                 GetSynergy();
             }
@@ -113,38 +119,43 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
         if (isRerollBefore[6 - order] != true) 
         {
             rerollCount = 1;
-            rerollBtn.GetComponentsInChildren<Text>()[0].text = rerollCount.ToString();
+            rerollBtn.GetComponentsInChildren<TextMeshProUGUI>()[0].text = rerollCount.ToString();
         }
         else
         {
             rerollCount = 0;
-            rerollBtn.GetComponentsInChildren<Text>()[0].text = rerollCount.ToString();
+            rerollBtn.GetComponentsInChildren<TextMeshProUGUI>()[0].text = rerollCount.ToString();
         }
     }
 
     public void RerollSynergy()
     {
-        if(rerollBtn.GetComponentsInChildren<Text>()[0].text != "0")
+        if(rerollBtn.GetComponentsInChildren<TextMeshProUGUI>()[0].text != "0")
         {
             ValueInit();
             GetSynergyList();
             GetSynergy();
             rerollCount--;
-            rerollBtn.GetComponentsInChildren<Text>()[0].text = rerollCount.ToString();
+            rerollBtn.GetComponentsInChildren<TextMeshProUGUI>()[0].text = rerollCount.ToString();
             isRerollBefore[6 - order] = true;
         }
     }
     private void SelectSynergy()
     {
-        /*string btnName = EventSystem.current.currentSelectedGameObject.name;
-        for(int i = 0; i < currentSynergyList.Count; i++)
+        string btnName = EventSystem.current.currentSelectedGameObject.GetComponentInChildren<TextMeshProUGUI>().text;
+        //Debug.Log(btnName);
+        for(int i = 0; i < totalPageList.Count; i++)
         {
-            if(btnName == currentSynergyList[i].synergyName)
+            for (int j = 0; j < totalPageList[i].Count; j++)
             {
-                baseStat.AddRatioStat(currentSynergyList[i].statList);
+                //Debug.Log(totalPageList[i][j]);
+                if(btnName == totalPageList[i][j].synergyName)
+                {
+                    //_NetworkPlayer.NetworkSynergyList.Add(totalPageList[i][j].charStatList);
+                    //_NetworkPlayer.NetworkSynergyList.Add(totalPageList[i][j].WeaponStatList);
+                }
             }
-        }*/
-        
+        }
     }
 
     public void SpawnSynergy(GameObject spawnPoint)
@@ -152,7 +163,7 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
         ValueInit();
         //synergyBtn.Clear();
 
-        synergyPage = Instantiate(prefabBtn, spawnPoint.transform.position, Quaternion.identity, GameObject.Find("ItemSelectPanel").transform);
+        synergyPage = Instantiate(prefabBtn, spawnPoint.transform.position, Quaternion.identity, GameObject.Find("ItemSelectPanel(Clone)").transform);
 
         // 프리팹의 자식 오브젝트들을 리스트에 추가
         for (int i = 0; i < synergyPage.transform.childCount; i++)
