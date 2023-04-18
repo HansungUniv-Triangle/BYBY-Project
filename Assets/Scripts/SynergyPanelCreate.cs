@@ -27,5 +27,10 @@ public class SynergyPanelCreate : MonoBehaviour
                 synergyPanel.GetComponent<SynergySelectPanel>().MakeSynergyPage();
             }
         }
+        else if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            isCreate = false;
+            Destroy(synergyPanel);
+        }
     }
 }
