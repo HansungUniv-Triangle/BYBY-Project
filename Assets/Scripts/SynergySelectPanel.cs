@@ -153,6 +153,7 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
                 {
                     //_NetworkPlayer.NetworkSynergyList.Add(totalPageList[i][j].charStatList);
                     //_NetworkPlayer.NetworkSynergyList.Add(totalPageList[i][j].WeaponStatList);
+                    return;
                 }
             }
         }
