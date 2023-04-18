@@ -2,12 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using DG.Tweening.Core;
 using Fusion;
-using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
+using UIHolder;
 
 namespace Network
 {
@@ -24,6 +23,31 @@ namespace Network
         }
 
         private NetworkPlayer _localCharacter;
+
+        public NetworkPlayer LocalCharacter
+        {
+            get
+            {
+                if (_localCharacter is null)
+                {
+                    if (RoomPlayerList.TryGet(Runner.LocalPlayer, out RoomPlayerData roomPlayerData))
+                    {
+                        Runner.TryFindBehaviour(roomPlayerData.Character, out NetworkPlayer networkPlayer);
+                        _localCharacter = networkPlayer;
+                        if (networkPlayer is null)
+                        {
+                            throw new Exception("networkplayer를 찾을 수 없었음");
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception("히트 데이터 전송 시, 플레이어 데이터 없음");
+                    }
+                }
+
+                return _localCharacter;
+            }
+        }
     }
 
     // 룸 데이터 기반 UI 업데이트
@@ -124,7 +148,6 @@ namespace Network
             DontDestroyOnLoad(this);
             GameManager.Instance.DeActiveLoadingUI();
             _roomUI = GameManager.Instance.UIHolder as RoomUI;
-            _roomUI.readyButton.onClick.AddListener(OnReady);
             RPCAddPlayer(Runner.LocalPlayer, $"Nick{Random.Range(1,100)}", Random.ColorHSV());
         }
     
@@ -192,25 +215,9 @@ namespace Network
             RPCAddCharacterInPlayerData(playerRef, networkPlayerObject.GetComponent<NetworkPlayer>());
         }
         
-        public void AddHitData(PlayerRef playerRef, Vector3 pos, float damage)
+        public void AddHitData(Vector3 pos, float damage)
         {
-            if (_localCharacter is null)
-            {
-                if (RoomPlayerList.TryGet(playerRef, out RoomPlayerData roomPlayerData))
-                {
-                    Runner.TryFindBehaviour(roomPlayerData.Character, out NetworkPlayer networkPlayer);
-                    _localCharacter = networkPlayer;
-                    if (networkPlayer is null)
-                    {
-                        throw new Exception("networkplayer를 찾을 수 없었음");
-                    }
-                }
-                else
-                {
-                    throw new Exception("히트 데이터 전송 시, 플레이어 데이터 없음");
-                }
-            }
-            _localCharacter.AddBlockHitData(pos, damage);
+            LocalCharacter.AddBlockHitData(pos, damage);
         }
 
         private void InitialGame()

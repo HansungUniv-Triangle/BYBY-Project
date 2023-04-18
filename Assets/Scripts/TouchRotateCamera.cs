@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UIHolder;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -17,29 +19,44 @@ public class TouchRotateCamera : MonoBehaviour, IBeginDragHandler, IDragHandler,
     public float xAngleTemp;
     public float yAngleTemp;
 
-    private Move _moveScript;
-
     #region UI Settings
     public void IncreaseSpeed(GameObject text) { text.GetComponent<TextMeshProUGUI>().text = (rotationSpeed += 5).ToString(); }
     public void DecreaseSpeed(GameObject text) { text.GetComponent<TextMeshProUGUI>().text = (rotationSpeed -= 5).ToString(); }
     #endregion
-    
-    private void Start()
+
+    public bool isReady = false;
+
+    private void Update()
     {
-        _moveScript = camPivot.GetComponent<Move>();
+        if (camPivot == null)
+        {
+            Debug.Log("is null");
+            if (GameManager.Instance.NetworkManager.LocalCharacter)
+            {
+                Debug.Log("find character");
+                camPivot = GameManager.Instance.NetworkManager.LocalCharacter.gameObject.transform;
+            }
+        }
+        else
+        {
+            Debug.Log("im ready");
+            isReady = true;
+        }
     }
 
     private void OnEnable()
     {
+        if (!isReady) return;
+        
         Quaternion rotation = camPivot.rotation;
         xAngle = 0;
         yAngle = rotation.eulerAngles.y;
-
-        //Debug.Log(camPivot.name + ": " + xAngle + ", " + yAngle);
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        if (!isReady) return;
+        
         beginPos = eventData.position;
         xAngleTemp = xAngle;
         yAngleTemp = yAngle;
@@ -47,6 +64,8 @@ public class TouchRotateCamera : MonoBehaviour, IBeginDragHandler, IDragHandler,
 
     public void OnDrag(PointerEventData eventData)
     {
+        if (!isReady) return;
+        
         draggingPos = eventData.position;
 
         yAngle = yAngleTemp + (draggingPos.x - beginPos.x) * rotationSpeed * 2 / Screen.width;
@@ -60,11 +79,13 @@ public class TouchRotateCamera : MonoBehaviour, IBeginDragHandler, IDragHandler,
 
     public void OnPointerDown(PointerEventData eventData)
     {
+        if (!isReady) return;
+        
         OnBeginDrag(eventData);
     }
-
+    
     public void OnPointerUp(PointerEventData eventData)
     {
-        _moveScript.EndUlt();
+        GameManager.Instance.NetworkManager.LocalCharacter.EndUlt();
     }
 }

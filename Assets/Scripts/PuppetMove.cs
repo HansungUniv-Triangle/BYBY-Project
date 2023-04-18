@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using GameStatus;
 using TMPro;
-using Type;
+using Types;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
@@ -100,6 +100,12 @@ public class PuppetMove : MonoBehaviour
     
     void Update()
     {
+        return;
+        if (target is null)
+        {
+            target = GameManager.Instance.NetworkManager.LocalCharacter.gameObject;
+            return;
+        }
         Move();
     }
     private void Move()

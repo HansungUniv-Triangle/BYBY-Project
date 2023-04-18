@@ -7,6 +7,9 @@ namespace UIHolder
         private void Start()
         {
             GameManager.Instance.SetUICanvasHolder(this);
+            Initial();
         }
+
+        protected abstract void Initial();
     }
 }

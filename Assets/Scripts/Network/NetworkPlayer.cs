@@ -4,16 +4,18 @@ using System.Linq;
 using DG.Tweening;
 using Fusion;
 using GameStatus;
-using TMPro;
 using Types;
 using UnityEngine;
+using UIHolder;
+using UnityEngine.EventSystems;
 
 namespace Network
 {
+    // 블록 히트 데이터
     public partial class NetworkPlayer
     {
         [Networked(OnChanged = nameof(UpdateBlockHitList)), Capacity(10)]
-        private NetworkLinkedList<BlockHitData> _blockHitList => default;
+        private NetworkLinkedList<BlockHitData> BlockHitList => default;
         private int _blockHitLastTick = 0;
 
         private struct BlockHitData : INetworkStruct
@@ -33,9 +35,9 @@ namespace Network
             if (!Object.HasStateAuthority)
             {
                 int tick = 0;
-                for (var i = 0; i < _blockHitList.Count; i++)
+                for (var i = 0; i < BlockHitList.Count; i++)
                 {
-                    var data = _blockHitList.Get(i);
+                    var data = BlockHitList.Get(i);
                     tick = data.Tick;
                     if (_blockHitLastTick < data.Tick)
                     {
@@ -49,12 +51,12 @@ namespace Network
 
         public void AddBlockHitData(Vector3 pos, float damage)
         {
-            if (_blockHitList.Count == _blockHitList.Capacity)
+            if (BlockHitList.Count == BlockHitList.Capacity)
             {
-                _blockHitList.Remove(_blockHitList.Get(0));
+                BlockHitList.Remove(BlockHitList.Get(0));
             }
 
-            _blockHitList.Add(new BlockHitData
+            BlockHitList.Add(new BlockHitData
             {
                 Tick = Runner.Tick,
                 BlockPos = pos,
@@ -63,11 +65,11 @@ namespace Network
         }
     }
     
-    // 데미지 입힘
+    // 캐릭터 히트 데이터
     public partial class NetworkPlayer
     {
         [Networked(OnChanged = nameof(UpdateCharacterHit)), Capacity(10)]
-        private NetworkLinkedList<CharacterHitData> _characterHitList => default;
+        private NetworkLinkedList<CharacterHitData> CharacterHitList => default;
         private int _characterHitLastTick = 0;
 
         private struct CharacterHitData : INetworkStruct
@@ -86,9 +88,9 @@ namespace Network
             if (!Object.HasStateAuthority)
             {
                 int tick = 0;
-                for (var i = 0; i < _characterHitList.Count; i++)
+                for (var i = 0; i < CharacterHitList.Count; i++)
                 {
-                    var data = _characterHitList.Get(i);
+                    var data = CharacterHitList.Get(i);
                     
                     if (_characterHitLastTick < data.Tick)
                     {
@@ -112,12 +114,12 @@ namespace Network
 
         private void AddCharacterHitData(NetworkObject networkObject)
         {
-            if (_characterHitList.Count == _characterHitList.Capacity)
+            if (CharacterHitList.Count == CharacterHitList.Capacity)
             {
-                _characterHitList.Remove(_characterHitList.Get(0));
+                CharacterHitList.Remove(CharacterHitList.Get(0));
             }
 
-            _characterHitList.Add(new CharacterHitData
+            CharacterHitList.Add(new CharacterHitData
             {
                 Tick = Runner.Tick,
                 NetworkId = networkObject
@@ -175,6 +177,8 @@ namespace Network
     // 스탯
     public partial class NetworkPlayer
     {
+        private BaseStat<CharStat> _baseCharStat;
+        
         public void InitialStatus()
         {
             InitialCharacterStatus();
@@ -204,20 +208,132 @@ namespace Network
                 }
             }
         }
+
+        public Stat<CharStat> GetCharStat(CharStat type)
+        {
+            return _baseCharStat.GetStat(type);
+        }
+    }
+
+    // 진동
+    public partial class NetworkPlayer
+    {
+        private bool isVibrateBeat = false;
+        
+        private void VibrateUlt()
+        {
+            long[] pattern = 
+                { 0, 60, 20, 30, 20, 5};
+            int[] amplitudes = 
+                { 0, 2, 0, 1, 0, 1 };
+
+            RDG.Vibration.Vibrate(pattern, amplitudes, -1, true);
+
+            if (isVibrateBeat)
+            {
+                isVibrateBeat = false;
+                VibrateHeartBeat();
+            }
+        }
+        
+        private void VibrateHeartBeat()
+        {
+            if (isVibrateBeat)
+            {
+                RDG.Vibration.Cancel();
+                isVibrateBeat = false;
+            }
+            else
+            {
+                long[] pattern = { 1000, 20, 1000, 20 };
+                int[] amplitudes = { 0, 1 };
+
+                RDG.Vibration.Vibrate(pattern, amplitudes, 0);
+                isVibrateBeat = true;
+            }
+        }
+    }
+
+    // 공격
+    public partial class NetworkPlayer
+    {
+        private Ray _gunRay = new Ray();
+        private float _shootDistance = 30f;
+        private int _damage = 1;
+        
+        private void Shoot(AttackType attackType, LineRenderer lineRenderer)    // 라인렌더러는 임시
+        {
+            var aimRay = Camera.main.ScreenPointToRay(GetCrossHairPointInScreen());
+            _gunRay.origin = GunPos.position;
+
+            // 화면 중앙으로 쏘는 레이는 원점이 플레이어 앞에서 시작되어야 한다.
+            // 그렇지 않으면 플레이어는 크로스헤어에는 걸렸지만, 뒤에 있는 물체를 부수게 된다.
+            // 발사하는 주체는 제외
+            
+            if (Physics.Raycast(aimRay.origin + aimRay.direction * 10, aimRay.direction, out var hit, _shootDistance) 
+                && hit.transform.gameObject != gameObject)
+            {
+                _gunRay.direction = (hit.point - GunPos.position).normalized;
+            }
+            else
+            {
+                _gunRay.direction = ((aimRay.origin + aimRay.direction * 10 + aimRay.direction * _shootDistance) - GunPos.position).normalized;
+            }
+            
+            targetPoint = _gunRay.origin + _gunRay.direction * _shootDistance;
+            GetComponentInChildren<NetworkProjectileHolder>().target = targetPoint;
+            LaserBeam(_gunRay, _shootDistance, attackType, lineRenderer);
+        }
+
+        private void LaserBeam(Ray gunRay, float aimDistance, AttackType attackType, LineRenderer lineRenderer)
+        {
+            RaycastHit hit;
+            
+            lineRenderer.SetPosition(0, gunRay.origin);
+            lineRenderer.SetPosition(1, targetPoint);
+            
+            if (Physics.Raycast(gunRay, out hit, aimDistance, (int)(Layer.World | Layer.Enemy)))
+            {
+                var point = hit.point - hit.normal * 0.01f;
+
+                if (hit.transform.gameObject == _target.gameObject)
+                {
+                    bool isCritical = hit.point.y - (_target.transform.position.y - 1) > 1.25f;
+                    _gameUI.hitDamageText.GetComponent<HitDamage>().HitDamageAnimation(_damage, isCritical);
+                }
+                
+                switch (attackType)
+                {
+                    case AttackType.Basic:
+                        WorldManager.Instance.GetWorld().HitBlock(point, 1);
+                        AddBlockHitData(point, 1);
+                        break;
+
+                    case AttackType.Ultimate:
+                        WorldManager.Instance.GetWorld().ExplodeBlocks(point, 3, 3);
+                        VibrateUlt();
+                        break;
+                }
+
+                targetPoint = hit.point;
+                lineRenderer.SetPosition(1, targetPoint);
+            }
+        }
+
+        private Vector3 GetCrossHairPointInScreen()
+        {
+            return new Vector3(_crossHair.transform.position.x, _crossHair.transform.position.y, 0);
+        }
     }
     
     public partial class NetworkPlayer : NetworkBehaviour
     {
-        private BaseStat<CharStat> _baseCharStat;
-
         #region 에임
-        
         public Transform GunPos;
         public static bool isCameraFocused = false;
         public LineRenderer ShotLine;
         public LineRenderer UltLine;
         private RectTransform _crossHair;
-        
         #endregion
 
         #region 타겟 지정 관련 변수
@@ -227,7 +343,7 @@ namespace Network
         #endregion
         
         #region 움직임 관련 변수
-        private VariableJoystick _joystick;
+        private Joystick _joystick;
         private Transform _transform;
         private Vector3 moveDir;
         private float gravity = 15.0f;
@@ -238,11 +354,11 @@ namespace Network
         private bool isDodge = false;
         private float shakeDodgeThreshold = 2.0f;
         private CharacterController _characterController;
-
         public Vector3 targetPoint;
-        
+        private Vector3 _initPos;
         #endregion
-        
+
+        private CanvasManager _canvasManager;
         private GameManager _gameManager;
         private GameUI _gameUI;
 
@@ -251,6 +367,8 @@ namespace Network
 
         public override void Spawned()
         {
+            _canvasManager = CanvasManager.Instance;
+            _initPos = transform.position;
             _gameManager = GameManager.Instance;
             _baseCharStat = new BaseStat<CharStat>(1, 1);
             InitialStatus();
@@ -266,6 +384,7 @@ namespace Network
                     _target = GameObject.Find("허수아비");
                     Camera.main.GetComponent<PlayerCamera>().AddEnemy(_target.transform);
                 }
+                _canvasManager.SwitchUI(CanvasType.GameMoving);
             }
             else
             {
@@ -279,8 +398,10 @@ namespace Network
 
             _transform = gameObject.transform;
             _characterController = GetComponent<CharacterController>();
-            
             _gameUI = _gameManager.UIHolder as GameUI;
+
+            ShotLine = Instantiate(ShotLine);
+            UltLine = Instantiate(UltLine);
 
             if (_gameUI == null)
             {
@@ -321,66 +442,7 @@ namespace Network
                 CharacterMove();
             }
         }
-        
-        private void Shoot(AttackType attackType, LineRenderer lineRenderer)    // 라인렌더러는 임시
-        {
-            RaycastHit hit;
-            Ray gunRay;
-            
-            var aimRay = Camera.main.ScreenPointToRay(GetCrossHairPointInScreen());
-            var aimDistance = 30f;
 
-            // 화면 중앙으로 쏘는 레이는 원점이 플레이어 앞에서 시작되어야 한다.
-            // 그렇지 않으면 플레이어는 크로스헤어에는 걸렸지만, 뒤에 있는 물체를 부수게 된다.
-            // 발사하는 주체는 제외
-            
-            if (Physics.Raycast(aimRay.origin + aimRay.direction * 10, aimRay.direction, out hit, aimDistance, (int)(Layer.World | Layer.Enemy)) && hit.transform.gameObject != gameObject)
-            {
-                gunRay = new Ray(GunPos.position, (hit.point - GunPos.position).normalized);
-            }
-            else
-            {
-                gunRay = new Ray(GunPos.position, ((aimRay.origin + aimRay.direction * 10 + aimRay.direction * aimDistance) - GunPos.position).normalized);
-            }
-
-            targetPoint = gunRay.origin + gunRay.direction * aimDistance;
-            GetComponentInChildren<NetworkProjectileHolder>().target = targetPoint;
-            
-            //LaserBeam(gunRay, aimDistance, attackType, lineRenderer);
-        }
-
-        private void LaserBeam(Ray gunRay, float aimDistance, AttackType attackType, LineRenderer lineRenderer)
-        {
-            RaycastHit hit;
-            
-            lineRenderer.SetPosition(0, gunRay.origin);
-            lineRenderer.SetPosition(1, targetPoint);
-            
-            if (Physics.Raycast(gunRay, out hit, aimDistance, (int)(Layer.World | Layer.Enemy)))
-            {
-                var point = hit.point - hit.normal * 0.01f;
-
-                switch (attackType)
-                {
-                    case AttackType.Basic:
-                        WorldManager.Instance.GetWorld().HitBlock(point, 1);
-                        break;
-
-                    case AttackType.Ultimate:
-                        WorldManager.Instance.GetWorld().ExplodeBlocks(point, 3, 3);
-                        break;
-                }
-
-                targetPoint = hit.point;
-                lineRenderer.SetPosition(1, targetPoint);
-            }
-        }
-
-        private Vector3 GetCrossHairPointInScreen()
-        {
-            return new Vector3(_crossHair.transform.position.x, _crossHair.transform.position.y, 0);
-        }
-        
         private void CharacterMove()
         {
             var h = ReverseHorizontalMove ? -_joystick.Horizontal : _joystick.Horizontal;
@@ -429,6 +491,13 @@ namespace Network
                 _transform.rotation = Quaternion.Lerp(_transform.rotation, targetRotation, Runner.DeltaTime * 8f);
             }
         }
+        
+        public void InitPosition()
+        {
+            _characterController.enabled = false;
+            transform.position = _initPos;
+            _characterController.enabled = true;
+        }
 
         private void OnControllerColliderHit(ControllerColliderHit hit)
         {
@@ -440,13 +509,21 @@ namespace Network
                 }
             }
         }
-        
+    }
+
+    public partial class NetworkPlayer
+    {
+        public void GetUlt()
+        {
+            isCameraFocused = !isCameraFocused;
+            _canvasManager.SwitchUI(CanvasType.GameAiming);
+        }
+
         public void EndUlt()
         {
-            //_weapon.Attack();
             Shoot(AttackType.Ultimate, UltLine);
             isCameraFocused = false;
-            CanvasManager.Instance.SwitchUI(CanvasType.GameMoving);
+            _canvasManager.SwitchUI(CanvasType.GameMoving);
         }
     }
 }

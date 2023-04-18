@@ -34,7 +34,7 @@ namespace Network
                 point.z = (float)Math.Round(point.z, 3);
 
                 WorldManager.Instance.GetWorld().HitBlock(point, 1);
-                GameManager.Instance.NetworkManager.AddHitData(Runner.LocalPlayer, point, 1);
+                GameManager.Instance.NetworkManager.AddHitData(point, 1);
                 IsHit = true;
             }
             else if (objectLayer.Equals(LayerMask.NameToLayer("Player")))

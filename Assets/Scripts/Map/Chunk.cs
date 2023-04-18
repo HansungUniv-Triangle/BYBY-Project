@@ -117,9 +117,6 @@ public class Chunk
         if (damagedBlock.IsBroken())
         {
             damagedBlock.DestroyGameObject();
-
-            GameObject.Find("테스트입니다").GetComponent<TMP_Text>().text += '\n' + pos.ToString();
-
             //_damagedBlocks.Remove(pos);
         }
     }

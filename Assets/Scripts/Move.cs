@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using GameStatus;
 using TMPro;
-using Type;
+using Types;
 using UnityEngine;
 using Weapon;
 
@@ -89,13 +89,13 @@ public class Move : MonoBehaviour
 
     public void IncreaseSpeed(GameObject text)
     {
-        _statlist.Add(new Stat<CharStat>(CharStat.Speed, 1).SetRatio(0));
+        _statlist.Add(new Stat<CharStat>(CharStat.Speed, 1, 0).SetRatio(0));
         AdditionalWork(text, CharStat.Speed);
     }
 
     public void DecreaseSpeed(GameObject text)
     {
-        _statlist.Add(new Stat<CharStat>(CharStat.Speed, -1).SetRatio(0));
+        _statlist.Add(new Stat<CharStat>(CharStat.Speed, -1, 0).SetRatio(0));
         AdditionalWork(text, CharStat.Speed);
     }
 
@@ -227,7 +227,7 @@ public class Move : MonoBehaviour
         _btnStatus = 1;
         _initPos = transform.position;
 
-        _baseCharStat = new BaseStat<CharStat>();
+        _baseCharStat = new BaseStat<CharStat>(1, 1);
         _gunRay = new Ray();
 
         _gameManager = GameManager.Instance;
