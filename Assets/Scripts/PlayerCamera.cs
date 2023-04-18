@@ -5,51 +5,43 @@ using UnityEngine.UIElements;
 
 public class PlayerCamera : MonoBehaviour
 {
-    private bool _isReady = false;
-    private Transform _target;
-    private Transform _player;
-    private Transform _cameraPos;
-    private Transform _cameraFocusPos;
-    private Vector3 _originalCameraPos;
-    private Vector3 _originalCameraFocusPos;
+    public Transform Target;
+    public Transform Player;
 
-    public void AddPlayer(Transform player)
+    public Transform CameraPos;
+    public Transform CameraFocusPos;
+
+    public Vector3 _orignalCameraPos;
+    public Vector3 _orignalCameraFocusPos;
+
+    private float cameraSpeed;
+    private Move _playerMove;
+
+    private void Awake()
     {
-        _player = player;
-        _cameraPos = player.transform.Find("CameraPos");
-        _cameraFocusPos = player.transform.Find("CameraFocusPos");
-        _originalCameraPos = _cameraPos.localPosition;
-        _originalCameraFocusPos = _cameraFocusPos.localPosition;
-        _isReady = (_target != null);
-    }
-    
-    public void AddEnemy(Transform enemy)
-    {
-        _target = enemy;
-        _isReady = (_player != null);
+        _orignalCameraPos= CameraPos.localPosition;
+        _orignalCameraFocusPos = CameraFocusPos.localPosition;
+        _playerMove = Player.GetComponent<Move>();
     }
 
-    private void FixedUpdate()
+    void Update()
     {
-        if(!_isReady) return;
-
-        var position = _player.position;
-        var dir = (_cameraPos.position - position).normalized;
-        var ray = new Ray(position, dir);
+        var dir = (CameraPos.position - Player.position).normalized;
+        var ray = new Ray(Player.position, dir);
 
         //Debug.DrawRay(ray.origin, ray.direction * 10, Color.white);
-        if (Physics.Raycast(ray, out RaycastHit hit, 10, (int)Types.Layer.World))
+        if (Physics.Raycast(ray, out RaycastHit hit, 10, (int)Type.Layer.World))
         {
-            _cameraPos.position = hit.point;
-            _cameraFocusPos.position = hit.point;
+            CameraPos.position = hit.point;
+            CameraFocusPos.position = hit.point;
         }
         else
         {
-            if (_cameraPos.localPosition != _originalCameraPos)
-                _cameraPos.localPosition = _originalCameraPos;
+            if (CameraPos.localPosition != _orignalCameraPos)
+                CameraPos.localPosition = _orignalCameraPos;
 
-            if (_cameraFocusPos.localPosition != _originalCameraFocusPos)
-                _cameraFocusPos.localPosition = _originalCameraFocusPos;
+            if (CameraFocusPos.localPosition != _orignalCameraFocusPos)
+                CameraFocusPos.localPosition = _orignalCameraFocusPos;
         }
 
         CameraMovement();
@@ -57,17 +49,18 @@ public class PlayerCamera : MonoBehaviour
 
     private void CameraMovement()
     {
-        var cameraSpeed = 10f;
+        cameraSpeed = _playerMove.GetSpeed();
 
         if (Move.isCameraFocused)
         {
-            transform.position = Vector3.Lerp(transform.position, _cameraFocusPos.position, Time.deltaTime * cameraSpeed);
-            transform.rotation = Quaternion.Lerp(transform.rotation, _cameraFocusPos.rotation, Time.deltaTime * cameraSpeed);
+            transform.position = Vector3.Lerp(transform.position, CameraFocusPos.position, Time.deltaTime * cameraSpeed);
+            transform.rotation = Quaternion.Lerp(transform.rotation, CameraFocusPos.rotation, Time.deltaTime * cameraSpeed);
         }
         else
         {
-            transform.position = Vector3.Lerp(transform.position, _cameraPos.position, Time.deltaTime * cameraSpeed);
-            var relativePosition = _target.position - transform.position;
+            transform.position = Vector3.Lerp(transform.position, CameraPos.position, Time.deltaTime * cameraSpeed);
+
+            var relativePosition = Target.position - transform.position;
             var targetRotation = Quaternion.LookRotation(relativePosition);
             transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * cameraSpeed);
         }

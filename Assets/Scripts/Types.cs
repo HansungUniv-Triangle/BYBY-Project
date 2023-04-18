@@ -65,5 +65,11 @@ namespace Types
         Basic,
         Ultimate
     }
+
+    public enum JoystickSettingType
+    {
+        Variable,
+        Floating
+    }
 }
 

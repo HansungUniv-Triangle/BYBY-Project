@@ -1,6 +1,6 @@
-using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -19,6 +19,11 @@ public class TouchRotateCamera : MonoBehaviour, IBeginDragHandler, IDragHandler,
 
     private Move _moveScript;
 
+    #region UI Settings
+    public void IncreaseSpeed(GameObject text) { text.GetComponent<TextMeshProUGUI>().text = (rotationSpeed += 5).ToString(); }
+    public void DecreaseSpeed(GameObject text) { text.GetComponent<TextMeshProUGUI>().text = (rotationSpeed -= 5).ToString(); }
+    #endregion
+    
     private void Start()
     {
         _moveScript = camPivot.GetComponent<Move>();
@@ -27,7 +32,7 @@ public class TouchRotateCamera : MonoBehaviour, IBeginDragHandler, IDragHandler,
     private void OnEnable()
     {
         Quaternion rotation = camPivot.rotation;
-        xAngle = rotation.eulerAngles.x;
+        xAngle = 0;
         yAngle = rotation.eulerAngles.y;
 
         //Debug.Log(camPivot.name + ": " + xAngle + ", " + yAngle);
@@ -46,12 +51,10 @@ public class TouchRotateCamera : MonoBehaviour, IBeginDragHandler, IDragHandler,
 
         yAngle = yAngleTemp + (draggingPos.x - beginPos.x) * rotationSpeed * 2 / Screen.width;
         xAngle = xAngleTemp - (draggingPos.y - beginPos.y) * rotationSpeed * 2 / Screen.height;
-
-        /* 각도 제한 그러나 버그가 존재
-        if (xAngle > 30) xAngle = 30;
-        if (xAngle < -60) xAngle = -60;
-        */
         
+        if (xAngle > 50) xAngle = 50;
+        if (xAngle < -60) xAngle = -60;
+
         camPivot.rotation = Quaternion.Euler(xAngle, yAngle, 0.0f);
     }
 

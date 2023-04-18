@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using DG.Tweening;
 using GameStatus;
-using Types;
+using TMPro;
+using Type;
 using UnityEngine;
-using UnityEngine.UI;
 using Weapon;
 
 public class Move : MonoBehaviour
@@ -22,20 +22,21 @@ public class Move : MonoBehaviour
 
     #region 타겟 지정 관련 변수
     public GameObject target;
-    private bool _isTargetNotNull;
-    private RaycastHit _raycast;
-    public float maxDistance = 10.0f;
+    public static float targetDistance;
+
+    private RaycastHit _hit;
+    private Ray _gunRay;
     #endregion
 
     #region 움직임 관련 변수
-    public VariableJoystick Joystick;
-    private Transform _transform;
+    public Joystick Joystick;
+
     private CharacterController _characterController;
     private Vector3 moveDir;
     private float gravity = 15.0f;
     private float jumpForce = 7.0f;
     private float dodgeForce = 4.0f;
-    public bool ReverseHorizontalMove = false;
+    private bool ReverseHorizontalMove = false;
     private bool isJump = false;
     private bool isDodge = false;
     private float shakeDodgeThreshold = 2.0f;
@@ -50,46 +51,17 @@ public class Move : MonoBehaviour
 
     public Transform GunPos;
     public static bool isCameraFocused = false;
+
     public LineRenderer ShotLine;
     public LineRenderer UltLine;
+    
     public RectTransform CrossHairTransform;
+    private float _shootDistance = 30f;
     #endregion
 
-    private GameManager _gameManager;
-
-    private void Awake()
-    {
-        _btnStatus = 1;
-        _transform = gameObject.transform;
-        _baseCharStat = new BaseStat<CharStat>(1, 1);
-        _gameManager = GameManager.Instance;
-        _isTargetNotNull = true;
-
-        _characterController = GetComponent<CharacterController>();
-
-        weapons.Add(gameObject.AddComponent<HandGun>());
-        weapons.Add(gameObject.AddComponent<ShieldGenerator>());
-        // 임시 칸 채우기 용도
-        weapons.Add(gameObject.AddComponent<HandGun>());
-        weapons.Add(gameObject.AddComponent<ShieldGenerator>());
-    }
-
-    private void Start()
-    {
-        moveDir = Vector3.zero;
-        InitialStatus();
-        CanvasManager.Instance.SwitchUI(CanvasType.GameMoving);
-    }
-
-    private void InitialStatus()
-    {
-        _baseCharStat.ClearStatList();
-        foreach (var synergy in synergyList)
-        {
-            _baseCharStat.AddStatList(synergy.charStatList);
-            _weapon.AddWeaponStatList(synergy.weaponStatList);
-        }
-    }
+    #region UI Settings
+    private CanvasManager _canvasManager;
+    private List<Stat<CharStat>> _statlist = new();
 
     public void ChangeGun1()
     {
@@ -115,10 +87,182 @@ public class Move : MonoBehaviour
         _btnStatus = 4;
     }
 
+    public void IncreaseSpeed(GameObject text)
+    {
+        _statlist.Add(new Stat<CharStat>(CharStat.Speed, 1).SetRatio(0));
+        AdditionalWork(text, CharStat.Speed);
+    }
+
+    public void DecreaseSpeed(GameObject text)
+    {
+        _statlist.Add(new Stat<CharStat>(CharStat.Speed, -1).SetRatio(0));
+        AdditionalWork(text, CharStat.Speed);
+    }
+
+    private void AdditionalWork(GameObject text, CharStat type)
+    {
+        InitialStatus();
+
+        foreach (var s in _statlist)
+        {
+            _baseCharStat.AddStat(s);
+        }
+        
+        var total = _baseCharStat.GetStat(type).Total;
+        text.GetComponent<TextMeshProUGUI>().text = total.ToString();
+    }
+
+    public void IncreaseJump(GameObject text) { text.GetComponent<TextMeshProUGUI>().text = (++jumpForce).ToString(); }
+    public void DecreaseJump(GameObject text) { text.GetComponent<TextMeshProUGUI>().text = (--jumpForce).ToString(); }
+
+    public void IncreaseDodge(GameObject text){ text.GetComponent<TextMeshProUGUI>().text = (++dodgeForce).ToString(); }
+    public void DecreaseDodge(GameObject text){ text.GetComponent<TextMeshProUGUI>().text = (--dodgeForce).ToString(); }
+
+    public void IncreaseShootDistance(GameObject text) { text.GetComponent<TextMeshProUGUI>().text = (_shootDistance += 5).ToString(); }
+    public void DecreaseShootDistance(GameObject text) { text.GetComponent<TextMeshProUGUI>().text = (_shootDistance -= 5).ToString(); }
+
+    public void IncreaseShakeSensitivity(GameObject text)
+    {
+        text.GetComponent<TextMeshProUGUI>().text = (shakeDodgeThreshold += 0.1f).ToString("F1");
+    }
+    public void DecreaseShakeSensitivity(GameObject text)
+    {
+        text.GetComponent<TextMeshProUGUI>().text = (shakeDodgeThreshold -= 0.1f).ToString("F1");
+    }
+    public void ToggleReverseHorizontalMove() { ReverseHorizontalMove = !ReverseHorizontalMove; }
+
+    private JoystickSettingType joystickType = JoystickSettingType.Floating;
+    [Space(5f)]
+    public VariableJoystick variableJoystick;
+    public FloatingJoystick floatingJoystick;
+    public void ChangeJoystick(GameObject text)
+    {
+        switch (joystickType) 
+        {
+            case JoystickSettingType.Variable:
+                floatingJoystick.gameObject.SetActive(true);
+                floatingJoystick.GetComponent<CanvasController>().canvasType = CanvasType.GameMoving;
+
+                joystickType = JoystickSettingType.Floating;
+                Joystick = floatingJoystick;
+
+                variableJoystick.GetComponent<CanvasController>().canvasType = CanvasType.None;
+                variableJoystick.gameObject.SetActive(false);
+
+                text.GetComponent<TextMeshProUGUI>().text = "floating";
+                break;
+
+            case JoystickSettingType.Floating:
+                variableJoystick.gameObject.SetActive(true);
+                variableJoystick.GetComponent<CanvasController>().canvasType = CanvasType.GameMoving;
+
+                joystickType = JoystickSettingType.Variable;
+                Joystick = variableJoystick;
+
+                floatingJoystick.gameObject.SetActive(false);
+                floatingJoystick.GetComponent<CanvasController>().canvasType = CanvasType.None;
+
+                text.GetComponent<TextMeshProUGUI>().text = "variable";
+                break;
+        }
+    }
+
+    private Vector3 _initPos;
+    public void InitPosition()
+    {
+        _characterController.enabled = false;
+        transform.position = _initPos;
+        _characterController.enabled = true;
+    }
+
+    private bool attacking = true;
+    public void ToggleAttacking()
+    {
+        attacking = !attacking;
+    }
+
+    public void vibrate()
+    {
+        long[] pattern = 
+            { 0, 60, 20, 30, 20, 5};
+        int[] amplitudes = 
+            { 0, 2, 0, 1, 0, 1 };
+
+        RDG.Vibration.Vibrate(pattern, amplitudes, -1, true);
+
+        if (isVibrateBeat)
+        {
+            isVibrateBeat = false;
+            vibrateBeat();
+        }
+    }
+
+    private bool isVibrateBeat = false;
+
+    public void vibrateBeat()
+    {
+        if (isVibrateBeat)
+        {
+            RDG.Vibration.Cancel();
+            isVibrateBeat = false;
+        }
+        else
+        {
+            long[] pattern = { 1000, 20, 1000, 20 };
+            int[] amplitudes = { 0, 1 };
+
+            RDG.Vibration.Vibrate(pattern, amplitudes, 0);
+            isVibrateBeat = true;
+        }
+    }
+
+    #endregion
+
+    private GameManager _gameManager;
+
+    public TextMeshProUGUI HitDamageTextMesh;
+
+    private void Awake()
+    {
+        _btnStatus = 1;
+        _initPos = transform.position;
+
+        _baseCharStat = new BaseStat<CharStat>();
+        _gunRay = new Ray();
+
+        _gameManager = GameManager.Instance;
+        _canvasManager = CanvasManager.Instance;
+        
+        _characterController = GetComponent<CharacterController>();
+
+        weapons.Add(gameObject.AddComponent<HandGun>());
+        weapons.Add(gameObject.AddComponent<ShieldGenerator>());
+        // 임시 칸 채우기 용도
+        weapons.Add(gameObject.AddComponent<HandGun>());
+        weapons.Add(gameObject.AddComponent<ShieldGenerator>());
+    }
+
+    private void Start()
+    {
+        moveDir = Vector3.zero;
+        InitialStatus();
+        _canvasManager.SwitchUI(CanvasType.GameMoving);
+    }
+
+    private void InitialStatus()
+    {
+        _baseCharStat.ClearStatList();
+        foreach (var synergy in synergyList)
+        {
+            _baseCharStat.AddStatList(synergy.charStatList);
+            _weapon.AddWeaponStatList(synergy.weaponStatList);
+        }
+    }
+
     public void GetUlt()
     {
         isCameraFocused = !isCameraFocused;
-        CanvasManager.Instance.SwitchUI(CanvasType.GameAiming);
+        _canvasManager.SwitchUI(CanvasType.GameAiming);
     }
 
     public void EndUlt()
@@ -126,27 +270,42 @@ public class Move : MonoBehaviour
         //_weapon.Attack();
         Shoot(AttackType.Ultimate, UltLine);
         isCameraFocused = false;
-        CanvasManager.Instance.SwitchUI(CanvasType.GameMoving);
+        _canvasManager.SwitchUI(CanvasType.GameMoving);
+    }
+
+    public float GetSpeed()
+    {
+        return _baseCharStat.GetStat(CharStat.Speed).Total;
     }
 
     private void CharacterMove()
     {
+        if (target)
+        {
+            // y값은 고려하지 않음
+            var playerPos = new Vector3(transform.position.x, 0, transform.position.z);
+            var targetPos = new Vector3(target.transform.position.x, 0, target.transform.position.z);
+
+            targetDistance = Vector3.Distance(playerPos, targetPos);
+        }
+        
         var h = ReverseHorizontalMove ? -Joystick.Horizontal : Joystick.Horizontal;
         var v = Joystick.Vertical;
+        v = (targetDistance < 2f && v > 0) ? 0 : v;
 
-        var speed = _baseCharStat.GetStat(CharStat.Speed).Total;
+        var speed = GetSpeed();
 
         // move
         if (_characterController.isGrounded)
         {
             moveDir = new Vector3(h, 0, v);
-            moveDir = _transform.TransformDirection(moveDir);
+            moveDir = transform.TransformDirection(moveDir);
             moveDir *= speed;
         }
         else
         {
             var tmp = new Vector3(h, 0, v);
-            tmp = _transform.TransformDirection(tmp);
+            tmp = transform.TransformDirection(tmp);
             tmp *= (speed * 0.7f);
 
             moveDir.x = tmp.x;
@@ -169,17 +328,13 @@ public class Move : MonoBehaviour
 
         _characterController.Move(moveDir * Time.deltaTime);
 
-        if (_isTargetNotNull == false)
-        {
-            _transform.rotation = Quaternion.Lerp(_transform.rotation, Quaternion.LookRotation(moveDir), Time.deltaTime * (speed * 0.1f));
-        }
-        else if (isCameraFocused == false)
+        if (isCameraFocused == false)
         {
             var relativePosition = target.transform.position - transform.position;
             relativePosition.y = 0; // y축은 바라보지 않도록 함
             var targetRotation = Quaternion.LookRotation(relativePosition);
 
-            _transform.rotation = Quaternion.Lerp(_transform.rotation, targetRotation, Time.deltaTime * 8f);
+            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * speed);
         }
     }
 
@@ -208,13 +363,14 @@ public class Move : MonoBehaviour
                     isDodge = false;
                 });
         }
+
         CharacterMove();
 
         // 임시 자동공격
         if (!isCameraFocused)
         {
-            Shoot(AttackType.Basic, ShotLine);
-            //Debug.DrawLine(GunPos.position, target.transform.position, Color.red);
+            if (attacking)
+                Shoot(AttackType.Basic, ShotLine);
             //_weapon.Attack();
         }
 
@@ -222,35 +378,41 @@ public class Move : MonoBehaviour
         TestUpdate();
     }
 
+    public int damage = 1;
+
     // ReSharper disable Unity.PerformanceAnalysis
     private void Shoot(AttackType attackType, LineRenderer lineRenderer)    // 라인렌더러는 임시
     {
-        RaycastHit hit;
-        Ray gunRay;
-
-        //var screenCenter = new Vector3(Camera.main.pixelWidth / 2, Camera.main.pixelHeight / 2);        // 화면 중앙 (크로스헤어)
-        //var aimRay = Camera.main.ScreenPointToRay(screenCenter);
         var aimRay = Camera.main.ScreenPointToRay(GetCrosshairPointInScreen());
-        var aimDistance = 30f;
-
+        
+        _gunRay.origin = GunPos.position;
         // 화면 중앙으로 쏘는 레이는 원점이 플레이어 앞에서 시작되어야 한다.
         // 그렇지 않으면 플레이어는 크로스헤어에는 걸렸지만, 뒤에 있는 물체를 부수게 된다.
         // 발사하는 주체는 제외
-        if (Physics.Raycast(aimRay.origin + aimRay.direction * 10, aimRay.direction, out hit, aimDistance) && hit.transform.gameObject != gameObject)
+        if (Physics.Raycast(aimRay.origin + aimRay.direction * 10, aimRay.direction, out _hit, _shootDistance) && _hit.transform.gameObject != gameObject)
         {
-            gunRay = new Ray(GunPos.position, (hit.point - GunPos.position).normalized);
+            _gunRay.direction = (_hit.point - GunPos.position).normalized;
         }
         else
         {
-            gunRay = new Ray(GunPos.position, ((aimRay.origin + aimRay.direction * 10 + aimRay.direction * aimDistance) - GunPos.position).normalized);
+            _gunRay.direction = ((aimRay.origin + aimRay.direction * 10 + aimRay.direction * _shootDistance) - GunPos.position).normalized;
         }
 
-        lineRenderer.SetPosition(0, gunRay.origin);
-        lineRenderer.SetPosition(1, gunRay.origin + gunRay.direction * aimDistance);
+        lineRenderer.SetPosition(0, _gunRay.origin);
+        lineRenderer.SetPosition(1, _gunRay.origin + _gunRay.direction * _shootDistance);
 
-        if (Physics.Raycast(gunRay, out hit, aimDistance))
+        if (Physics.Raycast(_gunRay, out _hit, _shootDistance))
         {
-            var point = hit.point - hit.normal * 0.01f;
+            var point = _hit.point - _hit.normal * 0.01f;
+
+            if (_hit.transform.gameObject == target.gameObject)
+            {
+                bool isCritical = false;
+                if (_hit.point.y - (target.transform.position.y - 1) > 1.25f)
+                    isCritical = true;
+
+                HitDamageTextMesh.GetComponent<HitDamage>().HitDamageAnimation(damage, isCritical);
+            }
 
             switch (attackType)
             {
@@ -260,10 +422,11 @@ public class Move : MonoBehaviour
 
                 case AttackType.Ultimate:
                     WorldManager.Instance.GetWorld().ExplodeBlocks(point, 3, 3);
+                    vibrate();
                     break;
             }
 
-            lineRenderer.SetPosition(1, hit.point);
+            lineRenderer.SetPosition(1, _hit.point);
         }
     }
 

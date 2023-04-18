@@ -13,7 +13,7 @@ public class CanvasManager : Singleton<CanvasManager>
     {
         // �ӽ�
         _canvas = GameObject.Find("Canvas");
-        _canvasControllers = _canvas.GetComponentsInChildren<CanvasController>();
+        _canvasControllers = _canvas.GetComponentsInChildren<CanvasController>(true);
         foreach (var canvas in _canvasControllers)
         {
             canvas.gameObject.SetActive(false);
