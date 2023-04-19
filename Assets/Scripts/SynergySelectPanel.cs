@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
@@ -21,7 +22,11 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
     public GameObject prefabBtn;
     private GameObject synergyPage;
     private GameObject rerollBtn;
-    private GameObject[] spawnPoint = new GameObject [13];
+
+    [SerializeField]
+    private Transform spawnPointOrigin;
+    private Transform[] spawnPoint;
+    
     private GameObject synergyOrder;
     private GameObject synergyListText;
     public GameObject statPage;
@@ -40,6 +45,57 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
     private Vector2 swipeStartPos;
     private float swipeStartTime;
 
+    public class SynergyPage
+    {
+        public bool isRerolled = false;
+        public Synergy[] synergies = new Synergy[3];
+        public GameObject synegyObj;
+
+        public bool AddSynergy(Synergy synergy)
+        {
+            if (synergies[0] == null)
+            {
+                synergies[0] = synergy;
+                return true;
+            }
+            else if (synergies[1] == null)
+            {
+                synergies[1] = synergy;
+                return true;
+            }
+            else if (synergies[2] == null)
+            {
+                synergies[2] = synergy;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public void Clear()
+        {
+            synergies[0] = null;
+            synergies[1] = null;
+            synergies[2] = null;
+            // 초기화 작업...
+        }
+        
+        // 시너지를 랜덤으로 생성하는 함수
+        
+        // 시너지 리스트에 중복된 숫자 있는지 확인
+        
+        // 시너지 오브제에 시너지를 적용하는 함수
+        public void ApplySynergyToObj()
+        {
+            // 
+        }
+    }
+
+    public SynergyPage[] SynergyPages = new SynergyPage[6];
+    public int currentPage = 1;
+    SynergyPage a = SynergyPages[currentPage];
 
     void Awake()
     {
@@ -48,29 +104,16 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
         synergyOrder = GameObject.Find("ItemOrder");
         rerollBtn = GameObject.Find("RerollBtn");
     }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-      
-    }
-
+    
     public void MakeSynergyPage()
-    { 
-        for (int i = 0; i < spawnPoint.Length; i++)
+    {
+        spawnPoint = new Transform[spawnPointOrigin.transform.childCount];
+        var index = 0;
+        for (var i = 6; i < spawnPoint.Length; i++)
         {
-            spawnPoint[i] = GameObject.Find("ItemBtnSpawn (" + (i + 1) + ")");
+            SpawnSynergy(SynergyPages[index], spawnPoint[i]);
         }
-        for (int i = 0; i < 7; i++)
-        {
-            SpawnSynergy(spawnPoint[i + 6]);
-        }
+
         SetCurrentPage(spawnNum);
     }
 
@@ -114,8 +157,16 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
 
     private void ValueInit()
     {
-        isNumIn.Clear();
+        isReduplicationNum[0] = 0;
+        isReduplicationNum[1] = 0;
+        isReduplicationNum[2] = 0;
         synergyBtnStatus = 0;
+
+        if (IsRerolledBefore(_pageArray[order]))
+        {
+            
+        }
+        
         if (isRerollBefore[6 - order] != true) 
         {
             rerollCount = 1;
@@ -126,6 +177,16 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
             rerollCount = 0;
             rerollBtn.GetComponentsInChildren<TextMeshProUGUI>()[0].text = rerollCount.ToString();
         }
+    }
+
+    private GameObject GetPage(int index)
+    {
+        
+    }
+
+    private bool IsRerolledBefore(int index)
+    {
+        return isRerollBefore[index];
     }
 
     public void RerollSynergy()
@@ -140,7 +201,7 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
             isRerollBefore[6 - order] = true;
         }
     }
-    private void SelectSynergy()
+    private void SelectSynergy(int index)
     {
         string btnName = EventSystem.current.currentSelectedGameObject.GetComponentInChildren<TextMeshProUGUI>().text;
         //Debug.Log(btnName);
@@ -159,19 +220,23 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
         }
     }
 
-    public void SpawnSynergy(GameObject spawnPoint)
+    public void SpawnSynergy(SynergyPage synergyPage, Transform spawnPoint)
     {
-        ValueInit();
-        //synergyBtn.Clear();
-
-        synergyPage = Instantiate(prefabBtn, spawnPoint.transform.position, Quaternion.identity, GameObject.Find("ItemSelectPanel(Clone)").transform);
-
+        synergyPage.Clear();
+        var instance = Instantiate(prefabBtn, spawnPoint);
+        
         // 프리팹의 자식 오브젝트들을 리스트에 추가
-        for (int i = 0; i < synergyPage.transform.childCount; i++)
+        for (int i = 0; i < instance.transform.childCount; i++)
         {
-            GameObject child = synergyPage.transform.GetChild(i).gameObject;
-            synergyBtn.Add(child);
+            GameObject child = instance.transform.GetChild(i).gameObject;
+            child.GetComponent<Button>().onClick.AddListener(() =>
+            {
+                // 게임매니저에서 시너지를 가져온다
+                // 그 시저지를 이러쿵 저러쿵 한다.
+            }
+                );
         }
+        
         synergyListText = synergyPage.transform.GetChild(3).gameObject;
         synergyBtn[0].transform.GetComponent<Button>().onClick.AddListener(delegate { SelectSynergy(); });
         synergyBtn[1].transform.GetComponent<Button>().onClick.AddListener(delegate { SelectSynergy(); });
@@ -181,7 +246,9 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
         synergyPageList.Add(synergyPage);
         //프리팹 복사해서 원래 위치로 애니매이션 원래 버튼 지우고 복사된 버튼 연결 
         synergyBtn.Clear();
-        
+
+
+        synergyPage.synegyObj = instance;
     }
     private void SetCurrentPage(int spawnNum)
     {

@@ -5,14 +5,13 @@ using UnityEngine;
 public class SynergyPanelCreate : MonoBehaviour
 {
     public GameObject prefabPanel;
-    public GameObject spawnPoint;
     private GameObject synergyPanel;
-    private bool isCreate = false;
+    private RectTransform _rectTransform;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        _rectTransform = GetComponent<RectTransform>();
     }
 
     // Update is called once per frame
@@ -20,17 +19,19 @@ public class SynergyPanelCreate : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.E))
         {
-            if (isCreate == false)
+            if (synergyPanel == null)
             {
-                isCreate = true;
-                synergyPanel = Instantiate(prefabPanel, spawnPoint.transform.position, Quaternion.identity, GameObject.Find("ItemPanel").transform);
+                synergyPanel = Instantiate(prefabPanel, transform);
                 synergyPanel.GetComponent<SynergySelectPanel>().MakeSynergyPage();
+            }
+            else
+            {
+                synergyPanel.SetActive(true);
             }
         }
         else if (Input.GetKeyDown(KeyCode.Escape))
         {
-            isCreate = false;
-            Destroy(synergyPanel);
+            synergyPanel.SetActive(false);
         }
     }
 }
