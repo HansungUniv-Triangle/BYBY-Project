@@ -10,14 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fdc2158cf16b41c4188ea09996d8cbce, type: 3}
-  m_Name: Synergy 2
+  m_Name: Synergy 5
   m_EditorClassIdentifier: 
   sprite: {fileID: 0}
-  synergyName: "\uCEE4\uBA3C \uC2DC\uB108\uC9C02"
-  synergyExplain: 
+  synergyName: "\uCEE4\uBA3C \uC2DC\uB108\uC9C05"
   priority: 0
-  charStatList: []
-  weaponStatList:
-  - <Type>k__BackingField: 4
-    <Amount>k__BackingField: 10
-    <Ratio>k__BackingField: 1
+  statList:
+  - statType: 9
+    amount: 2
+    ratio: 0
+  - statType: 1
+    amount: 2
+    ratio: 0
+  - statType: 5
+    amount: 1
+    ratio: 0
