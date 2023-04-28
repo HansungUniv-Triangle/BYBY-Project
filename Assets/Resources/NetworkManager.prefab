@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3733383431492906883}
   - component: {fileID: 3733383431492906882}
   m_Layer: 0
-  m_Name: Room
+  m_Name: NetworkManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -47,7 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ObjectInterest: 1
   DefaultInterestGroups: []
-  DestroyWhenStateAuthorityLeaves: 0
+  DestroyWhenStateAuthorityLeaves: 1
   AllowStateAuthorityOverride: 1
   AoiPositionSource: {fileID: 0}
   Flags: 2305
@@ -70,3 +70,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interpolationDataSource: 0
+  _playerPrefab:
+    RawGuidValue: e1433cb2b6135a94e92c3f1283df80b1
+  _handGun:
+    RawGuidValue: 613db97d09b872848b8e308bae6c0147

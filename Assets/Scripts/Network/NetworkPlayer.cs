@@ -7,10 +7,28 @@ using GameStatus;
 using Types;
 using UnityEngine;
 using UIHolder;
-using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace Network
 {
+    // HP canvas
+    public partial class NetworkPlayer
+    {
+        [SerializeField] private Image healthBar;
+        [Networked] private float MaxHp { get; set; }
+        [Networked(OnChanged = nameof(OnHpChanged))] private float NowHp { get; set; }
+
+        private static void OnHpChanged(Changed<NetworkPlayer> changed)
+        {
+            changed.Behaviour.OnHpChanged();
+        }
+
+        private void OnHpChanged()
+        {
+            healthBar.DOFillAmount(NowHp / MaxHp, 0.5f);
+        }
+    }
+    
     // 블록 히트 데이터
     public partial class NetworkPlayer
     {
@@ -101,7 +119,7 @@ namespace Network
                         }
                         else
                         {
-                            OnHit(networkObject);
+                            _gameManager.NetworkManager.LocalCharacter.OnHit(networkObject);
                         }
                     }
                     
@@ -112,7 +130,7 @@ namespace Network
             }
         }
 
-        private void AddCharacterHitData(NetworkObject networkObject)
+        public void AddCharacterHitData(NetworkObject networkObject)
         {
             if (CharacterHitList.Count == CharacterHitList.Capacity)
             {
@@ -126,18 +144,12 @@ namespace Network
             });
         }
 
-        public void OnHit(NetworkObject projectile)
+        private void OnHit(NetworkObject projectile)
         {
             var damage = projectile.GetComponent<NetworkProjectileBase>().Damage;
             var armor = _baseCharStat.GetStat(CharStat.Armor).Total;
             var calcDamage = damage * (100 / (100 + armor));
-            _nowHP -= calcDamage;
-        }
-        
-        public void NetworkOnHit(NetworkObject networkObject)
-        {
-            OnHit(networkObject);
-            AddCharacterHitData(networkObject);
+            NowHp -= calcDamage;
         }
     }
 
@@ -192,8 +204,8 @@ namespace Network
             {
                 _baseCharStat.AddStatList(synergy.charStatList);
             }
-
-            _maxHP = _nowHP = _baseCharStat.GetStat(CharStat.Health).Total;
+            
+            MaxHp = NowHp = _baseCharStat.GetStat(CharStat.Health).Total * 100;
         }
 
         private void InitialWeaponStatus()
@@ -281,12 +293,22 @@ namespace Network
             }
             
             targetPoint = _gunRay.origin + _gunRay.direction * _shootDistance;
-            GetComponentInChildren<NetworkProjectileHolder>().target = targetPoint;
-            LaserBeam(_gunRay, _shootDistance, attackType, lineRenderer);
+            
+            var weapon = GetComponentInChildren<NetworkProjectileHolder>();
+            if (weapon)
+            {
+                weapon.target = targetPoint;
+            }
+
+            //LaserBeam(_gunRay, _shootDistance, attackType, lineRenderer);
         }
 
         private void LaserBeam(Ray gunRay, float aimDistance, AttackType attackType, LineRenderer lineRenderer)
         {
+            // 레이저빔 작동시 spawned에 추가
+            // ShotLine = Instantiate(ShotLine);
+            // UltLine = Instantiate(UltLine);
+            
             RaycastHit hit;
             
             lineRenderer.SetPosition(0, gunRay.origin);
@@ -322,7 +344,14 @@ namespace Network
 
         private Vector3 GetCrossHairPointInScreen()
         {
-            return new Vector3(_crossHair.transform.position.x, _crossHair.transform.position.y, 0);
+            if (_crossHair != null)
+            {
+                return new Vector3(_crossHair.transform.position.x, _crossHair.transform.position.y, 0);
+            }
+            else
+            {
+                return new Vector3(0, 0, 0);
+            }
         }
     }
     
@@ -333,7 +362,19 @@ namespace Network
         public static bool isCameraFocused = false;
         public LineRenderer ShotLine;
         public LineRenderer UltLine;
-        private RectTransform _crossHair;
+        public RectTransform _crossHairOrigin;
+
+        public RectTransform _crossHair
+        {
+            get
+            {
+                if (_gameUI != null)
+                {
+                    _crossHairOrigin = _gameUI.crossHair;
+                }
+                return _crossHairOrigin;
+            }
+        }
         #endregion
 
         #region 타겟 지정 관련 변수
@@ -360,23 +401,38 @@ namespace Network
 
         private CanvasManager _canvasManager;
         private GameManager _gameManager;
+        [SerializeField]
         private GameUI _gameUI;
 
-        public float _maxHP;
-        public float _nowHP;
+        private void Start()
+        {
+            GunPos = transform.GetChild(2).transform;
+            moveDir = Vector3.zero;
+            _transform = gameObject.transform;
+            _characterController = GetComponent<CharacterController>();
+            
+        }
 
         public override void Spawned()
         {
-            _canvasManager = CanvasManager.Instance;
             _initPos = transform.position;
+            _canvasManager = CanvasManager.Instance;
             _gameManager = GameManager.Instance;
             _baseCharStat = new BaseStat<CharStat>(1, 1);
+            _gameUI = _gameManager.UIHolder as GameUI;
+
+            if (_gameUI == null)
+            {
+                throw new Exception("ui holder가 null임");
+            }
+            
             InitialStatus();
             
             if (HasStateAuthority)
             {
                 Camera.main.GetComponent<PlayerCamera>().AddPlayer(transform);
                 _target = GameObject.Find("허수아비");
+                _joystick = _gameUI.joystick;
                 
                 // 혼자 테스트용 코드
                 if (Runner.ActivePlayers.Count() == 1)
@@ -390,28 +446,14 @@ namespace Network
             {
                 _target = GameObject.Find("허수아비");
                 Camera.main.GetComponent<PlayerCamera>().AddEnemy(_target.transform);
+                gameObject.layer = LayerMask.NameToLayer("Enemy");
                 return;
             }
             
-            moveDir = Vector3.zero;
-            GunPos = transform.GetChild(2).transform;
-
-            _transform = gameObject.transform;
-            _characterController = GetComponent<CharacterController>();
-            _gameUI = _gameManager.UIHolder as GameUI;
-
-            ShotLine = Instantiate(ShotLine);
-            UltLine = Instantiate(UltLine);
-
-            if (_gameUI == null)
+            if (_gameManager.UIHolder is RoomUI)
             {
-                throw new Exception("ui holder가 null임");
+                Debug.Log("testtt");
             }
-            _crossHair = _gameUI.crossHair;
-            _joystick = _gameUI.joystick;
-            
-            // 자신은 타겟팅 되지 않기 위해 레이어 변경
-            gameObject.layer = LayerMask.NameToLayer("Player");
         }
         
         public override void FixedUpdateNetwork()

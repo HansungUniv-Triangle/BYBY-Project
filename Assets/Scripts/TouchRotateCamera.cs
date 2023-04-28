@@ -30,7 +30,6 @@ public class TouchRotateCamera : MonoBehaviour, IBeginDragHandler, IDragHandler,
     {
         if (camPivot == null)
         {
-            Debug.Log("is null");
             if (GameManager.Instance.NetworkManager.LocalCharacter)
             {
                 Debug.Log("find character");

@@ -11,6 +11,8 @@ namespace UIHolder
         public Button resetPlayerLocation;
         public TextMeshProUGUI hitDamageText;
         public Button ultButton;
+        public Button disconnectButton;
+        public TextMeshProUGUI roundText;
 
         protected override void Initial()
         {
@@ -22,6 +24,11 @@ namespace UIHolder
             ultButton.onClick.AddListener(() =>
             {
                 GameManager.Instance.NetworkManager.LocalCharacter.GetUlt();
+            });
+            
+            disconnectButton.onClick.AddListener(() =>
+            {
+                GameManager.Instance.DisconnectedSever();
             });
         }
     }

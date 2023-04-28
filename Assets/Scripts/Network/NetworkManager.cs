@@ -34,10 +34,6 @@ namespace Network
                     {
                         Runner.TryFindBehaviour(roomPlayerData.Character, out NetworkPlayer networkPlayer);
                         _localCharacter = networkPlayer;
-                        if (networkPlayer is null)
-                        {
-                            throw new Exception("networkplayer를 찾을 수 없었음");
-                        }
                     }
                     else
                     {
@@ -108,14 +104,9 @@ namespace Network
         {
             if (_networkObjectList.Count > 10)
             {
-                RemoveNetworkObjectInList(_networkObjectList[0]);
+                _networkObjectList.RemoveAt(0);
             }
             _networkObjectList.Add(networkObject);
-        }
-        
-        public void RemoveNetworkObjectInList(NetworkObject networkObject)
-        {
-            Runner.Despawn(networkObject);
         }
         
         public void RemoveDeSpawnNetworkObject(NetworkObject networkObject)
@@ -128,12 +119,154 @@ namespace Network
             return _networkObjectList.FirstOrDefault(networkObject => networkObject.Id.Equals(networkId));
         }
     }
+
+    // 라운드 조작 관련
+    public partial class NetworkManager
+    {
+        [Networked] private TickTimer RoundChangeTimer { get; set; }
+        
+        private PlayerRef _defeatRef;
+        private RoundState _round = RoundState.None;
+        private int roundNum = 0;
+
+        private enum RoundState
+        {
+            None,
+            SynergySelect, 
+            WaitToStart,
+            RoundStart,
+            RoundEnd,
+            GameEnd,
+        }
+
+        private void ChangeRound(RoundState roundState)
+        {
+            switch (roundState)
+            {
+                case RoundState.None:
+                    _round = RoundState.SynergySelect;
+                    break;
+                case RoundState.SynergySelect:
+                    _round = RoundState.WaitToStart;
+                    break;
+                case RoundState.WaitToStart:
+                    _round = RoundState.RoundStart;
+                    break;
+                case RoundState.RoundStart:
+                    _round = RoundState.RoundEnd;
+                    break;
+                case RoundState.RoundEnd:
+                    _round = RoundState.SynergySelect;
+                    break;
+                case RoundState.GameEnd:
+                    // 게임 방 나가는 코드를 넣으쇼
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            StartRound();
+        }
+        
+        private void StartRound()
+        {
+            switch (_round)
+            {
+                case RoundState.SynergySelect:
+                    ViewSynergySelect();
+                    ChangeRoundFiveSec();
+                    break;
+                case RoundState.WaitToStart:
+                    ViewWait();
+                    ChangeRoundFiveSec();
+                    break;
+                case RoundState.RoundStart:
+                    IncreaseRound();
+                    ChangeRoundFiveSec();
+                    break;
+                case RoundState.RoundEnd:
+                    ViewRoundWinner();
+                    ChangeRoundFiveSec();
+                    break;
+                case RoundState.GameEnd: // 게임 나가는 코드 넣어야해
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private void FixedUpdate()
+        {
+            if(!HasStateAuthority) return;
+            
+            if (RoundChangeTimer.Expired(Runner))
+            {
+                RoundChangeTimer = TickTimer.None;
+                RPCChangeRound(_round);
+            }
+        }
+
+        private void ChangeRoundFiveSec()
+        {
+            if(!HasStateAuthority) return;
+            
+            RoundChangeTimer = TickTimer.CreateFromSeconds(Runner, 5.0f);
+        }
+
+        private void ViewSynergySelect()
+        {
+            var gameUI = GameManager.Instance.UIHolder as GameUI;
+            gameUI.roundText.text = $"시너지 고르는 중 입니다.";
+        }
+
+        private void ViewWait()
+        {
+            var gameUI = GameManager.Instance.UIHolder as GameUI;
+            gameUI.roundText.text = $"기다리십쇼";
+        }
+        
+        private void IncreaseRound()
+        {
+            roundNum++;
+            var gameUI = GameManager.Instance.UIHolder as GameUI;
+            if (gameUI != null)
+            {
+                gameUI.roundText.text = $"ROUND {roundNum}";
+            } 
+        }
+
+        private void ViewRoundWinner()
+        {
+            _defeatRef = Runner.LocalPlayer;
+            foreach (var (key, value) in RoomPlayerList)
+            {
+                // 임시로 플레이어 이름 나오게 해놨음
+                if (key == _defeatRef)
+                {
+                    var gameUI = GameManager.Instance.UIHolder as GameUI;
+                    gameUI.roundText.text = $"{value.NickName}님이 승리하셨습니다!";
+                    return;
+                }
+            }
+        }
+        
+        private void ViewGameWinner()
+        {
+            _defeatRef = Runner.LocalPlayer;
+            foreach (var (key, value) in RoomPlayerList)
+            {
+                if (key != _defeatRef)
+                {
+                    var gameUI = GameManager.Instance.UIHolder as GameUI;
+                    gameUI.roundText.text = $"{value.NickName}님이 최종 승리하셨습니다!";
+                    return;
+                }
+            }
+        }
+    }
     
     public partial class NetworkManager : NetworkBehaviour
     {
-        [Networked]
-        private TickTimer _timer { get; set; }
-    
+        [Networked] private TickTimer _timer { get; set; }
+
         private RoomUI _roomUI;
 
         // Player
@@ -142,31 +275,26 @@ namespace Network
     
         private readonly Color32 _ready = Color.green;
         private readonly Color32 _notReady = Color.red;
-
+        
         public override void Spawned()
         {
             DontDestroyOnLoad(this);
+            GameManager.Instance.SetNetworkManager(this);
             GameManager.Instance.DeActiveLoadingUI();
             _roomUI = GameManager.Instance.UIHolder as RoomUI;
+
             RPCAddPlayer(Runner.LocalPlayer, $"Nick{Random.Range(1,100)}", Random.ColorHSV());
         }
     
         public override void FixedUpdateNetwork()
         {
-            // if (_timer.Expired(Runner))
-            // {
-            //     _timer = TickTimer.None;
-            //     GameObject.Find("테스트입니다").SetActive(false);
-            // }
-            // else if (_timer.IsRunning)
-            // {
-            //     GameObject.Find("테스트입니다").GetComponent<TMP_Text>().text = _timer.RemainingTime(Runner).ToString();
-            // }
+
         }
         
         // Mono에서는 Runner를 가져올 수 없어서 만든 Adapter 역할
         public void OnReady()
         {
+            Debug.Log(Runner);
             RPCReady(Runner.LocalPlayer);
         }
 
@@ -215,28 +343,35 @@ namespace Network
             RPCAddCharacterInPlayerData(playerRef, networkPlayerObject.GetComponent<NetworkPlayer>());
         }
         
-        public void AddHitData(Vector3 pos, float damage)
+        public void AddBlockHitData(Vector3 pos, float damage)
         {
             LocalCharacter.AddBlockHitData(pos, damage);
+        }
+        
+        public void AddCharacterHitData(NetworkObject networkObject)
+        {
+            LocalCharacter.AddCharacterHitData(networkObject);
         }
 
         private void InitialGame()
         {
+            WorldManager.Instance.GeneratorMap();
             SpawnPlayerCharacter(Runner.LocalPlayer);
             RPCLoadSceneComplete(Runner.LocalPlayer);
-            GameManager.Instance.DeActiveLoadingUI();
+            RPCChangeRound(RoundState.None);
         }
 
-        private IEnumerator LoadYourAsyncScene()
+        private IEnumerator LoadAsyncScene(int sceneNum)
         {
-            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(1);
-        
+            GameManager.Instance.ActiveLoadingUI();
+            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneNum);
+
             while (!asyncLoad.isDone)
             {
                 yield return null;
             }
-
-            InitialGame();
+            InitialGame(); 
+            GameManager.Instance.DeActiveLoadingUI();
         }
     }
 
@@ -315,8 +450,19 @@ namespace Network
         private void RPCStart()
         {
             Runner.SessionInfo.IsOpen = false;
-            GameManager.Instance.ActiveLoadingUI();
-            StartCoroutine(LoadYourAsyncScene());
+            StartCoroutine(LoadAsyncScene(1));
+        }
+        
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        private void RPCSendDefeat(PlayerRef playerRef)
+        {
+            _defeatRef = playerRef;
+        }
+        
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        private void RPCChangeRound(RoundState roundState)
+        {
+            ChangeRound(roundState);
         }
     }
 }

@@ -35,7 +35,11 @@ public class GameManager : Singleton<GameManager>
     {
         _synergyList = Resources.LoadAll<Synergy>(Path.Synergy);
         _uiLoadingPrefab = Resources.Load(Path.Loading) as GameObject;
-        NetworkManager = FindObjectOfType<NetworkManager>();
+    }
+
+    public void SetNetworkManager(NetworkManager networkManager)
+    {
+        NetworkManager = networkManager;
     }
 
     public bool GetSynergy(int index, out Synergy synergy)
@@ -91,5 +95,17 @@ public class GameManager : Singleton<GameManager>
             AddLoadingUI();
             _uiLoading.SetActive(false);
         }
+    }
+
+    // adapter
+    public void DisconnectedSever()
+    {
+        GameObject.Find("Spawner").GetComponent<Network.BasicSpawner>().DisconnectingServer();
+    }
+
+    public void OnReady()
+    {
+        if (NetworkManager == null) return;
+        NetworkManager.OnReady();
     }
 }

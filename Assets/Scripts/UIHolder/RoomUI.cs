@@ -15,7 +15,7 @@ namespace UIHolder
         {
             readyButton.onClick.AddListener(() =>
             {
-                GameManager.Instance.NetworkManager.OnReady();
+                GameManager.Instance.OnReady();
             });
         }
     }
