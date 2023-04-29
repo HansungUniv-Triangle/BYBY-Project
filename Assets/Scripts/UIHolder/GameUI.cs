@@ -13,6 +13,7 @@ namespace UIHolder
         public Button ultButton;
         public Button disconnectButton;
         public TextMeshProUGUI roundText;
+        public TextMeshProUGUI bulletText;
 
         protected override void Initial()
         {

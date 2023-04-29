@@ -27,19 +27,18 @@ namespace Network
         private NetworkProjectileHolder _projectileHolder;
 
         // 기본 스탯
-        private float _baseStat(WeaponStat weaponStat) => _projectileHolder.GetWeaponStatTotal(weaponStat);
-
-        // 변동 스탯
-        protected float Distance;
-        private float _additionalVelocity;
-        private float _additionalScale;
-        private float _additionalDamage;
-    
-        // 기본 + 변동 스탯
-        public float TotalVelocity => _baseStat(WeaponStat.Velocity) + _additionalVelocity;
-        public float TotalScale => _baseStat(WeaponStat.BulletSize) + _additionalScale;
-        public float TotalDamage => _baseStat(WeaponStat.Damage) + _additionalDamage;
+        protected float _baseStat(WeaponStat weaponStat) => _projectileHolder.GetWeaponStatTotal(weaponStat);
         protected float MaxRange => _baseStat(WeaponStat.Range);
+        protected float Distance;
+        
+        // 기본 + 변동 스탯
+        protected float TotalVelocity => _baseStat(WeaponStat.Velocity) + IndividualVelocity;
+        protected float IndividualVelocity;
+        protected float TotalScale => _baseStat(WeaponStat.BulletSize) + IndividualScale;
+        protected float IndividualScale;
+        protected float TotalDamage => _baseStat(WeaponStat.Damage) + IndividualDamage;
+        protected float IndividualDamage;
+        
         
         // 네트워크 관련
         [Networked] protected NetworkBool IsHit { get; set; }
@@ -52,12 +51,12 @@ namespace Network
             {
                 Debug.LogError("ProjectileBase가 2번 초기화 되었습니다.");
             }
+
+            IndividualVelocity = 0;
+            IndividualScale = 0;
+            IndividualDamage = 0;
             
             _projectileHolder = holder;
-            _additionalVelocity = 0;
-            _additionalScale = 0;
-            _additionalDamage = 0;
-            
             transform.localScale = new Vector3(TotalScale, TotalScale, TotalScale);
         }
 
@@ -95,40 +94,6 @@ namespace Network
             NetworkActive = false;
         }
 
-        protected void AddScale(float scale)
-        {
-            _additionalScale += scale;
-            transform.localScale = new Vector3(TotalScale, TotalScale, TotalScale);
-        }
-        
-        protected void AddVelocity(float velocity)
-        {
-            _additionalVelocity += velocity;
-        }
-        
-        protected void AddDamage(float damage)
-        {
-            _additionalDamage += damage;
-        }
-
-        protected NetworkPlayer GetNetworkPlayer(GameObject character)
-        {
-            if (character.TryGetComponent<NetworkPlayer>(out var networkPlayer))
-            {
-                return networkPlayer;
-            }
-            else
-            {
-                throw new Exception("히트 플레이어, 게임오브젝트에서 네트워크 플레이어를 찾을 수 없었음");
-            }
-        }
-
-        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        protected void RPCHitPlayer()
-        {
-            IsHit = true;
-        }
-        
         #region 오버라이드 메소드 (abstract, virtual)
         // 총알 파괴 조건
         protected abstract bool IsExpirationProjectile();

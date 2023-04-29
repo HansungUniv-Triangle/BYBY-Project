@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
+using DG.Tweening;
 using Fusion;
 using GameStatus;
+using TMPro;
 using Types;
+using UIHolder;
 using UnityEngine;
 
 namespace Network
@@ -16,6 +19,9 @@ namespace Network
 
         protected Transform WeaponTransform;
         protected Vector3 Target;
+        protected bool IsDoneShootAction;
+        protected int RemainBullet;
+        protected TextMeshProUGUI BulletText;
         
         [Networked] private TickTimer delay { get; set; }
 
@@ -26,9 +32,12 @@ namespace Network
             _projectileList = new List<NetworkObject>();
             _baseWeaponStat.AddStat(new Stat<WeaponStat>(WeaponStat.Velocity, 20, 0));
             _baseWeaponStat.AddStat(new Stat<WeaponStat>(WeaponStat.Range, 10, 0));
+            _baseWeaponStat.AddStat(new Stat<WeaponStat>(WeaponStat.Special, 12, 0));
+            _baseWeaponStat.AddStat(new Stat<WeaponStat>(WeaponStat.Bullet, 4, 0));
             
             WeaponTransform = gameObject.transform;
             Target = gameObject.transform.forward;
+            IsDoneShootAction = true;
         }
 
         private void Start()
@@ -37,13 +46,25 @@ namespace Network
             {
                 Debug.LogError("Holder 연결 에러");
             }
+            
+            RemainBullet = (int)GetWeaponStat(WeaponStat.Bullet).Total;
+            BulletText = (GameManager.Instance.UIHolder as GameUI).bulletText;
         }
 
         public override void FixedUpdateNetwork()
         {
             if (!Object.HasInputAuthority) return;
             
-            Attack();
+            if (RemainBullet == 0)
+            {
+                ReloadBullet();
+            }
+            else
+            {
+                Attack();
+            }
+
+            BulletText.text = RemainBullet.ToString();
         }
 
         public void SetTarget(Vector3 target)
@@ -77,6 +98,11 @@ namespace Network
         
         protected virtual bool CanAttack()
         {
+            if (!IsDoneShootAction)
+            {
+                return false;
+            }
+            
             if (delay.ExpiredOrNotRunning(Runner))
             {
                 delay = TickTimer.CreateFromSeconds(Runner, _baseWeaponStat.GetStat(WeaponStat.Interval).Total);
@@ -88,13 +114,42 @@ namespace Network
             }
         }
 
+        protected void ReloadBullet()
+        {
+            Sequence reloadSequence = DOTween.Sequence();
+
+            reloadSequence
+                .OnStart(() =>
+                {
+                    IsDoneShootAction = false;
+                    GameManager.Instance.ActiveLoadingUI();
+                })
+                .OnComplete(() =>
+                {
+                    IsDoneShootAction = true;
+                    GameManager.Instance.DeActiveLoadingUI();
+                });
+
+            var max = (int)GetWeaponStat(WeaponStat.Bullet).Total;
+            var time = (int)GetWeaponStat(WeaponStat.Reload).Total;
+            
+            for (int i = 0; i < max; i++)
+            {
+                reloadSequence
+                    .AppendCallback(() => RemainBullet++)
+                    .AppendInterval(0.5f);
+            }
+
+            reloadSequence.Play();
+        }
+
         protected abstract void Attack();
 
         #region 레벨
 
         public void IncreaseLevel()
         {
-            if (_baseWeaponStat.GetStat(WeaponStat.MaxLevel).Total > _level) _level++;
+            if (4 > _level) _level++;
         }
         
         public void DecreaseLevel()
@@ -111,6 +166,22 @@ namespace Network
 
         #region 스탯
 
+        protected void AddWeaponAdditionStat(WeaponStat weaponStat, float add)
+        {
+            GetWeaponStat(weaponStat).AddAddition(add);
+        }
+        
+        protected void AddCharAdditionStat(CharStat charStat, float add)
+        {
+            GetCharStat(charStat).AddAddition(add);
+        }
+        
+        protected Stat<CharStat> GetCharStat(CharStat stat)
+        {
+            var localCharacter = GameManager.Instance.NetworkManager.LocalCharacter;
+            return localCharacter.GetCharStat(stat);
+        }
+        
         public void AddWeaponStat(Stat<WeaponStat> stat)
         {
             _baseWeaponStat.AddStat(stat);

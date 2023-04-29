@@ -28,7 +28,7 @@ namespace Weapon
 
         public void IncreaseLevel()
         {
-            if (BaseWeaponStat.GetStat(WeaponStat.MaxLevel).Total > Level) Level++;
+            if (4 > Level) Level++;
         }
         
         public void DecreaseLevel()

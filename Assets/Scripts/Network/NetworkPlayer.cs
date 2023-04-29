@@ -40,7 +40,9 @@ namespace Network
         {
             public int Tick { get; set; }
             [Networked] public Vector3 BlockPos { get; set; }
-            [Networked] public float Damage { get; set; }
+            public int Damage { get; set; }
+            public NetworkBool Explode { get; set; }
+            public int Radius { get; set; }
         }
         
         public static void UpdateBlockHitList(Changed<NetworkPlayer> changed)
@@ -59,7 +61,14 @@ namespace Network
                     tick = data.Tick;
                     if (_blockHitLastTick < data.Tick)
                     {
-                        WorldManager.Instance.GetWorld().HitBlock(data.BlockPos, (int)data.Damage);
+                        if (data.Explode)
+                        {
+                            WorldManager.Instance.GetWorld().HitBlock(data.BlockPos, data.Damage);
+                        }
+                        else
+                        {
+                            WorldManager.Instance.GetWorld().ExplodeBlocks(data.BlockPos, data.Radius, data.Damage);
+                        }
                     }
                 }
 
@@ -67,19 +76,34 @@ namespace Network
             }
         }
 
-        public void AddBlockHitData(Vector3 pos, float damage)
+        public void AddBlockHitData(Vector3 pos, int radius, int damage)
         {
             if (BlockHitList.Count == BlockHitList.Capacity)
             {
                 BlockHitList.Remove(BlockHitList.Get(0));
             }
 
-            BlockHitList.Add(new BlockHitData
+            if (radius > 0)
             {
-                Tick = Runner.Tick,
-                BlockPos = pos,
-                Damage = damage
-            });
+                BlockHitList.Add(new BlockHitData
+                {
+                    Tick = Runner.Tick,
+                    BlockPos = pos,
+                    Radius = radius,
+                    Explode = true,
+                    Damage = damage
+                });
+            }
+            else
+            {
+                BlockHitList.Add(new BlockHitData
+                {
+                    Tick = Runner.Tick,
+                    BlockPos = pos,
+                    Damage = damage,
+                    Explode = false
+                });
+            }
         }
     }
     
@@ -328,7 +352,7 @@ namespace Network
                 {
                     case AttackType.Basic:
                         WorldManager.Instance.GetWorld().HitBlock(point, 1);
-                        AddBlockHitData(point, 1);
+                        AddBlockHitData(point, 0,1);
                         break;
 
                     case AttackType.Ultimate:

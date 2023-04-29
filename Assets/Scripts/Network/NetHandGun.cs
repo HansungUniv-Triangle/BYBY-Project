@@ -1,4 +1,7 @@
-﻿namespace Network
+﻿using DG.Tweening;
+using Types;
+
+namespace Network
 {
     public class NetHandGun : NetworkProjectileHolder
     {
@@ -6,7 +9,12 @@
         {
             if (CanAttack())
             {
-                SpawnProjectile(WeaponTransform);
+                DOTween.Sequence()
+                    .OnStart(() =>  RemainBullet--)
+                    .AppendCallback(() => SpawnProjectile(WeaponTransform))
+                    .AppendCallback(() => AddCharAdditionStat(CharStat.Speed, 10))
+                    .AppendInterval(0.1f)
+                    .AppendCallback(() => AddCharAdditionStat(CharStat.Speed, -10));
             }
         }
     }

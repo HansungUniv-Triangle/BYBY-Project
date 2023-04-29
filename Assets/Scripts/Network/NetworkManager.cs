@@ -346,9 +346,14 @@ namespace Network
             RPCAddCharacterInPlayerData(playerRef, networkPlayerObject.GetComponent<NetworkPlayer>());
         }
         
-        public void AddBlockHitData(Vector3 pos, float damage)
+        public void AddBlockHitData(Vector3 pos, int damage)
         {
-            LocalCharacter.AddBlockHitData(pos, damage);
+            LocalCharacter.AddBlockHitData(pos, 0, damage);
+        }
+        
+        public void AddBlockHitData(Vector3 pos, int radius, int damage)
+        {
+            LocalCharacter.AddBlockHitData(pos, radius, damage);
         }
         
         public void AddCharacterHitData(NetworkObject networkObject)
