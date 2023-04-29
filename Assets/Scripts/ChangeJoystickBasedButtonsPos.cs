@@ -3,14 +3,8 @@ using UnityEngine.EventSystems;
 
 public class ChangeJoystickBasedButtonsPos : MonoBehaviour, IPointerDownHandler
 {
-    private RectTransform rectTransform;
     private RectTransform buttonPanel;
     private Vector2 pos;
-
-    private void Awake()
-    {
-        rectTransform = GetComponent<RectTransform>();
-    }
 
     private void Start()
     {

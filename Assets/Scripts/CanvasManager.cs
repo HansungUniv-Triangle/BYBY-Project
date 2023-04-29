@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using Types;
 using UnityEngine;
 
-public class CanvasManager : Singleton<CanvasManager>
+public class CanvasManager
 {
     private GameObject _canvas;
     private CanvasController[] _canvasControllers;
     private CanvasType _lastActiveCanvasType;
 
-    protected override void Initiate()
+    public CanvasManager()
     {
-        // �ӽ�
         _canvas = GameObject.Find("Canvas");
         _canvasControllers = _canvas.GetComponentsInChildren<CanvasController>(true);
         foreach (var canvas in _canvasControllers)

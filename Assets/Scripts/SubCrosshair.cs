@@ -2,14 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UIHolder;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 public class SubCrosshair : MonoBehaviour
 {
-    public Move move;
-    public RectTransform SubCrossHairTransform;
-    private Joystick Joystick;
+    private RectTransform _subCrossHairTransform;
+    private Joystick _joystick;
     
     public int MaxAimingRange = 120;
     public float Speed = 15;
@@ -37,31 +37,27 @@ public class SubCrosshair : MonoBehaviour
         OnlyHorizontal = !OnlyHorizontal;
     }
     #endregion
-
-    public void SetJoystick()
+    
+    private void Start()
     {
-        Joystick = move.Joystick;
-    }
-
-    private void Awake()
-    {
-        SetJoystick();
+        _subCrossHairTransform = GetComponent<RectTransform>();
+        _joystick = (GameManager.Instance.UIHolder as GameUI)?.joystick;
     }
 
     private void Update()
     {
         var reverse = ReverseMove ? -1 : 1;
-        var h = Joystick.Horizontal * reverse;
-        var v = Joystick.Vertical * reverse;
+        var h = _joystick.Horizontal * reverse;
+        var v = _joystick.Vertical * reverse;
         v = OnlyHorizontal ? 0 : v;
         
-        var start = SubCrossHairTransform.anchoredPosition;
+        var start = _subCrossHairTransform.anchoredPosition;
         var dest = new Vector3(h * MaxAimingRange, v * MaxAimingRange);
 
         var distance = Vector3.Distance(start, dest);
         if (distance != 0)
         {
-            SubCrossHairTransform.anchoredPosition = 
+            _subCrossHairTransform.anchoredPosition = 
                 distance <= 0.01f ? dest : Vector3.Lerp(start, dest, Time.deltaTime * Speed);
         }
     }

@@ -231,7 +231,7 @@ public class Move : MonoBehaviour
         _gunRay = new Ray();
 
         _gameManager = GameManager.Instance;
-        _canvasManager = CanvasManager.Instance;
+        //_canvasManager = CanvasManager.Instance;
         
         _characterController = GetComponent<CharacterController>();
 
