@@ -9,13 +9,13 @@ namespace Network
     public abstract class NetworkProjectileHolder : NetworkBehaviour
     {
         private BaseStat<WeaponStat> _baseWeaponStat;
-        private Transform _weaponTransform;
         private int _level;
         private List<NetworkObject> _projectileList;
         [SerializeField]
         private NetworkObject _projectileObject;
 
-        public Vector3 target;
+        protected Transform WeaponTransform;
+        protected Vector3 Target;
         
         [Networked] private TickTimer delay { get; set; }
 
@@ -24,10 +24,11 @@ namespace Network
             _level = 1;
             _baseWeaponStat = new BaseStat<WeaponStat>(1, 1);
             _projectileList = new List<NetworkObject>();
-            _weaponTransform = gameObject.transform;
-            target = gameObject.transform.forward;
             _baseWeaponStat.AddStat(new Stat<WeaponStat>(WeaponStat.Velocity, 20, 0));
             _baseWeaponStat.AddStat(new Stat<WeaponStat>(WeaponStat.Range, 10, 0));
+            
+            WeaponTransform = gameObject.transform;
+            Target = gameObject.transform.forward;
         }
 
         private void Start()
@@ -43,6 +44,11 @@ namespace Network
             if (!Object.HasInputAuthority) return;
             
             Attack();
+        }
+
+        public void SetTarget(Vector3 target)
+        {
+            Target = target;
         }
         
         private void InitializeProjectile(NetworkRunner runner, NetworkObject obj)
@@ -62,7 +68,7 @@ namespace Network
             var obj = Runner.Spawn(
                 _projectileObject, 
                 position.position + Vector3.forward, 
-                Quaternion.LookRotation(target - gameObject.transform.position), 
+                Quaternion.LookRotation(Target - gameObject.transform.position), 
                 Runner.LocalPlayer,
                 InitializeProjectile
             );
@@ -82,14 +88,8 @@ namespace Network
             }
         }
 
-        protected virtual void Attack()
-        {
-            if (CanAttack())
-            {
-                SpawnProjectile(_weaponTransform);
-            }
-        }
-        
+        protected abstract void Attack();
+
         #region 레벨
 
         public void IncreaseLevel()

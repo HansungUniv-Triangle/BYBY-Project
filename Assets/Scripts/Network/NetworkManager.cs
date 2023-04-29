@@ -104,7 +104,10 @@ namespace Network
         {
             if (_networkObjectList.Count > 10)
             {
-                _networkObjectList.RemoveAt(0);
+                if (_networkObjectList[0].HasStateAuthority)
+                {
+                    Runner.Despawn(_networkObjectList[0]);
+                }
             }
             _networkObjectList.Add(networkObject);
         }

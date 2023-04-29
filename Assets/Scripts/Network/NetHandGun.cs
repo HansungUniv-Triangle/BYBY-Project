@@ -2,6 +2,12 @@
 {
     public class NetHandGun : NetworkProjectileHolder
     {
-        // 딱히 넣을게 없음.
+        protected override void Attack()
+        {
+            if (CanAttack())
+            {
+                SpawnProjectile(WeaponTransform);
+            }
+        }
     }
 }

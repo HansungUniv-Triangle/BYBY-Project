@@ -2,8 +2,6 @@ using System;
 using Fusion;
 using Network;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
 using Utils;
 
 public class GameManager : Singleton<GameManager>

@@ -297,7 +297,7 @@ namespace Network
             var weapon = GetComponentInChildren<NetworkProjectileHolder>();
             if (weapon)
             {
-                weapon.target = targetPoint;
+                weapon.SetTarget(targetPoint);
             }
 
             //LaserBeam(_gunRay, _shootDistance, attackType, lineRenderer);
