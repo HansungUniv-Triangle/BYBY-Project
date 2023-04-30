@@ -252,61 +252,63 @@ namespace Network
     public partial class NetworkPlayer
     {
         private Ray _gunRay;
+        private RaycastHit _hit;
         private float _shootDistance = 30f;
         private int _damage = 1;
         private bool isShooting = true;
+        private const int shootRayMask = (int)Layer.Enemy | (int)Layer.World;
         
+        public float distCam = 13f;
+        public float yOffset = 0f;
         public void ToggleShooting() { isShooting = !isShooting; }
 
         private void Shoot(AttackType attackType, LineRenderer lineRenderer)    // 라인렌더러는 임시
         {
             if (!isShooting) return;
             
-            var aimRay = Camera.main.ScreenPointToRay(GetCrossHairPointInScreen());
-            _gunRay.origin = GunPos.position;
-
-            // 화면 중앙으로 쏘는 레이는 원점이 플레이어 앞에서 시작되어야 한다.
-            // 그렇지 않으면 플레이어는 크로스헤어에는 걸렸지만, 뒤에 있는 물체를 부수게 된다.
-            // 발사하는 주체는 제외
+            var aimRay = _camera.ScreenPointToRay(GetCrossHairPointInScreen());
+            // 조준점으로 쏘는 레이의 원점이 플레이어 앞에서 시작되어야 한다.
+            // 그렇지 않으면, 플레이어의 총알은 플레이어의 뒤에 있지만, 조준점에는 걸린 물체로 날아가게 된다. 한마디로 뒤로 쏘게 된다.
+            var aimRayOrigin = aimRay.origin + aimRay.direction * distCam;
             
-            if (Physics.Raycast(aimRay.origin + aimRay.direction * 10, aimRay.direction, out var hit, _shootDistance) 
-                && hit.transform.gameObject != gameObject)
+            /* 총알이 날아갈 지점 구하기 */
+            _gunRay.origin = GunPos.position;
+            
+            //Debug.DrawRay(aimRayOrigin, aimRay.direction * _shootDistance, Color.blue, 0.3f);
+            if (Physics.Raycast(aimRayOrigin, aimRay.direction, out _hit, _shootDistance, shootRayMask))
             {
-                _gunRay.direction = (hit.point - GunPos.position).normalized;
+                _gunRay.direction = (_hit.point - _gunRay.origin).normalized;
             }
             else
             {
-                _gunRay.direction = ((aimRay.origin + aimRay.direction * 10 + aimRay.direction * _shootDistance) - GunPos.position).normalized;
+                _gunRay.direction = ((aimRayOrigin + aimRay.direction * _shootDistance) - _gunRay.origin).normalized;
             }
-            
+            //Debug.DrawRay(_gunRay.origin, _gunRay.direction * _shootDistance, Color.magenta, 0.3f);
             targetPoint = _gunRay.origin + _gunRay.direction * _shootDistance;
-            GetComponentInChildren<NetworkProjectileHolder>().target = targetPoint;
             LaserBeam(_gunRay, _shootDistance, attackType, lineRenderer);
         }
 
         private void LaserBeam(Ray gunRay, float aimDistance, AttackType attackType, LineRenderer lineRenderer)
         {
-            RaycastHit hit;
-            
             lineRenderer.SetPosition(0, gunRay.origin);
-            lineRenderer.SetPosition(1, targetPoint);
-            
-            if (Physics.Raycast(gunRay, out hit, aimDistance, (int)(Layer.World | Layer.Enemy)))
-            {
-                var point = hit.point - hit.normal * 0.01f;
 
-                if (hit.transform.gameObject == _target.gameObject)
+            /* 실제 총알이 날아가는 경로 */
+            if (Physics.Raycast(gunRay, out _hit, aimDistance, shootRayMask))
+            {
+                var point = _hit.point - _hit.normal * 0.01f;
+
+                if (_hit.transform.gameObject == _target.gameObject)
                 {
                     // 임시 헤드 판정
-                    var isCritical = hit.point.y - (_target.transform.position.y - 1) > 1.25f;
+                    var isCritical = _hit.point.y - (_target.transform.position.y - 1) > 1.25f;
                     _gameUI.hitDamageText.GetComponent<HitDamage>().HitDamageAnimation(_damage, isCritical);
                 }
                 
                 switch (attackType)
                 {
                     case AttackType.Basic:
-                        WorldManager.Instance.GetWorld().HitBlock(point, 1);
-                        AddBlockHitData(point, 1);
+                        //WorldManager.Instance.GetWorld().HitBlock(point, 1);
+                        //AddBlockHitData(point, 1);
                         break;
 
                     case AttackType.Ultimate:
@@ -317,14 +319,16 @@ namespace Network
                         throw new ArgumentOutOfRangeException(nameof(attackType), attackType, null);
                 }
 
-                targetPoint = hit.point;
-                lineRenderer.SetPosition(1, targetPoint);
+                targetPoint = _hit.point;
             }
+            
+            GetComponentInChildren<NetworkProjectileHolder>().target = targetPoint;
+            lineRenderer.SetPosition(1, targetPoint);
         }
 
         private Vector3 GetCrossHairPointInScreen()
         {
-            var position = _crossHair.transform.position;
+            var position = _crossHair.position;
             return new Vector3(position.x, position.y, 0);
         }
     }
@@ -341,13 +345,10 @@ namespace Network
 
         #region 타겟 지정 관련 변수
         private GameObject _target;
-        private RaycastHit _raycast;
-        public float maxDistance = 10.0f;
         #endregion
         
         #region 움직임 관련 변수
         private Joystick _joystick;
-        private Transform _transform;
         private Vector3 moveDir;
         private float gravity = 15.0f;
         private float jumpForce = 7.0f;
@@ -364,7 +365,8 @@ namespace Network
         private CanvasManager _canvasManager;
         private GameManager _gameManager;
         private GameUI _gameUI;
-
+        private Camera _camera;
+        
         public float _maxHP;
         public float _nowHP;
 
@@ -384,31 +386,31 @@ namespace Network
             _canvasManager = _gameUI.canvasManager;
             _crossHair = _gameUI.crossHair;
             _joystick = _gameUI.joystick;
+            _camera = Camera.main;
             
             if (HasStateAuthority)
             {
-                Camera.main.GetComponent<PlayerCamera>().AddPlayer(transform);
+                _camera.GetComponent<PlayerCamera>().AddPlayer(transform);
                 _target = GameObject.Find("허수아비");
                 
                 // 혼자 테스트용 코드
                 if (Runner.ActivePlayers.Count() == 1)
                 {
                     _target = GameObject.Find("허수아비");
-                    Camera.main.GetComponent<PlayerCamera>().AddEnemy(_target.transform);
+                    _camera.GetComponent<PlayerCamera>().AddEnemy(_target.transform);
                 }
                 _canvasManager.SwitchUI(CanvasType.GameMoving);
             }
             else
             {
                 _target = GameObject.Find("허수아비");
-                Camera.main.GetComponent<PlayerCamera>().AddEnemy(_target.transform);
+                _camera.GetComponent<PlayerCamera>().AddEnemy(_target.transform);
                 return;
             }
             
             moveDir = Vector3.zero;
             GunPos = transform; // 총 위치로 수정해야함.
-
-            _transform = gameObject.transform;
+            
             _characterController = GetComponent<CharacterController>();
 
             ShotLine = Instantiate(ShotLine);
@@ -416,6 +418,11 @@ namespace Network
 
             // 자신은 타겟팅 되지 않기 위해 레이어 변경
             gameObject.layer = LayerMask.NameToLayer("Player");
+        }
+
+        public void SetGunPos(Transform transform)
+        {
+            GunPos = transform;
         }
         
         public override void FixedUpdateNetwork()
@@ -452,13 +459,13 @@ namespace Network
             if (_characterController.isGrounded)
             {
                 moveDir = new Vector3(h, 0, v);
-                moveDir = _transform.TransformDirection(moveDir);
+                moveDir = transform.TransformDirection(moveDir);
                 moveDir *= speed;
             }
             else
             {
                 var tmp = new Vector3(h, 0, v);
-                tmp = _transform.TransformDirection(tmp);
+                tmp = transform.TransformDirection(tmp);
                 tmp *= (speed * 0.7f);
             
                 moveDir.x = tmp.x;
@@ -486,7 +493,7 @@ namespace Network
                 relativePosition.y = 0; // y축은 바라보지 않도록 함
                 var targetRotation = Quaternion.LookRotation(relativePosition);
 
-                _transform.rotation = Quaternion.Lerp(_transform.rotation, targetRotation, Runner.DeltaTime * 8f);
+                transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Runner.DeltaTime * 8f);
             }
         }
 

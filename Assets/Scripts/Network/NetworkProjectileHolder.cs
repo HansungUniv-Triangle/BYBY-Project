@@ -61,7 +61,7 @@ namespace Network
         {
             var obj = Runner.Spawn(
                 _projectileObject, 
-                position.position + Vector3.forward, 
+                position.position, //+ position.TransformDirection(Vector3.forward), 
                 Quaternion.LookRotation(target - gameObject.transform.position), 
                 Runner.LocalPlayer,
                 InitializeProjectile

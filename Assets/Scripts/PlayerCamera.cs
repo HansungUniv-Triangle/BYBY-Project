@@ -15,8 +15,8 @@ public class PlayerCamera : MonoBehaviour
     private Vector3 _originalCameraPos;
     private Vector3 _originalCameraFocusPos;
 
-    private float _moveSpeed = 4f;  // 고정된 값 필요, 너무 빠르면 어지러움증 유발
-    private float _rotationSpeed;
+    private readonly float _moveSpeed = 4f; // 고정된 값 필요, 너무 빠르면 어지러움증 유발
+    private readonly float _rotationSpeed = 8f;
 
     private RaycastHit _hit;
     private Ray _ray;
@@ -66,7 +66,7 @@ public class PlayerCamera : MonoBehaviour
 
     private void CameraMovement()
     {
-        _rotationSpeed = _networkPlayer.GetCharStat(CharStat.Speed).Total;
+        //_rotationSpeed = _networkPlayer.GetCharStat(CharStat.Speed).Total;
 
         if (NetworkPlayer.isCameraFocused)
         {

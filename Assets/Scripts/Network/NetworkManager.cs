@@ -211,8 +211,11 @@ namespace Network
             
             NetworkObject gun = Runner.Spawn(_handGun, spawnPosition + Vector3.up, Quaternion.identity, playerRef);
             gun.transform.SetParent(networkPlayerObject.transform);
-        
-            RPCAddCharacterInPlayerData(playerRef, networkPlayerObject.GetComponent<NetworkPlayer>());
+
+            var networkPlayer = networkPlayerObject.GetComponent<NetworkPlayer>();
+            networkPlayer.SetGunPos(gun.transform);
+            
+            RPCAddCharacterInPlayerData(playerRef, networkPlayer);
         }
         
         public void AddHitData(Vector3 pos, float damage)
