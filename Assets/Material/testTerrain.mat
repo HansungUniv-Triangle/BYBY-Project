@@ -21,7 +21,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: testTerrain
-  m_Shader: {fileID: 4800000, guid: df695d70c539c3d4c87b79de307ab7bb, type: 3}
+  m_Shader: {fileID: 4800000, guid: 7a06e458000b70b4daf220f2785b9711, type: 3}
   m_ValidKeywords:
   - _MK_ALBEDO_MAP
   - _MK_ALPHA_CLIPPING
@@ -33,14 +33,12 @@ Material:
   - _MK_RECEIVE_SHADOWS
   - _MK_RIM_DEFAULT
   - _MK_THRESHOLD_MAP
-  - _MK_WRAPPED_DIFFUSE
   m_InvalidKeywords:
   - _ALPHACLIPPING_ON
   - _FRESNELHIGHLIGHTS_ON
   - _MK_OUTLINE_HULL_CLIP
   - _MK_OUTLINE_NOISE
   - _RECEIVESHADOWS_ON
-  - _WRAPPEDLIGHTING_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -156,6 +154,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _RefractionDistortionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _RimRamp:
         m_Texture: {fileID: 2800000, guid: c0e7030002b659d4da3a7b86988b4828, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -217,6 +219,10 @@ Material:
     - _BlendSrcAlpha: 1
     - _Brightness: 1
     - _BumpScale: 1
+    - _CameraFade: 0
+    - _CameraFadeFarDistance: 2
+    - _CameraFadeNearDistance: 1
+    - _ColorBlend: 0
     - _ColorGrading: 0
     - _Contrast: 1
     - _Cutoff: 0.486
@@ -236,12 +242,14 @@ Material:
     - _DrawnMapScale: 2.5
     - _DstBlend: 0
     - _EnvironmentReflections: 0
+    - _Flipbook: 0
     - _FresnelHighlights: 1
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
     - _GoochRampIntensity: 0.5
-    - _HatchingMapScale: 21
+    - _HatchingMapScale: 5
+    - _IndexOfRefraction: 0
     - _IndirectFade: 1
     - _Initialized: 1
     - _InputTab: 1
@@ -273,11 +281,16 @@ Material:
     - _OutlineTab: 1
     - _OverwriteBlend: 0
     - _Parallax: 0.02
+    - _ParticlesTab: 0
     - _ReceiveShadows: 1
+    - _RefractionDistortion: 0.1
+    - _RefractionDistortionFade: 0.5
+    - _RefractionDistortionMapScale: 1
+    - _RefractionTab: 0
     - _RenderFace: 2
     - _RenderPriority: 0
     - _Rim: 1
-    - _RimSize: 2.58
+    - _RimSize: 1.92
     - _RimSmoothness: 0.5
     - _RimThresholdOffset: 0.648
     - _Roughness: 0.5
@@ -285,6 +298,9 @@ Material:
     - _SketchMapScale: 1
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
+    - _SoftFade: 0
+    - _SoftFadeFarDistance: 1
+    - _SoftFadeNearDistance: 0
     - _Specular: 0
     - _SpecularHighlights: 1
     - _SpecularIntensity: 10
@@ -307,7 +323,7 @@ Material:
     - _VertexAnimationIntensity: 0.05
     - _VertexAnimationStutter: 0
     - _Workflow: 0
-    - _WrappedLighting: 1
+    - _WrappedLighting: 0
     - _ZTest: 4
     - _ZWrite: 1
     m_Colors:
@@ -317,12 +333,12 @@ Material:
     - _DissolveBorderColor: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _GoochBrightColor: {r: 1, g: 1, b: 1, a: 1}
-    - _GoochDarkColor: {r: 0.49056602, g: 0.49056602, b: 0.49056602, a: 1}
+    - _GoochDarkColor: {r: 0.82639474, g: 0.5191349, b: 0.8962264, a: 1}
     - _IridescenceColor: {r: 1, g: 1, b: 1, a: 0.5}
     - _LightTransmissionColor: {r: 1, g: 0.65, b: 0, a: 1}
     - _OutlineColor: {r: 0, g: 0, b: 0, a: 1}
     - _RimBrightColor: {r: 1, g: 1, b: 1, a: 1}
-    - _RimColor: {r: 0, g: 0, b: 0, a: 1}
+    - _RimColor: {r: 0.16544978, g: 0.03681023, b: 0.41509432, a: 1}
     - _RimDarkColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecularColor: {r: 0.20312497, g: 0.20312497, b: 0.20312497, a: 1}
     - _VertexAnimationFrequency: {r: 2.5, g: 2.5, b: 2.5, a: 1}

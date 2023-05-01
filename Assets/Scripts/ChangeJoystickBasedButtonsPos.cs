@@ -17,14 +17,14 @@ public class ChangeJoystickBasedButtonsPos : MonoBehaviour, IPointerDownHandler
         if (Screen.width * 0.5f > eventData.position.x)     
         {
             buttonPanel.anchorMin = buttonPanel.anchorMax = new Vector2(1f, 0);
-            pos = new Vector2(-100, 0);
+            pos = new Vector2(-75, 0);
         }
         // screen right
         else
         {
 
             buttonPanel.anchorMin = buttonPanel.anchorMax = new Vector2(0f, 0);; 
-            pos = new Vector2(100, 0);
+            pos = new Vector2(75, 0);
         }
 
         buttonPanel.anchoredPosition = pos;

@@ -177,6 +177,10 @@ Material:
     - _BlendSrcAlpha: 1
     - _Brightness: 1
     - _BumpScale: 1
+    - _CameraFade: 0
+    - _CameraFadeFarDistance: 2
+    - _CameraFadeNearDistance: 1
+    - _ColorBlend: 0
     - _ColorGrading: 0
     - _Contrast: 1
     - _Cutoff: 0.5
@@ -192,6 +196,7 @@ Material:
     - _DrawnMapScale: 1
     - _DstBlend: 0
     - _EnvironmentReflections: 1
+    - _Flipbook: 0
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
@@ -218,9 +223,10 @@ Material:
     - _OutlineFadeMax: 2
     - _OutlineFadeMin: 0.25
     - _OutlineNoise: 0
-    - _OutlineSize: 200
+    - _OutlineSize: 100
     - _OutlineTab: 1
     - _Parallax: 0.02
+    - _ParticlesTab: 1
     - _ReceiveShadows: 1
     - _RenderFace: 2
     - _RenderPriority: 0
@@ -232,6 +238,9 @@ Material:
     - _SketchMapScale: 1
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
+    - _SoftFade: 0
+    - _SoftFadeFarDistance: 1
+    - _SoftFadeNearDistance: 0
     - _Specular: 1
     - _SpecularHighlights: 1
     - _SpecularIntensity: 0.25

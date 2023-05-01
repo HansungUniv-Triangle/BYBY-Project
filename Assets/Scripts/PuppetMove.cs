@@ -98,7 +98,7 @@ public class PuppetMove : MonoBehaviour
     
     void Update()
     {
-        if (target is null)
+        if (target == null)
         {
             target = GameManager.Instance.NetworkManager.LocalCharacter.gameObject;
         }

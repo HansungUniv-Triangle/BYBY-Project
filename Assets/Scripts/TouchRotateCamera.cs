@@ -26,9 +26,13 @@ public class TouchRotateCamera : MonoBehaviour, IBeginDragHandler, IDragHandler,
 
     public bool isReady = false;
 
-    private void OnEnable()
+    private void Update()
     {
         FindCamPivot();
+    }
+
+    private void OnEnable()
+    {
         if (!isReady) return;
 
         Quaternion rotation = camPivot.rotation;
@@ -44,6 +48,7 @@ public class TouchRotateCamera : MonoBehaviour, IBeginDragHandler, IDragHandler,
             {
                 camPivot = GameManager.Instance.NetworkManager.LocalCharacter.transform;
                 isReady = true;
+                OnEnable();
             }
         }
     }

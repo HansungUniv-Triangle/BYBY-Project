@@ -220,9 +220,9 @@ Material:
     - _ZTest: 4
     - _ZWrite: 1
     m_Colors:
-    - _AlbedoColor: {r: 0.5518868, g: 0.96460587, b: 1, a: 1}
+    - _AlbedoColor: {r: 0.78679246, g: 0.98316777, b: 1, a: 1}
     - _BaseColor: {r: 0.5518868, g: 0.9646059, b: 1, a: 1}
-    - _Color: {r: 0.5518868, g: 0.96460587, b: 1, a: 1}
+    - _Color: {r: 0.78679246, g: 0.9831677, b: 1, a: 1}
     - _Color0: {r: 1, g: 0, b: 0, a: 1}
     - _Color1: {r: 0, g: 1, b: 0, a: 1}
     - _DissolveBorderColor: {r: 1, g: 1, b: 1, a: 1}
