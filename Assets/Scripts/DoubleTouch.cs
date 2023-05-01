@@ -17,6 +17,7 @@ public class DoubleTouch : MonoBehaviour, IPointerDownHandler
         {
             isDoubleClicked = true;
             doubleClickedTime = -1.0f;
+            GetComponent<FloatingJoystick>().OnPointerUp(eventData);    // ¡∂¿ÃΩ∫∆Ω ≤Ù±‚
             button.onClick.Invoke();
         }
         else
