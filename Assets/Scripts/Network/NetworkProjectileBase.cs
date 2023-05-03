@@ -19,12 +19,11 @@ namespace Network
         
         private void DeActiveNetworkObject()
         {
-            if(_projectileHolder)
-                _projectileHolder.RemoveProjectile(Object, NetworkActive);
             gameObject.SetActive(NetworkActive);
         }
         
-        private NetworkProjectileHolder _projectileHolder;
+        protected NetworkProjectileHolder _projectileHolder;
+        private Rigidbody _rigidbody;
 
         // 기본 스탯
         protected float _baseStat(WeaponStat weaponStat) => _projectileHolder.GetWeaponStatTotal(weaponStat);
@@ -33,16 +32,16 @@ namespace Network
         
         // 기본 + 변동 스탯
         protected float TotalVelocity => _baseStat(WeaponStat.Velocity) + IndividualVelocity;
-        protected float IndividualVelocity;
+        public float IndividualVelocity;
         protected float TotalScale => _baseStat(WeaponStat.BulletSize) + IndividualScale;
-        protected float IndividualScale;
+        public float IndividualScale;
         protected float TotalDamage => _baseStat(WeaponStat.Damage) + IndividualDamage;
-        protected float IndividualDamage;
-        
-        
+        public float IndividualDamage;
+
         // 네트워크 관련
         [Networked] protected NetworkBool IsHit { get; set; }
         [Networked] public float Damage { get; set; }
+        public float DamageSave;
          
         // 초기화
         public void Initialized(NetworkProjectileHolder holder)
@@ -51,13 +50,19 @@ namespace Network
             {
                 Debug.LogError("ProjectileBase가 2번 초기화 되었습니다.");
             }
+            
+            _projectileHolder = holder;
 
             IndividualVelocity = 0;
             IndividualScale = 0;
             IndividualDamage = 0;
-            
-            _projectileHolder = holder;
+
             transform.localScale = new Vector3(TotalScale, TotalScale, TotalScale);
+        }
+
+        private void Awake()
+        {
+            _rigidbody = GetComponent<Rigidbody>();
         }
 
         public override void Spawned()
@@ -72,10 +77,13 @@ namespace Network
 
         public override void FixedUpdateNetwork()
         {
-            if (!Object.HasInputAuthority) return;
+            DamageSave = Damage;
+
+            if (!Object.HasStateAuthority) return;
             
             Distance += Runner.DeltaTime * TotalVelocity;
             Damage = TotalDamage;
+            
             UpdateProjectile();
             
             if (IsExpirationProjectile())
@@ -84,21 +92,20 @@ namespace Network
             }
         }
         
-        private void DestroyProjectile()
+        public void DestroyProjectile()
         {
-            if (_projectileHolder is null)
-            {
-                throw new Exception($"{nameof(gameObject)} : {Message.CantAssignHolder}");
-            }
-
             NetworkActive = false;
         }
-
+        
         #region 오버라이드 메소드 (abstract, virtual)
         // 총알 파괴 조건
         protected abstract bool IsExpirationProjectile();
-        // 총알이 어떻게 움직이는가
-        protected abstract void UpdateProjectile();
+        
+        protected virtual void UpdateProjectile()
+        {
+            _rigidbody.AddForce(gameObject.transform.forward * (TotalVelocity / 10), ForceMode.VelocityChange);
+        }
+        
         #endregion
     }
 }

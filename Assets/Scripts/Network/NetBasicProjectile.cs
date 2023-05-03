@@ -14,16 +14,25 @@ namespace Network
             return Distance > MaxRange;
         }
 
-        protected override void UpdateProjectile()
+        private void OnTriggerEnter(Collider other)
         {
-            transform.position += gameObject.transform.forward * (TotalVelocity * Runner.DeltaTime);
+            if(IsHit) return;
+            
+            if (other.gameObject.TryGetComponent(out ICollisionBullet collisionBullet))
+            { // 추후 해당 인터페이스로 변경할 것.
+                collisionBullet.CollisionBullet(Object);
+                if (!collisionBullet.CollisionBulletIsHitCheck())
+                {
+                    IsHit = true;
+                }
+            }
         }
 
         private void OnCollisionEnter(Collision collision)
         {
             if(IsHit) return;
             var objectLayer = collision.collider.gameObject.layer;
-
+            
             if (objectLayer.Equals(LayerMask.NameToLayer("World")))
             {
                 var hit = collision.contacts[0];

@@ -62,7 +62,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: c7379e5ed9e7e484ab53e7acdf283fd3, type: 2}
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -107,11 +107,11 @@ GameObject:
   m_Component:
   - component: {fileID: 6339508871230178698}
   - component: {fileID: 6339508871230178697}
+  - component: {fileID: 6339508871230178699}
   - component: {fileID: 731377849170397947}
   - component: {fileID: -2824537534770099128}
-  - component: {fileID: -4206603946461993535}
   m_Layer: 9
-  m_Name: Cannon_Projectile
+  m_Name: Basic_Projectile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -161,6 +161,24 @@ MonoBehaviour:
     RotTeleportRadians: 1.5
   UseLegacySharedModeInterpolation: 0
   TargetInterpolationDelay: 0.03
+--- !u!114 &6339508871230178699
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6339508871230178710}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 593248cf901b42eea3f9a9ba2909f2d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _interpolationDataSource: 0
+  IndividualVelocity: 0
+  IndividualScale: 0
+  IndividualDamage: 0
+  _Damage: 0
+  DamageSave: 0
 --- !u!114 &731377849170397947
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -180,11 +198,11 @@ MonoBehaviour:
   AoiPositionSource: {fileID: 0}
   Flags: 2305
   NetworkGuid:
-    RawGuidValue: e45726408c37aa140bf2bb2b7cc75c1f
+    RawGuidValue: 2a259965b1266844f92f128fef025bf9
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 6339508871230178697}
-  - {fileID: -4206603946461993535}
+  - {fileID: 6339508871230178699}
   SimulationBehaviours: []
 --- !u!54 &-2824537534770099128
 Rigidbody:
@@ -202,21 +220,3 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 2
---- !u!114 &-4206603946461993535
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6339508871230178710}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 18c5dd0113f14d0184e20085a9fa78f4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
-  IndividualVelocity: 0
-  IndividualScale: 0
-  IndividualDamage: 0
-  _Damage: 0
-  DamageSave: 0

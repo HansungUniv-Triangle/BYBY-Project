@@ -170,7 +170,7 @@ namespace Network
 
         private void OnHit(NetworkObject projectile)
         {
-            var damage = projectile.GetComponent<NetworkProjectileBase>().Damage;
+            var damage = projectile.GetComponent<NetworkProjectileBase>().DamageSave;
             var armor = _baseCharStat.GetStat(CharStat.Armor).Total;
             var calcDamage = damage * (100 / (100 + armor));
             NowHp -= calcDamage;

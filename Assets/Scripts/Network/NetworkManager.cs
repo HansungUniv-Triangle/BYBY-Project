@@ -17,7 +17,7 @@ namespace Network
         {
             public NetworkString<_16> NickName;
             public NetworkBool IsReady;
-            public NetworkBool DoneLoading;
+            public NetworkBool IsDoneLoading;
             public NetworkBehaviourId Character;
             public Color PlayerColor;
         }
@@ -274,8 +274,7 @@ namespace Network
 
         // Player
         [SerializeField] private NetworkPrefabRef _playerPrefab;
-        [SerializeField] private NetworkPrefabRef _handGun;
-    
+
         private readonly Color32 _ready = Color.green;
         private readonly Color32 _notReady = Color.red;
         
@@ -288,12 +287,7 @@ namespace Network
 
             RPCAddPlayer(Runner.LocalPlayer, $"Nick{Random.Range(1,100)}", Random.ColorHSV());
         }
-    
-        public override void FixedUpdateNetwork()
-        {
 
-        }
-        
         // Mono에서는 Runner를 가져올 수 없어서 만든 Adapter 역할
         public void OnReady()
         {
@@ -339,9 +333,14 @@ namespace Network
             //Vector3 spawnPosition = new Vector3((playerRef.RawEncoded % Runner.Config.Simulation.DefaultPlayers) * 3,1,0);
             Vector3 spawnPosition = new Vector3((playerRef.RawEncoded % Runner.Config.Simulation.DefaultPlayers) + 20, 30, 10);
             NetworkObject networkPlayerObject = Runner.Spawn(_playerPrefab, spawnPosition, Quaternion.identity, playerRef);
+
+            var mainWeapon = GameManager.Instance.SelectWeapon;
+            NetworkObject mainWeaponSpawn = Runner.Spawn(mainWeapon, spawnPosition + Vector3.up, Quaternion.identity, playerRef);
+            mainWeaponSpawn.transform.SetParent(networkPlayerObject.transform);
             
-            NetworkObject gun = Runner.Spawn(_handGun, spawnPosition + Vector3.up, Quaternion.identity, playerRef);
-            gun.transform.SetParent(networkPlayerObject.transform);
+            var subWeapon = GameManager.Instance.subWeaponList[0];
+            NetworkObject subWeaponSpawn = Runner.Spawn(subWeapon, spawnPosition + Vector3.up * 2, Quaternion.identity, playerRef);
+            subWeaponSpawn.transform.SetParent(networkPlayerObject.transform);
         
             RPCAddCharacterInPlayerData(playerRef, networkPlayerObject.GetComponent<NetworkPlayer>());
         }
@@ -397,7 +396,7 @@ namespace Network
             RoomPlayerList.Add(playerRef, new RoomPlayerData {
                 NickName = nick,
                 IsReady = false,
-                DoneLoading = false,
+                IsDoneLoading = false,
                 PlayerColor = color
             });
         }
@@ -440,7 +439,7 @@ namespace Network
         {
             if (RoomPlayerList.TryGet(playerRef, out RoomPlayerData roomPlayerData))
             {
-                roomPlayerData.DoneLoading = true;
+                roomPlayerData.IsDoneLoading = true;
                 RoomPlayerList.Set(playerRef, roomPlayerData);
             
                 if (HasStateAuthority && IsAllPlayerReady())

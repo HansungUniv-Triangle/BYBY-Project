@@ -11,7 +11,7 @@ namespace Network
 {
     public abstract class NetworkProjectileHolder : NetworkBehaviour
     {
-        private BaseStat<WeaponStat> _baseWeaponStat;
+        protected BaseStat<WeaponStat> _baseWeaponStat;
         private int _level;
         private List<NetworkObject> _projectileList;
         [SerializeField]
@@ -23,17 +23,20 @@ namespace Network
         protected int RemainBullet;
         protected TextMeshProUGUI BulletText;
         
-        [Networked] private TickTimer delay { get; set; }
+        [Networked] protected TickTimer delay { get; set; }
 
         private void Awake()
         {
             _level = 1;
             _baseWeaponStat = new BaseStat<WeaponStat>(1, 1);
             _projectileList = new List<NetworkObject>();
+            
+            _baseWeaponStat.AddStat(new Stat<WeaponStat>(WeaponStat.Damage, 10, 0));
             _baseWeaponStat.AddStat(new Stat<WeaponStat>(WeaponStat.Velocity, 20, 0));
             _baseWeaponStat.AddStat(new Stat<WeaponStat>(WeaponStat.Range, 10, 0));
-            _baseWeaponStat.AddStat(new Stat<WeaponStat>(WeaponStat.Special, 12, 0));
-            _baseWeaponStat.AddStat(new Stat<WeaponStat>(WeaponStat.Bullet, 4, 0));
+            _baseWeaponStat.AddStat(new Stat<WeaponStat>(WeaponStat.Special, 6, 0));
+            _baseWeaponStat.AddStat(new Stat<WeaponStat>(WeaponStat.Bullet, 10, 0));
+            _baseWeaponStat.AddStat(new Stat<WeaponStat>(WeaponStat.Reload, 10, 0));
             
             WeaponTransform = gameObject.transform;
             Target = gameObject.transform.forward;
@@ -55,14 +58,7 @@ namespace Network
         {
             if (!Object.HasInputAuthority) return;
             
-            if (RemainBullet == 0)
-            {
-                ReloadBullet();
-            }
-            else
-            {
-                Attack();
-            }
+            Attack();
 
             BulletText.text = RemainBullet.ToString();
         }
@@ -78,13 +74,7 @@ namespace Network
             objInit.Initialized(this);
         }
 
-        public void RemoveProjectile(NetworkObject projectile, bool networkActive)
-        {
-            if (networkActive) return;
-            _projectileList.Remove(projectile);
-        }
-
-        protected void SpawnProjectile(Transform position)
+        protected NetworkObject SpawnProjectile(Transform position)
         {
             var obj = Runner.Spawn(
                 _projectileObject, 
@@ -94,12 +84,19 @@ namespace Network
                 InitializeProjectile
             );
             _projectileList.Add(obj);
+            return obj;
         }
         
         protected virtual bool CanAttack()
         {
             if (!IsDoneShootAction)
             {
+                return false;
+            }
+            
+            if (RemainBullet == 0)
+            {
+                ReloadBullet();
                 return false;
             }
             
@@ -112,6 +109,11 @@ namespace Network
             {
                 return false;
             }
+        }
+
+        public void ChangeIsDone(bool value)
+        {
+            IsDoneShootAction = value;
         }
 
         protected void ReloadBullet()
@@ -130,14 +132,15 @@ namespace Network
                     GameManager.Instance.DeActiveLoadingUI();
                 });
 
-            var max = (int)GetWeaponStat(WeaponStat.Bullet).Total;
-            var time = (int)GetWeaponStat(WeaponStat.Reload).Total;
+            var max = GetWeaponStat(WeaponStat.Bullet).Total;
+            var time = GetWeaponStat(WeaponStat.Reload).Total;
+            var separateTime = (50 + time) / (50 * max);
             
             for (int i = 0; i < max; i++)
             {
                 reloadSequence
                     .AppendCallback(() => RemainBullet++)
-                    .AppendInterval(0.5f);
+                    .AppendInterval(separateTime);
             }
 
             reloadSequence.Play();

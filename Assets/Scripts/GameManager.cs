@@ -1,8 +1,11 @@
 using System;
+using System.Collections.Generic;
 using Fusion;
 using Network;
 using UnityEngine;
 using Utils;
+using UIHolder;
+using UnityEngine.Serialization;
 
 public class GameManager : Singleton<GameManager>
 {
@@ -28,6 +31,12 @@ public class GameManager : Singleton<GameManager>
     [SerializeField]
     private Synergy[] _synergyList;
     public int SynergyCount => _synergyList.Length;
+
+    public NetworkPrefabRef[] mainWeaponArray = new NetworkPrefabRef[4];
+    public int selectWeaponNum = 0;
+    public NetworkPrefabRef SelectWeapon => mainWeaponArray[selectWeaponNum];
+    
+    public List<NetworkPrefabRef> subWeaponList;
 
     protected override void Initiate()
     {

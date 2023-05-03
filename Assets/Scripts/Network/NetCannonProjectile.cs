@@ -13,12 +13,7 @@ namespace Network
             if (IsHit) return true;
             return Distance > MaxRange;
         }
-
-        protected override void UpdateProjectile()
-        {
-            transform.position += gameObject.transform.forward * (TotalVelocity * Runner.DeltaTime);
-        }
-
+        
         private void OnCollisionEnter(Collision collision)
         {
             if(IsHit) return;

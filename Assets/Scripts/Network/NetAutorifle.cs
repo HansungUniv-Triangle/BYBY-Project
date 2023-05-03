@@ -1,4 +1,5 @@
-﻿using DG.Tweening;
+﻿using System;
+using DG.Tweening;
 using Types;
 
 namespace Network
@@ -10,11 +11,12 @@ namespace Network
             if (CanAttack())
             {
                 var sequence = DOTween.Sequence()
-                    .SetAutoKill(false)
                     .OnStart(() => IsDoneShootAction = false)
                     .OnComplete(() => IsDoneShootAction = true);
-                    
-                for (int i = 0; i < GetWeaponStatTotal(WeaponStat.Special); i++)
+                
+                var shoot = Math.Min(GetWeaponStatTotal(WeaponStat.Special), RemainBullet);
+
+                for (int i = 0; i < shoot; i++)
                 {
                     sequence
                         .AppendCallback(() =>
@@ -24,8 +26,6 @@ namespace Network
                         })
                         .AppendInterval(0.05f);
                 }
-                
-                sequence.Play();
             }
         }
     }
