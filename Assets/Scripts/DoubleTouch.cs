@@ -26,4 +26,9 @@ public class DoubleTouch : MonoBehaviour, IPointerDownHandler
             doubleClickedTime = Time.time;
         }
     }
+
+    public void SetButton(Button button)
+    {
+        this.button = button;
+    }
 }

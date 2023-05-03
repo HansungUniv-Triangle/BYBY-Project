@@ -4168,6 +4168,7 @@ GameObject:
   - component: {fileID: 547360349}
   - component: {fileID: 547360348}
   - component: {fileID: 547360347}
+  - component: {fileID: 547360351}
   m_Layer: 5
   m_Name: Vibrate
   m_TagString: Untagged
@@ -4303,6 +4304,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 547360345}
   m_CullTransparentMesh: 1
+--- !u!114 &547360351
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 547360345}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 742d7e494ec4e514c868eb6070569d68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  LongTouched: 0
 --- !u!1 &557122978
 GameObject:
   m_ObjectHideFlags: 0
@@ -8201,6 +8215,7 @@ GameObject:
   - component: {fileID: 1078133503}
   - component: {fileID: 1078133502}
   - component: {fileID: 1078133501}
+  - component: {fileID: 1078133505}
   m_Layer: 5
   m_Name: AttackButton
   m_TagString: Untagged
@@ -8336,6 +8351,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1078133499}
   m_CullTransparentMesh: 1
+--- !u!114 &1078133505
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1078133499}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 742d7e494ec4e514c868eb6070569d68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  LongTouched: 0
 --- !u!1 &1081001526
 GameObject:
   m_ObjectHideFlags: 0
@@ -14198,8 +14226,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1448533502}
   m_HandleRect: {fileID: 1448533501}
   m_Direction: 2
-  m_Value: 1.0000033
-  m_Size: 0.45500004
+  m_Value: 1.0000032
+  m_Size: 0.455
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
