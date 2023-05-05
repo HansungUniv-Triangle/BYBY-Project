@@ -1696,6 +1696,7 @@ MonoBehaviour:
   disconnectButton: {fileID: 946163212}
   roundText: {fileID: 288188962}
   bulletText: {fileID: 1225446006}
+  hitButton: {fileID: 504245798}
 --- !u!4 &147223794
 Transform:
   m_ObjectHideFlags: 0
@@ -3045,10 +3046,10 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 72
+    m_FontSize: 50
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 7
+    m_MinSize: 3
     m_MaxSize: 72
     m_Alignment: 4
     m_AlignByGeometry: 0
@@ -3056,7 +3057,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: wp1
+  m_Text: "\uC544\uD508\n\uBC84\uD2BC"
 --- !u!222 &317133765
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4955,7 +4956,7 @@ GameObject:
   - component: {fileID: 612205993}
   - component: {fileID: 612205992}
   - component: {fileID: 612205991}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Gun
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -16237,7 +16238,7 @@ GameObject:
   - component: {fileID: 1972338507}
   - component: {fileID: 1972338506}
   - component: {fileID: 1972338508}
-  m_Layer: 3
+  m_Layer: 8
   m_Name: "\uD5C8\uC218\uC544\uBE44"
   m_TagString: Player
   m_Icon: {fileID: 0}

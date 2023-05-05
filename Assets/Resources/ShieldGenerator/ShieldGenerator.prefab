@@ -186,4 +186,4 @@ MonoBehaviour:
   _interpolationDataSource: 0
   _projectileObject: {fileID: 1043879133491697671, guid: 99e5abcc7816237478d36eec7b252a62,
     type: 3}
-  timer: 5
+  timer: 10

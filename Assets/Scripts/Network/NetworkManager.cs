@@ -102,7 +102,7 @@ namespace Network
         
         public void AddNetworkObjectInList(NetworkObject networkObject)
         {
-            if (_networkObjectList.Count > 10)
+            if (_networkObjectList.Count > 50)
             {
                 if (_networkObjectList[0].HasStateAuthority)
                 {
@@ -338,7 +338,7 @@ namespace Network
             NetworkObject mainWeaponSpawn = Runner.Spawn(mainWeapon, spawnPosition + Vector3.up, Quaternion.identity, playerRef);
             mainWeaponSpawn.transform.SetParent(networkPlayerObject.transform);
             
-            var subWeapon = GameManager.Instance.subWeaponList[0];
+            var subWeapon = GameManager.Instance.subWeaponList[4];
             NetworkObject subWeaponSpawn = Runner.Spawn(subWeapon, spawnPosition + Vector3.up * 2, Quaternion.identity, playerRef);
             subWeaponSpawn.transform.SetParent(networkPlayerObject.transform);
         

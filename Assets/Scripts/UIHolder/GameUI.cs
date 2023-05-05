@@ -14,6 +14,7 @@ namespace UIHolder
         public Button disconnectButton;
         public TextMeshProUGUI roundText;
         public TextMeshProUGUI bulletText;
+        public Button hitButton;
 
         protected override void Initial()
         {
@@ -30,6 +31,11 @@ namespace UIHolder
             disconnectButton.onClick.AddListener(() =>
             {
                 GameManager.Instance.DisconnectedSever();
+            });
+            
+            hitButton.onClick.AddListener(() =>
+            {
+                GameManager.Instance.NetworkManager.LocalCharacter.OnHitDebugging(5f);
             });
         }
     }

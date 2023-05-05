@@ -2,9 +2,9 @@
 
 namespace Network
 {
-    public class NetBasicWeapon : NetworkProjectileHolder
+    public class NetTimerWeapon : NetworkProjectileHolder
     {
-        public float timer = 5.0f;
+        public float timer = 10.0f;
         
         protected override void Attack()
         {

@@ -56,16 +56,21 @@ namespace Network
 
         public override void FixedUpdateNetwork()
         {
-            if (!Object.HasInputAuthority) return;
+            if (!HasInputAuthority) return;
             
             Attack();
 
-            BulletText.text = RemainBullet.ToString();
+            //BulletText.text = RemainBullet.ToString();
         }
 
         public void SetTarget(Vector3 target)
         {
             Target = target;
+        }
+        
+        public Vector3 GetTarget()
+        {
+            return Target;
         }
         
         private void InitializeProjectile(NetworkRunner runner, NetworkObject obj)
@@ -105,10 +110,8 @@ namespace Network
                 delay = TickTimer.CreateFromSeconds(Runner, _baseWeaponStat.GetStat(WeaponStat.Interval).Total);
                 return true;
             }
-            else
-            {
-                return false;
-            }
+            
+            return false;
         }
 
         public void ChangeIsDone(bool value)

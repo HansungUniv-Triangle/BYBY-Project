@@ -27,6 +27,27 @@ namespace Network
         {
             healthBar.DOFillAmount(NowHp / MaxHp, 0.5f);
         }
+
+        public void Healing(float point)
+        {
+            // Todo: 힐링 파티클 있으면 좋을 듯?
+            NowHp += point;
+            if (MaxHp < NowHp)
+            {
+                NowHp = MaxHp;
+            }
+            Debug.Log("힐링 되엇ㅅ브니다");
+        }
+
+        public float GetNowHp()
+        {
+            return NowHp;
+        }
+        
+        public float GetMaxHp()
+        {
+            return MaxHp;
+        }
     }
     
     // 블록 히트 데이터
@@ -63,11 +84,11 @@ namespace Network
                     {
                         if (data.Explode)
                         {
-                            WorldManager.Instance.GetWorld().HitBlock(data.BlockPos, data.Damage);
+                            WorldManager.Instance.GetWorld().ExplodeBlocks(data.BlockPos, data.Radius, data.Damage);
                         }
                         else
                         {
-                            WorldManager.Instance.GetWorld().ExplodeBlocks(data.BlockPos, data.Radius, data.Damage);
+                            WorldManager.Instance.GetWorld().HitBlock(data.BlockPos, data.Damage);
                         }
                     }
                 }
@@ -174,6 +195,18 @@ namespace Network
             var armor = _baseCharStat.GetStat(CharStat.Armor).Total;
             var calcDamage = damage * (100 / (100 + armor));
             NowHp -= calcDamage;
+
+            if (projectile.TryGetComponent<ICollisionCharacterEvent>(out var collisionEvent))
+            {
+                collisionEvent.CollisionCharacterEvent(this);
+            }
+        }
+        
+        public void OnHitDebugging(float damage)
+        {
+            var armor = _baseCharStat.GetStat(CharStat.Armor).Total;
+            var calcDamage = damage * (100 / (100 + armor));
+            NowHp -= calcDamage;
         }
     }
 
@@ -249,6 +282,11 @@ namespace Network
         {
             return _baseCharStat.GetStat(type);
         }
+
+        public NetworkProjectileHolder[] GetProjectileHolderList()
+        {
+            return GetComponentsInChildren<NetworkProjectileHolder>();
+        }
     }
 
     // 진동
@@ -318,10 +356,11 @@ namespace Network
             
             targetPoint = _gunRay.origin + _gunRay.direction * _shootDistance;
             
-            var weapon = GetComponentInChildren<NetworkProjectileHolder>();
-            if (weapon)
+            var weapon = GetComponentsInChildren<NetworkProjectileHolder>();
+            
+            foreach (var networkProjectileHolder in weapon)
             {
-                weapon.SetTarget(targetPoint);
+                networkProjectileHolder.SetTarget(targetPoint);
             }
 
             //LaserBeam(_gunRay, _shootDistance, attackType, lineRenderer);
@@ -515,6 +554,7 @@ namespace Network
             var v = _joystick.Vertical;
 
             var speed = _baseCharStat.GetStat(CharStat.Speed).Total;
+            speed = speed > 0 ? speed : 0;
             
             // move
             if (_characterController.isGrounded)

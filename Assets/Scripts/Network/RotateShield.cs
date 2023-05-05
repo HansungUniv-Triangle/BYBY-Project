@@ -1,4 +1,5 @@
-﻿using Fusion;
+﻿using DG.Tweening;
+using Fusion;
 using UnityEngine;
 
 namespace Network
@@ -9,8 +10,7 @@ namespace Network
         public NetworkArray<NetworkBool> ChildShieldActive { get; } 
             = MakeInitializer(new NetworkBool[] { true, true, true, true });
         
-        public GameObject[] ChildShieldObject = new GameObject[4];
-
+        public GameObject[] childShieldObject = new GameObject[4];
         public int childCount = 4;
 
         private static void ChangeChildState(Changed<RotateShield> changed)
@@ -20,9 +20,9 @@ namespace Network
         
         private void ChangeChildState()
         {
-            for (var i = 0; i < ChildShieldObject.Length; i++)
+            for (var i = 0; i < childShieldObject.Length; i++)
             {
-                ChildShieldObject[i].SetActive(ChildShieldActive[i]);
+                childShieldObject[i].SetActive(ChildShieldActive[i]);
             }
         }
 
@@ -36,19 +36,14 @@ namespace Network
             }
         }
 
-        public override void Despawned(NetworkRunner runner, bool hasState)
-        {
-            base.Despawned(runner, hasState);
-            if (_projectileHolder)
-            {
-                _projectileHolder.ChangeIsDone(true);
-            }
-        }
-
         protected override bool IsExpirationProjectile()
         {
             if (childCount == 0 || Distance > (MaxRange * 10))
             {
+                if (_projectileHolder)
+                {
+                    _projectileHolder.ChangeIsDone(true);
+                }
                 return true;
             }
 
@@ -58,6 +53,7 @@ namespace Network
         protected override void UpdateProjectile()
         {
             gameObject.transform.Rotate(Vector3.up, TotalVelocity / 10);
+            gameObject.transform.position = GameManager.Instance.NetworkManager.LocalCharacter.transform.position;
         }
 
         public void TouchChildShield(GameObject shield, NetworkObject bullet)

@@ -79,7 +79,7 @@ namespace Network
         {
             DamageSave = Damage;
 
-            if (!Object.HasStateAuthority) return;
+            if (!HasStateAuthority) return;
             
             Distance += Runner.DeltaTime * TotalVelocity;
             Damage = TotalDamage;
@@ -95,6 +95,20 @@ namespace Network
         public void DestroyProjectile()
         {
             NetworkActive = false;
+        }
+        
+        private void OnTriggerEnter(Collider other)
+        {
+            if(IsHit || !HasStateAuthority) return;
+            
+            if (other.gameObject.TryGetComponent(out ICollisionObjectEvent collisionObject))
+            { // 추후 해당 인터페이스로 변경할 것.
+                collisionObject.CollisionObjectEvent(Object);
+                if (!collisionObject.CollisionObjectIsHitCheck())
+                {
+                    IsHit = true;
+                }
+            }
         }
         
         #region 오버라이드 메소드 (abstract, virtual)

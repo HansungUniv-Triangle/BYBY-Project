@@ -5,7 +5,7 @@ using Fusion;
 using Network;
 using UnityEngine;
 
-public class RotateShieldChild : MonoBehaviour, ICollisionBullet
+public class RotateShieldChild : MonoBehaviour, ICollisionObjectEvent
 {
     public RotateShield parent;
 
@@ -14,12 +14,12 @@ public class RotateShieldChild : MonoBehaviour, ICollisionBullet
         parent = gameObject.transform.parent.parent.GetComponent<RotateShield>();
     }
 
-    public void CollisionBullet(NetworkObject bullet)
+    public void CollisionObjectEvent(NetworkObject bullet)
     {
         parent.TouchChildShield(gameObject, bullet);
     }
 
-    public bool CollisionBulletIsHitCheck()
+    public bool CollisionObjectIsHitCheck()
     {
         return parent.GetComponent<NetworkObject>().HasStateAuthority;
     }
