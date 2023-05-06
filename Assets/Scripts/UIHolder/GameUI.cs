@@ -18,6 +18,7 @@ namespace UIHolder
         public Button ultButton;
         public Button attackButton;
         public Button vibrateButton;
+        public Button dodgeButton;
 
         [Serializable]
         public class Settings
@@ -75,7 +76,12 @@ namespace UIHolder
             {
                 GameManager.Instance.NetworkManager.LocalCharacter.VibrateHeartBeat();
             });
-            
+
+            dodgeButton.onClick.AddListener(() =>
+            {
+                GameManager.Instance.NetworkManager.LocalCharacter.Dodge();
+            });
+
             /* Settings */
             // speed
             settings.SpeedUp.onClick.AddListener(() =>

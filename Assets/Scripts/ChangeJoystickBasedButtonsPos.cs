@@ -18,13 +18,16 @@ public class ChangeJoystickBasedButtonsPos : MonoBehaviour, IPointerDownHandler
         {
             buttonPanel.anchorMin = buttonPanel.anchorMax = new Vector2(1f, 0);
             pos = new Vector2(-75, 0);
+
+            Camera.main.GetComponent<PlayerCamera>().ReverseCameraPos(false);
         }
         // screen right
         else
         {
-
             buttonPanel.anchorMin = buttonPanel.anchorMax = new Vector2(0f, 0);; 
             pos = new Vector2(75, 0);
+
+            Camera.main.GetComponent<PlayerCamera>().ReverseCameraPos(true);
         }
 
         buttonPanel.anchoredPosition = pos;

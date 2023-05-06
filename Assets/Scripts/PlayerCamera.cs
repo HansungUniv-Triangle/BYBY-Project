@@ -15,7 +15,7 @@ public class PlayerCamera : MonoBehaviour
     private Vector3 _originalCameraPos;
     private Vector3 _originalCameraFocusPos;
 
-    private readonly float _moveSpeed = 4f; // 고정된 값 필요, 너무 빠르면 어지러움증 유발
+    private readonly float _moveSpeed = 3f; // 고정된 값 필요, 너무 빠르면 어지러움증 유발
     private readonly float _rotationSpeed = 8f;
 
     private RaycastHit _hit;
@@ -80,6 +80,32 @@ public class PlayerCamera : MonoBehaviour
             var relativePosition = _target.position - transform.position;
             var targetRotation = Quaternion.LookRotation(relativePosition);
             transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * _rotationSpeed);
+        }
+    }
+
+    public void ReverseCameraPos(bool isLeft)
+    {
+        if (isLeft)
+        {
+            if (_cameraPos.localPosition.x < 0)
+            {
+                _cameraPos.localPosition = new Vector3(_cameraPos.localPosition.x * -1, _cameraPos.localPosition.y, _cameraPos.localPosition.z);
+                _cameraFocusPos.localPosition = new Vector3(_cameraFocusPos.localPosition.x * -1, _cameraFocusPos.localPosition.y, _cameraFocusPos.localPosition.z);
+
+                _originalCameraPos = new Vector3(_originalCameraPos.x * -1, _originalCameraPos.y, _originalCameraPos.z);
+                _originalCameraFocusPos = new Vector3(_originalCameraFocusPos.x * -1, _originalCameraFocusPos.y, _originalCameraFocusPos.z);
+            }
+        }
+        else
+        {
+            if (_cameraPos.localPosition.x > 0)
+            {
+                _cameraPos.localPosition = new Vector3(_cameraPos.localPosition.x * -1, _cameraPos.localPosition.y, _cameraPos.localPosition.z);
+                _cameraFocusPos.localPosition = new Vector3(_cameraFocusPos.localPosition.x * -1, _cameraFocusPos.localPosition.y, _cameraFocusPos.localPosition.z);
+
+                _originalCameraPos = new Vector3(_originalCameraPos.x * -1, _originalCameraPos.y, _originalCameraPos.z);
+                _originalCameraFocusPos = new Vector3(_originalCameraFocusPos.x * -1, _originalCameraFocusPos.y, _originalCameraFocusPos.z);
+            }
         }
     }
 }

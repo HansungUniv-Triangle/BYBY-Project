@@ -447,44 +447,59 @@ namespace Network
             }
         }
 
+        private Vector3 lastMoveDir;
+
         private void CharacterMove()
         {
             var h = ReverseHorizontalMove ? -_joystick.Horizontal : _joystick.Horizontal;
             var v = _joystick.Vertical;
 
             var speed = _baseCharStat.GetStat(CharStat.Speed).Total;
-            
-            // move
-            if (_characterController.isGrounded)
-            {
-                moveDir = new Vector3(h, 0, v);
-                moveDir = transform.TransformDirection(moveDir);
-                moveDir *= speed;
-            }
-            else
-            {
-                var tmp = new Vector3(h, 0, v);
-                tmp = transform.TransformDirection(tmp);
-                tmp *= (speed * 0.7f);
-            
-                moveDir.x = tmp.x;
-                moveDir.z = tmp.z;
-            }
-
-            if (isJump)
-            {
-                moveDir.y = jumpForce;
-                isJump = false;
-            }
 
             if (isDodge)
             {
-                moveDir.x *= dodgeForce;
-                moveDir.z *= dodgeForce;
-            }
+                var dodgeDir = lastMoveDir.normalized * speed;
+                dodgeDir = transform.TransformDirection(dodgeDir);
 
-            moveDir.y -= gravity * Runner.DeltaTime;
-            _characterController.Move(moveDir * Runner.DeltaTime);
+                dodgeDir.x *= dodgeForce;
+                dodgeDir.z *= dodgeForce;
+
+                _characterController.Move(dodgeDir * Runner.DeltaTime);
+            }
+            else
+            {
+                if (Mathf.Abs(h) >= 0.3f ||
+                    Mathf.Abs(v) >= 0.3f)
+                {
+                    lastMoveDir = new Vector3(h, 0, v);
+                }
+
+                // move
+                if (_characterController.isGrounded)
+                {
+                    moveDir = new Vector3(h, 0, v);
+                    moveDir = transform.TransformDirection(moveDir);
+                    moveDir *= speed;
+                }
+                else
+                {
+                    var tmp = new Vector3(h, 0, v);
+                    tmp = transform.TransformDirection(tmp);
+                    tmp *= (speed * 0.7f);
+
+                    moveDir.x = tmp.x;
+                    moveDir.z = tmp.z;
+                }
+
+                if (isJump)
+                {
+                    moveDir.y = jumpForce;
+                    isJump = false;
+                }
+
+                moveDir.y -= gravity * Runner.DeltaTime;
+                _characterController.Move(moveDir * Runner.DeltaTime);
+            }          
 
             if (isCameraFocused == false)
             {
@@ -496,7 +511,7 @@ namespace Network
             }
         }
 
-        private void Dodge()
+        public void Dodge()
         {
             isDodge = true;
             DOTween.Sequence()
