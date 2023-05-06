@@ -37,6 +37,8 @@ public class GameManager : Singleton<GameManager>
     public NetworkPrefabRef SelectWeapon => mainWeaponArray[selectWeaponNum];
     
     public List<NetworkPrefabRef> subWeaponList;
+    public int selectSubWeaponNum;
+    public NetworkPrefabRef SelectSubWeapon => subWeaponList[selectSubWeaponNum];
 
     protected override void Initiate()
     {

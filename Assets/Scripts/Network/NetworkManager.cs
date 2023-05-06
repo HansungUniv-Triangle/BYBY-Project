@@ -337,8 +337,8 @@ namespace Network
             var mainWeapon = GameManager.Instance.SelectWeapon;
             NetworkObject mainWeaponSpawn = Runner.Spawn(mainWeapon, spawnPosition + Vector3.up, Quaternion.identity, playerRef);
             mainWeaponSpawn.transform.SetParent(networkPlayerObject.transform);
-            
-            var subWeapon = GameManager.Instance.subWeaponList[4];
+
+            var subWeapon = GameManager.Instance.SelectSubWeapon;
             NetworkObject subWeaponSpawn = Runner.Spawn(subWeapon, spawnPosition + Vector3.up * 2, Quaternion.identity, playerRef);
             subWeaponSpawn.transform.SetParent(networkPlayerObject.transform);
         
