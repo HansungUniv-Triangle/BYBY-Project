@@ -27,6 +27,7 @@ public class SynergyPanelCreate : MonoBehaviour
             else
             {
                 synergyPanel.SetActive(true);
+                synergyPanel.GetComponent<SynergySelectPanel>().MakeSynergyPage();
             }
         }
         else if (Input.GetKeyDown(KeyCode.Escape))
