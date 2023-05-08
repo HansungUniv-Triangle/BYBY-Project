@@ -31,7 +31,7 @@ namespace Types
         Speed, // 속도
         Rolling, // 구르기
         Armor, // 방어력
-        View, // 시야
+        Calm // 차분함
     }
 
     public enum WeaponStat
@@ -42,7 +42,6 @@ namespace Types
         Range, // 사거리
         Reload, // 재장전 속도
         Bullet, // 탄창수
-        BulletSize, // 총알 크기
         Velocity, // 총알 속도
     }
 

@@ -10,7 +10,6 @@ namespace Weapon
         {
             _projectileHolder = new ProjectileHolder<Shield>("Shield");
             
-            BaseWeaponStat.GetStat(WeaponStat.BulletSize).AddRatio(-0.5f);
             BaseWeaponStat.GetStat(WeaponStat.Range).AddRatio(360.0f);
             BaseWeaponStat.GetStat(WeaponStat.Velocity).AddRatio(360.0f);
         }
@@ -20,7 +19,6 @@ namespace Weapon
             if (CheckCoolTime())
             {
                 _projectileHolder.GetProjectile(WeaponPos)
-                    .AddBaseStat(BaseWeaponStat.GetStat(WeaponStat.BulletSize))
                     .AddBaseStat(BaseWeaponStat.GetStat(WeaponStat.Range))
                     .AddBaseStat(BaseWeaponStat.GetStat(WeaponStat.Velocity));
                 CoolTime = 0;

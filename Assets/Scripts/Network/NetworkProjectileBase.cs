@@ -33,8 +33,6 @@ namespace Network
         // 기본 + 변동 스탯
         protected float TotalVelocity => _baseStat(WeaponStat.Velocity) + IndividualVelocity;
         public float IndividualVelocity;
-        protected float TotalScale => _baseStat(WeaponStat.BulletSize) + IndividualScale;
-        public float IndividualScale;
         protected float TotalDamage => _baseStat(WeaponStat.Damage) + IndividualDamage;
         public float IndividualDamage;
 
@@ -54,10 +52,7 @@ namespace Network
             _projectileHolder = holder;
 
             IndividualVelocity = 0;
-            IndividualScale = 0;
             IndividualDamage = 0;
-
-            transform.localScale = new Vector3(TotalScale, TotalScale, TotalScale);
         }
 
         private void Awake()
@@ -117,7 +112,7 @@ namespace Network
         
         protected virtual void UpdateProjectile()
         {
-            _rigidbody.AddForce(gameObject.transform.forward * (TotalVelocity / 10), ForceMode.VelocityChange);
+            _rigidbody.velocity = transform.forward * TotalVelocity;
         }
         
         #endregion

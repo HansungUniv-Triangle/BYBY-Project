@@ -17,11 +17,24 @@ namespace Network
         protected override void UpdateProjectile()
         {
             Vector3 direction = _projectileHolder.GetTarget() - transform.position;
-            Quaternion rotation = Quaternion.LookRotation(direction);
-            Quaternion clampedRotation = Quaternion.RotateTowards(transform.rotation, rotation, maxAngle);
-            transform.rotation = Quaternion.Lerp(transform.rotation, clampedRotation, speed * Runner.DeltaTime);
+            float angle = GetAngle(transform.forward, direction); 
+            float angleThreshold = 45f;
+            float rotationSpeed = 10f;
+
+            if (angle > -angleThreshold && angle < angleThreshold)
+            {
+                Quaternion targetRotation = Quaternion.LookRotation(direction);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Runner.DeltaTime);
+            }
+            
             base.UpdateProjectile();
             DamageSave /= 2;
+        }
+        
+        public static float GetAngle (Vector3 vStart, Vector3 vEnd)
+        {
+            Vector3 v = vEnd - vStart;
+            return Mathf.Atan2(v.y, v.x) * Mathf.Rad2Deg;
         }
 
         private void OnCollisionEnter(Collision collision)

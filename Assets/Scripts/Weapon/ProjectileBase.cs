@@ -28,7 +28,6 @@ namespace Weapon
     
         // 기본 + 변동 스탯
         public float TotalVelocity => _base.GetStat(WeaponStat.Velocity).Total + AddVelocity;
-        public float TotalBulletSize => _base.GetStat(WeaponStat.BulletSize).Total + AddScale;
         public float TotalDamage => _base.GetStat(WeaponStat.Damage).Total + AddDamage;
         protected float MaxRange => _base.GetStat(WeaponStat.Range).Total;
         
@@ -37,7 +36,6 @@ namespace Weapon
         {
             SetHolder(holder);
             InitializedStat();
-            AddBulletSize(TotalBulletSize);
         }
         
         private void InitializedStat()
@@ -89,18 +87,6 @@ namespace Weapon
         {
             Distance += Time.deltaTime * TotalVelocity;
             MoveProjectile();
-            ChangeScale();
-        }
-
-        private void ChangeScale()
-        {
-            if (AddScale == 0) return;
-
-            var sizeStat = new Stat<WeaponStat>(WeaponStat.BulletSize, AddScale, 0);
-            _base.AddStat(sizeStat);
-            var size = TotalBulletSize;
-            transform.localScale = new Vector3(size, size, size);
-            AddScale = 0;
         }
 
         private void GuidedTarget(float guided)

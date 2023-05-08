@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Fusion;
 using Network;
+using Types;
 using UnityEngine;
 using Utils;
 using UIHolder;
 using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 public class GameManager : Singleton<GameManager>
 {
@@ -40,10 +43,17 @@ public class GameManager : Singleton<GameManager>
     public int selectSubWeaponNum;
     public NetworkPrefabRef SelectSubWeapon => subWeaponList[selectSubWeaponNum];
 
+    public PlayerBehaviorAnalyzer PlayerBehaviorAnalyzer;
+
     protected override void Initiate()
     {
         _synergyList = Resources.LoadAll<Synergy>(Path.Synergy);
         _uiLoadingPrefab = Resources.Load(Path.Loading) as GameObject;
+    }
+
+    private void Start()
+    {
+        PlayerBehaviorAnalyzer = new PlayerBehaviorAnalyzer();
     }
 
     public void SetNetworkManager(NetworkManager networkManager)
@@ -116,5 +126,359 @@ public class GameManager : Singleton<GameManager>
     {
         if (NetworkManager == null) return;
         NetworkManager.OnReady();
+    }
+}
+
+public class StatCorrelationList<T> where T : Enum
+{
+    private Dictionary<T, List<StatCorrelation<CharStat>>> _charList = new();
+    private Dictionary<T, List<StatCorrelation<WeaponStat>>> _weaponList = new();
+    private T _typeSetting;
+
+    public StatCorrelationList()
+    {
+        foreach (T stat in Enum.GetValues(typeof(T)))
+        {
+            _charList[stat] = new List<StatCorrelation<CharStat>>();
+        }
+        foreach (T stat in Enum.GetValues(typeof(T)))
+        {
+            _weaponList[stat] = new List<StatCorrelation<WeaponStat>>();
+        }
+    }
+
+    public StatCorrelationList<T> SetCorrelationType(T stat)
+    {
+        _typeSetting = stat;
+        return this;
+    }
+
+    public StatCorrelationList<T> AddCorrelationValue(CharStat add, float correlation)
+    {
+        if (_typeSetting is null)
+        {
+            throw new Exception("typeSetting이 되지 않았음");
+        }
+        _charList[_typeSetting].Add(new StatCorrelation<CharStat>(add, correlation));
+        return this;
+    }
+    
+    public StatCorrelationList<T> AddCorrelationValue(WeaponStat add, float correlation)
+    {
+        if (_typeSetting is null)
+        {
+            throw new Exception("typeSetting이 되지 않았음");
+        }
+        _weaponList[_typeSetting].Add(new StatCorrelation<WeaponStat>(add, correlation));
+        return this;
+    }
+    
+    public float GetCorrelationValue(T type, CharStat stat)
+    {
+        var result = _charList[type].Find(o => o.Stat.Equals(stat));
+        if (result != null)
+        {
+            return result.Correlation;
+        }
+
+        return 0;
+    }
+    
+    public float GetCorrelationValue(T type, WeaponStat stat)
+    {
+        var result = _weaponList[type].Find(o => o.Stat.Equals(stat));
+        if (result != null)
+        {
+            return result.Correlation;
+        }
+
+        return 0;
+    }
+
+    public void PrintDebug()
+    {
+        foreach (var (key, value) in _charList)
+        {
+            foreach (var statCorrelation in value)
+            {
+                Debug.Log($"{key} : {statCorrelation}");
+            }
+        }
+        
+        foreach (var (key, value) in _weaponList)
+        {
+            foreach (var statCorrelation in value)
+            {
+                Debug.Log($"{key} : {statCorrelation}");
+            }
+        }
+    }
+}
+
+public class StatCorrelation<T> where T : Enum
+{
+    public T Stat;
+    public float Correlation;
+
+    public StatCorrelation(T stat, float correlation)
+    {
+        Stat = stat;
+        Correlation = correlation;
+    }
+
+    public override string ToString()
+    {
+        return $"{nameof(Stat)}: {Stat}, {nameof(Correlation)}: {Correlation}";
+    }
+}
+
+public enum BehaviourEvent
+{
+    명중률,
+    포지셔닝,
+    회피률,
+    재장전대기,
+    받은피해,
+    피해감소,
+    거리유지,
+    거리부족
+}
+
+public class PlayerBehaviorAnalyzer
+{
+    public readonly StatCorrelationList<CharStat> CharStats;
+    public readonly StatCorrelationList<WeaponStat> WeaponStats;
+    
+    public readonly Dictionary<BehaviourEvent, Enum> BehaviourEventStats = new() {
+        { BehaviourEvent.명중률, CharStat.Calm},
+        { BehaviourEvent.포지셔닝, CharStat.Speed },
+        { BehaviourEvent.회피률, CharStat.Rolling },
+        { BehaviourEvent.재장전대기, WeaponStat.Bullet },
+        { BehaviourEvent.받은피해, CharStat.Health },
+        { BehaviourEvent.피해감소, CharStat.Armor },
+        { BehaviourEvent.거리유지, CharStat.Speed },
+        { BehaviourEvent.거리부족, WeaponStat.Range }
+    };
+    
+    public Dictionary<BehaviourEvent, int> BehaviourEventCountPlayer = new() {
+        { BehaviourEvent.명중률, 0 },
+        { BehaviourEvent.포지셔닝, 0 },
+        { BehaviourEvent.회피률, 0 },
+        { BehaviourEvent.재장전대기, 0 },
+        { BehaviourEvent.받은피해, 0 },
+        { BehaviourEvent.피해감소, 0 },
+        { BehaviourEvent.거리유지, 0 },
+        { BehaviourEvent.거리부족, 0 }
+    };
+
+    public Dictionary<BehaviourEvent, int> BehaviourEventCountEnemy = new() {
+        { BehaviourEvent.명중률, 0 },
+        { BehaviourEvent.포지셔닝, 0 },
+        { BehaviourEvent.회피률, 0 },
+        { BehaviourEvent.재장전대기, 0 },
+        { BehaviourEvent.받은피해, 0 },
+        { BehaviourEvent.피해감소, 0 },
+        { BehaviourEvent.거리유지, 0 },
+        { BehaviourEvent.거리부족, 0 }
+    };
+    
+    public Dictionary<Enum, float> EventResult = new()
+    {
+        { CharStat.Health, 1 },
+        { CharStat.Speed, 1 },
+        { CharStat.Rolling, 1 },
+        { CharStat.Armor, 1 },
+        { CharStat.Calm, 1 },
+        { WeaponStat.Interval, 1 },
+        { WeaponStat.Special, 1 },
+        { WeaponStat.Damage, 1 },
+        { WeaponStat.Range, 1 },
+        { WeaponStat.Reload, 1 },
+        { WeaponStat.Bullet, 1 },
+        { WeaponStat.Velocity, 1 },
+    };
+    
+    public Dictionary<Enum, int> MyStat = new()
+    {
+        { CharStat.Health, 0 },
+        { CharStat.Speed, 0 },
+        { CharStat.Rolling, 0 },
+        { CharStat.Armor, 0 },
+        { CharStat.Calm, 0 },
+        { WeaponStat.Interval, 0 },
+        { WeaponStat.Special, 0 },
+        { WeaponStat.Damage, 0 },
+        { WeaponStat.Range, 0 },
+        { WeaponStat.Reload, 0 },
+        { WeaponStat.Bullet, 0 },
+        { WeaponStat.Velocity, 0 },
+    };
+    
+    public Dictionary<Enum, float> StatResult = new()
+    {
+        { CharStat.Health, 0 },
+        { CharStat.Speed, 0 },
+        { CharStat.Rolling, 0 },
+        { CharStat.Armor, 0 },
+        { CharStat.Calm, 0 },
+        { WeaponStat.Interval, 0 },
+        { WeaponStat.Special, 0 },
+        { WeaponStat.Damage, 0 },
+        { WeaponStat.Range, 0 },
+        { WeaponStat.Reload, 0 },
+        { WeaponStat.Bullet, 0 },
+        { WeaponStat.Velocity, 0 },
+    };
+    
+    public Dictionary<Enum, float> RecommendFinal = new()
+    {
+        { CharStat.Health, 0 },
+        { CharStat.Speed, 0 },
+        { CharStat.Rolling, 0 },
+        { CharStat.Armor, 0 },
+        { CharStat.Calm, 0 },
+        { WeaponStat.Interval, 0 },
+        { WeaponStat.Special, 0 },
+        { WeaponStat.Damage, 0 },
+        { WeaponStat.Range, 0 },
+        { WeaponStat.Reload, 0 },
+        { WeaponStat.Bullet, 0 },
+        { WeaponStat.Velocity, 0 },
+    };
+
+    public PlayerBehaviorAnalyzer()
+    {
+        CharStats = new StatCorrelationList<CharStat>();
+        WeaponStats = new StatCorrelationList<WeaponStat>();
+
+        CharStats.SetCorrelationType(CharStat.Health)
+            .AddCorrelationValue(CharStat.Health, 0.5f)
+            .AddCorrelationValue(CharStat.Armor, 0.5f);
+        
+        CharStats.SetCorrelationType(CharStat.Armor)
+            .AddCorrelationValue(CharStat.Health, 0.5f)
+            .AddCorrelationValue(CharStat.Armor, 0.5f);
+
+        CharStats.SetCorrelationType(CharStat.Speed)
+            .AddCorrelationValue(CharStat.Speed, 0.3f)
+            .AddCorrelationValue(CharStat.Calm, 0.2f)
+            .AddCorrelationValue(CharStat.Rolling, 0.1f)
+            .AddCorrelationValue(WeaponStat.Range, 0.2f)
+            .AddCorrelationValue(WeaponStat.Velocity, 0.2f);
+
+        CharStats.SetCorrelationType(CharStat.Rolling)
+            .AddCorrelationValue(CharStat.Rolling, 0.4f)
+            .AddCorrelationValue(CharStat.Speed, 0.6f);
+        
+        CharStats.SetCorrelationType(CharStat.Calm)
+            .AddCorrelationValue(CharStat.Calm, 0.3f)
+            .AddCorrelationValue(CharStat.Speed, 0.7f);
+
+        WeaponStats.SetCorrelationType(WeaponStat.Interval)
+            .AddCorrelationValue(WeaponStat.Interval, 0.4f)
+            .AddCorrelationValue(WeaponStat.Bullet, 0.3f)
+            .AddCorrelationValue(WeaponStat.Reload, 0.3f);
+
+        WeaponStats.SetCorrelationType(WeaponStat.Damage)
+            .AddCorrelationValue(WeaponStat.Damage, 0.2f)
+            .AddCorrelationValue(WeaponStat.Interval, 0.2f)
+            .AddCorrelationValue(WeaponStat.Bullet, 0.2f)
+            .AddCorrelationValue(WeaponStat.Reload, 0.2f)
+            .AddCorrelationValue(WeaponStat.Special, 0.2f);
+
+        WeaponStats.SetCorrelationType(WeaponStat.Range)
+            .AddCorrelationValue(WeaponStat.Range, 0.5f)
+            .AddCorrelationValue(WeaponStat.Velocity, 0.5f);
+
+        WeaponStats.SetCorrelationType(WeaponStat.Velocity)
+            .AddCorrelationValue(WeaponStat.Velocity, 0.5f)
+            .AddCorrelationValue(WeaponStat.Range, 0.5f);
+
+        WeaponStats.SetCorrelationType(WeaponStat.Reload)
+            .AddCorrelationValue(WeaponStat.Reload, 0.3f)
+            .AddCorrelationValue(WeaponStat.Bullet, 0.7f);
+
+        WeaponStats.SetCorrelationType(WeaponStat.Bullet)
+            .AddCorrelationValue(WeaponStat.Reload, 0.3f)
+            .AddCorrelationValue(WeaponStat.Bullet, 0.7f);
+
+        WeaponStats.SetCorrelationType(WeaponStat.Special)
+            .AddCorrelationValue(WeaponStat.Special, 1.0f);
+        
+        
+        // 점유율을 랜덤으로 정합니다.
+        foreach (BehaviourEvent behaviourEvent in Enum.GetValues(typeof(BehaviourEvent)))
+        {
+            BehaviourEventCountPlayer[behaviourEvent] = Random.Range(0, 100);
+            BehaviourEventCountEnemy[behaviourEvent] = Random.Range(0, 100);
+        }
+        
+        Debug.Log("스탯 정하기");
+        
+        // 일단 스탯을 랜덤으로 정합니다.
+        var keys = new List<Enum>(MyStat.Keys);
+        foreach (var key in keys)
+        {
+            MyStat[key] = Random.Range(0, 100);
+            Debug.Log($"{key}: {MyStat[key]}");
+        }
+        
+        Debug.Log("유사도 정하기");
+        
+        // 무작위로 정한 값 * 유사도를 구해서 결과에 저장합니다.
+        foreach (var key1 in keys)
+        {
+            foreach (var key2 in keys)
+            {
+                StatResult[key2] += MyStat[key1] * GetCorrelation(key1, key2);
+            }
+        }
+        
+        foreach (var key1 in keys)
+        {
+            Debug.Log($"{key1}: {StatResult[key1]}");
+        }
+        
+        // 점유율을 퍼센트로 나누어서 추천률로 변환합니다.
+        Debug.Log($"추천률로 바꾸기");
+        foreach (BehaviourEvent behaviourEvent in Enum.GetValues(typeof(BehaviourEvent)))
+        {
+            var all = BehaviourEventCountPlayer[behaviourEvent] + BehaviourEventCountEnemy[behaviourEvent];
+            // 낮을수록 해당 스탯을 높게 챙겨야하기 때문에 1에서 빼준다.
+            var percent = 1 - (BehaviourEventCountPlayer[behaviourEvent] / (float)all);
+            Debug.Log($"{behaviourEvent}: {percent * 100}%");
+            foreach (var behaviourEventStat in BehaviourEventStats)
+            {
+                EventResult[behaviourEventStat.Value] += percent;
+            }
+            
+        }
+        
+        // 서로 곱해서 결과를 봅시다.
+        Debug.Log($"결과는?");
+        foreach (var key in keys)
+        {
+            RecommendFinal[key] = EventResult[key] * StatResult[key];
+            Debug.Log($"{key}: {RecommendFinal[key]}");
+        }
+    }
+
+    private float GetCorrelation<T1, T2>(T1 stat1, T2 stat2)
+        where T1 : Enum
+        where T2 : Enum
+    {
+        if (stat1 is CharStat charStatA && stat2 is CharStat charStatB)
+            return CharStats.GetCorrelationValue(charStatA, charStatB);
+
+        if (stat1 is CharStat charStat && stat2 is WeaponStat weaponStat)
+            return CharStats.GetCorrelationValue(charStat, weaponStat);
+
+        if (stat1 is WeaponStat weaponStatA && stat2 is CharStat charStatC)
+            return WeaponStats.GetCorrelationValue(weaponStatA, charStatC);
+
+        if (stat1 is WeaponStat weaponStatB && stat2 is WeaponStat weaponStatC)
+            return WeaponStats.GetCorrelationValue(weaponStatB, weaponStatC);
+
+        return 0;
     }
 }

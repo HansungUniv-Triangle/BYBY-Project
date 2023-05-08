@@ -964,7 +964,7 @@ MonoBehaviour:
   - RawGuidValue: ac1885e99a15a7e4eb3260e8bad9007c
   - RawGuidValue: 723f5f3e32b663e4da87e0bbb0de1330
   - RawGuidValue: 1551d93755355834387741eb44046ccd
-  selectSubWeaponNum: 1
+  selectSubWeaponNum: 2
 --- !u!4 &611016120
 Transform:
   m_ObjectHideFlags: 0
