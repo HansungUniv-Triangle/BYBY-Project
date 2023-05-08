@@ -8,6 +8,7 @@ using Types;
 using UnityEngine;
 using UIHolder;
 using UnityEngine.EventSystems;
+using UnityEngine.TextCore.Text;
 
 namespace Network
 {
@@ -348,17 +349,21 @@ namespace Network
         
         #region 움직임 관련 변수
         private Joystick _joystick;
+        private CharacterController _characterController;
+        private Transform _characterTransform;
+
+        public Vector3 targetPoint;
         private Vector3 moveDir;
+        private Vector3 _initPos;
+
         private float gravity = 15.0f;
         private float jumpForce = 7.0f;
         private float dodgeForce = 4.0f;
+        private float shakeDodgeThreshold = 2.0f;
+
         public bool ReverseHorizontalMove = false;
         private bool isJump = false;
         private bool isDodge = false;
-        private float shakeDodgeThreshold = 2.0f;
-        private CharacterController _characterController;
-        public Vector3 targetPoint;
-        private Vector3 _initPos;
         #endregion
 
         private CanvasManager _canvasManager;
@@ -411,6 +416,7 @@ namespace Network
             GunPos = transform; // 총 위치로 수정해야함.
             
             _characterController = GetComponent<CharacterController>();
+            _characterTransform = transform.GetChild(0);
 
             ShotLine = Instantiate(ShotLine);
             UltLine = Instantiate(UltLine);
@@ -458,7 +464,7 @@ namespace Network
 
             if (isDodge)
             {
-                var dodgeDir = lastMoveDir.normalized * speed;
+                var dodgeDir = lastMoveDir.normalized;
                 dodgeDir = transform.TransformDirection(dodgeDir);
 
                 dodgeDir.x *= dodgeForce;
@@ -499,7 +505,7 @@ namespace Network
 
                 moveDir.y -= gravity * Runner.DeltaTime;
                 _characterController.Move(moveDir * Runner.DeltaTime);
-            }          
+            }
 
             if (isCameraFocused == false)
             {
@@ -509,6 +515,21 @@ namespace Network
 
                 transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Runner.DeltaTime * 8f);
             }
+
+            // 캐릭터를 이동 방향대로 회전
+            var charaterRotate = 8f;
+            var characterDir = moveDir;
+            if (h * h < 0.09f && v * v < 0.09f)
+            {
+                characterDir = _target.transform.position - _characterTransform.position;
+            }
+            if (!_characterController.isGrounded)
+            {
+                charaterRotate = 3f;
+            }
+
+            var characterRotation = Quaternion.LookRotation(characterDir);
+            _characterTransform.rotation = Quaternion.Lerp(_characterTransform.rotation, characterRotation, Runner.DeltaTime * charaterRotate);
         }
 
         public void Dodge()
@@ -545,6 +566,7 @@ namespace Network
     {
         public void GetUlt()
         {
+            _joystick.OnPointerUp(null);    // joystick 입력값 초기화
             isCameraFocused = !isCameraFocused;
             _canvasManager.SwitchUI(CanvasType.GameAiming);
         }

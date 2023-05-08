@@ -6,9 +6,12 @@ public class ChangeJoystickBasedButtonsPos : MonoBehaviour, IPointerDownHandler
     private RectTransform buttonPanel;
     private Vector2 pos;
 
+    private PlayerCamera playerCamera;
+
     private void Start()
     {
         buttonPanel = GameObject.Find("ButtonPanel").GetComponent<RectTransform>();
+        playerCamera = Camera.main.GetComponent<PlayerCamera>();
     }
 
     public void OnPointerDown(PointerEventData eventData)
@@ -19,7 +22,7 @@ public class ChangeJoystickBasedButtonsPos : MonoBehaviour, IPointerDownHandler
             buttonPanel.anchorMin = buttonPanel.anchorMax = new Vector2(1f, 0);
             pos = new Vector2(-75, 0);
 
-            Camera.main.GetComponent<PlayerCamera>().ReverseCameraPos(false);
+            playerCamera.ReverseCameraPos(false);
         }
         // screen right
         else
@@ -27,7 +30,7 @@ public class ChangeJoystickBasedButtonsPos : MonoBehaviour, IPointerDownHandler
             buttonPanel.anchorMin = buttonPanel.anchorMax = new Vector2(0f, 0);; 
             pos = new Vector2(75, 0);
 
-            Camera.main.GetComponent<PlayerCamera>().ReverseCameraPos(true);
+            playerCamera.ReverseCameraPos(true);
         }
 
         buttonPanel.anchoredPosition = pos;
