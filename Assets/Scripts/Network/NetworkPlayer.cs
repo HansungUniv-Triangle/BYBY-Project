@@ -286,6 +286,8 @@ namespace Network
             //Debug.DrawRay(_gunRay.origin, _gunRay.direction * _shootDistance, Color.magenta, 0.3f);
             targetPoint = _gunRay.origin + _gunRay.direction * _shootDistance;
             LaserBeam(_gunRay, _shootDistance, attackType, lineRenderer);
+
+            RotateToTarget(GunPos, targetPoint, 8f, false);
         }
 
         private void LaserBeam(Ray gunRay, float aimDistance, AttackType attackType, LineRenderer lineRenderer)
@@ -370,7 +372,8 @@ namespace Network
         private GameManager _gameManager;
         private GameUI _gameUI;
         private Camera _camera;
-        
+        private Animator _animator;
+
         public float _maxHP;
         public float _nowHP;
 
@@ -417,6 +420,7 @@ namespace Network
             
             _characterController = GetComponent<CharacterController>();
             _characterTransform = transform.GetChild(0);
+            _animator = _characterTransform.GetComponent<Animator>();
 
             ShotLine = Instantiate(ShotLine);
             UltLine = Instantiate(UltLine);
@@ -464,6 +468,11 @@ namespace Network
 
             if (isDodge)
             {
+                /*
+                if (moveDir == Vector3.zero)
+                    _animator.SetInteger("animation", 8);
+                */
+
                 var dodgeDir = lastMoveDir.normalized;
                 dodgeDir = transform.TransformDirection(dodgeDir);
 
@@ -483,12 +492,19 @@ namespace Network
                 // move
                 if (_characterController.isGrounded)
                 {
+                    if (moveDir == Vector3.zero)
+                        _animator.SetInteger("animation", 1);
+                    else
+                        _animator.SetInteger("animation", 18);
+
                     moveDir = new Vector3(h, 0, v);
                     moveDir = transform.TransformDirection(moveDir);
                     moveDir *= speed;
                 }
                 else
                 {
+                    _animator.SetInteger("animation", 9);
+
                     var tmp = new Vector3(h, 0, v);
                     tmp = transform.TransformDirection(tmp);
                     tmp *= (speed * 0.7f);
@@ -509,27 +525,24 @@ namespace Network
 
             if (isCameraFocused == false)
             {
-                var relativePosition = _target.transform.position - transform.position;
-                relativePosition.y = 0; // y축은 바라보지 않도록 함
-                var targetRotation = Quaternion.LookRotation(relativePosition);
-
-                transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Runner.DeltaTime * 8f);
+                RotateToTarget(transform, _target.transform.position, 8f, true);
             }
 
             // 캐릭터를 이동 방향대로 회전
-            var charaterRotate = 8f;
             var characterDir = moveDir;
-            if (h * h < 0.09f && v * v < 0.09f)
+            var charaterRotateSpeed = 8f;
+
+            if (h * h < 0.36f && v * v < 0.36f)
             {
                 characterDir = _target.transform.position - _characterTransform.position;
             }
+
             if (!_characterController.isGrounded)
             {
-                charaterRotate = 3f;
+                charaterRotateSpeed = 3f;
             }
 
-            var characterRotation = Quaternion.LookRotation(characterDir);
-            _characterTransform.rotation = Quaternion.Lerp(_characterTransform.rotation, characterRotation, Runner.DeltaTime * charaterRotate);
+            LerpLookRotation(_characterTransform, characterDir, charaterRotateSpeed);
         }
 
         public void Dodge()
@@ -548,6 +561,21 @@ namespace Network
             _characterController.enabled = false;
             transform.position = _initPos;
             _characterController.enabled = true;
+        }
+
+        private void RotateToTarget(Transform origin, Vector3 targetPos, float speed, bool lockAxisY)
+        {
+            var relativePosition = targetPos - origin.position;
+            if (lockAxisY)
+                relativePosition.y = 0; // y축은 바라보지 않도록 함
+
+            LerpLookRotation(origin, relativePosition, speed);
+        }
+
+        private void LerpLookRotation(Transform origin, Vector3 dir, float speed)
+        {
+            var targetRotation = Quaternion.LookRotation(dir);
+            origin.rotation = Quaternion.Lerp(origin.rotation, targetRotation, Runner.DeltaTime * speed);
         }
 
         private void OnControllerColliderHit(ControllerColliderHit hit)

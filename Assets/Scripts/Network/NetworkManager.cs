@@ -209,7 +209,7 @@ namespace Network
             Vector3 spawnPosition = new Vector3((playerRef.RawEncoded % Runner.Config.Simulation.DefaultPlayers) + 20, 30, 10);
             NetworkObject networkPlayerObject = Runner.Spawn(_playerPrefab, spawnPosition, Quaternion.identity, playerRef);
             
-            NetworkObject gun = Runner.Spawn(_handGun, spawnPosition + Vector3.up * 2.5f, Quaternion.identity, playerRef);
+            NetworkObject gun = Runner.Spawn(_handGun, spawnPosition + Vector3.up * 1.8f, Quaternion.identity, playerRef);
             gun.transform.SetParent(networkPlayerObject.transform);
 
             var networkPlayer = networkPlayerObject.GetComponent<NetworkPlayer>();

@@ -14,6 +14,7 @@ Material:
   - _MK_ARTISTIC_ANIMATION_STUTTER
   - _MK_ARTISTIC_HATCHING
   - _MK_ARTISTIC_PROJECTION_SCREEN_SPACE
+  - _MK_CAMERA_FADE
   - _MK_DETAIL_BLEND_MIX
   - _MK_ENVIRONMENT_REFLECTIONS_AMBIENT
   - _MK_FRESNEL_HIGHLIGHTS
@@ -24,6 +25,7 @@ Material:
   - _MK_WRAPPED_DIFFUSE
   m_InvalidKeywords:
   - _
+  - _CAMERAFADE_ON
   - _EMISSIVE_SIMPLE
   - _FRESNELHIGHLIGHTS_ON
   - _IS_ANGELRING_OFF
@@ -139,7 +141,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _HatchingDarkMap:
-        m_Texture: {fileID: 2800000, guid: bf0cfe47fb237ec4eb90305d8ce1eb86, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _HeightMap:
@@ -302,9 +304,9 @@ Material:
     - _Brightness: 1
     - _BumpScale: 1
     - _BumpScaleMatcap: 1
-    - _CameraFade: 0
-    - _CameraFadeFarDistance: 3
-    - _CameraFadeNearDistance: 2.5
+    - _CameraFade: 1
+    - _CameraFadeFarDistance: 4
+    - _CameraFadeNearDistance: 2
     - _CameraRolling_Stabilizer: 0
     - _ClippingMode: 2
     - _Clipping_Level: 0

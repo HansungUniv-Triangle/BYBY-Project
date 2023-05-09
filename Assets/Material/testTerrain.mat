@@ -21,24 +21,25 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: testTerrain
-  m_Shader: {fileID: 4800000, guid: 7a06e458000b70b4daf220f2785b9711, type: 3}
+  m_Shader: {fileID: 4800000, guid: 733fefdcde0d35f4b822d2935d5a22f4, type: 3}
   m_ValidKeywords:
   - _MK_ALBEDO_MAP
   - _MK_ALPHA_CLIPPING
   - _MK_ARTISTIC_ANIMATION_STUTTER
-  - _MK_DETAIL_BLEND_MIX
-  - _MK_FRESNEL_HIGHLIGHTS
   - _MK_IRIDESCENCE_DEFAULT
   - _MK_LIGHT_RAMP
   - _MK_RECEIVE_SHADOWS
   - _MK_RIM_DEFAULT
   - _MK_THRESHOLD_MAP
-  - _MK_WORKFLOW_SPECULAR
   m_InvalidKeywords:
   - _ALPHACLIPPING_ON
   - _FRESNELHIGHLIGHTS_ON
+  - _MK_DETAIL_BLEND_MIX
+  - _MK_DIFFUSE_OREN_NAYAR
+  - _MK_FRESNEL_HIGHLIGHTS
   - _MK_OUTLINE_HULL_CLIP
   - _MK_OUTLINE_NOISE
+  - _MK_WORKFLOW_SPECULAR
   - _RECEIVESHADOWS_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -231,7 +232,7 @@ Material:
     - _DetailMix: 0.5
     - _DetailNormalMapIntensity: 1
     - _DetailNormalMapScale: 1
-    - _Diffuse: 0
+    - _Diffuse: 1
     - _DiffuseSmoothness: 0.3
     - _DiffuseThresholdOffset: 0.75
     - _Dissolve: 0
@@ -335,11 +336,11 @@ Material:
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _GoochBrightColor: {r: 1, g: 1, b: 1, a: 1}
     - _GoochDarkColor: {r: 0.9015826, g: 0.8159487, b: 0.9056604, a: 1}
-    - _IridescenceColor: {r: 0, g: 0, b: 0, a: 0.1764706}
+    - _IridescenceColor: {r: 0, g: 0, b: 0, a: 0.29803923}
     - _LightTransmissionColor: {r: 1, g: 0.65, b: 0, a: 1}
     - _OutlineColor: {r: 0, g: 0, b: 0, a: 1}
     - _RimBrightColor: {r: 1, g: 1, b: 1, a: 1}
-    - _RimColor: {r: 0.084905684, g: 0.0076094694, b: 0.021663312, a: 0.3764706}
+    - _RimColor: {r: 0.08490568, g: 0.0076094694, b: 0.021663312, a: 0.39215687}
     - _RimDarkColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecularColor: {r: 0.20312497, g: 0.20312497, b: 0.20312497, a: 1}
     - _VertexAnimationFrequency: {r: 2.5, g: 2.5, b: 2.5, a: 1}
