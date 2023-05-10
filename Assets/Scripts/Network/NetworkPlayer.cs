@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using DG.Tweening;
 using Fusion;
 using GameStatus;
@@ -356,6 +357,8 @@ namespace Network
 
         public Vector3 targetPoint;
         private Vector3 moveDir;
+        private Vector3 jumpDir;
+        private Vector3 lastMoveDir;
         private Vector3 _initPos;
 
         private float gravity = 15.0f;
@@ -364,6 +367,7 @@ namespace Network
         private float shakeDodgeThreshold = 2.0f;
 
         public bool ReverseHorizontalMove = false;
+        private bool isWalk = true;
         private bool isJump = false;
         private bool isDodge = false;
         #endregion
@@ -373,7 +377,7 @@ namespace Network
         private GameUI _gameUI;
         private Camera _camera;
         private Animator _animator;
-
+        
         public float _maxHP;
         public float _nowHP;
 
@@ -419,8 +423,8 @@ namespace Network
             GunPos = transform; // 총 위치로 수정해야함.
             
             _characterController = GetComponent<CharacterController>();
-            _characterTransform = transform.GetChild(0);
-            _animator = _characterTransform.GetComponent<Animator>();
+            _characterTransform = transform.Find("Cat");
+            _animator = _characterTransform.GetComponentInChildren<Animator>();
 
             ShotLine = Instantiate(ShotLine);
             UltLine = Instantiate(UltLine);
@@ -440,7 +444,7 @@ namespace Network
             
             var shakeMagnitude = Input.acceleration.magnitude;
 
-            if (shakeMagnitude > shakeDodgeThreshold && !isDodge)    //if (Input.GetKeyDown(KeyCode.Space) && !isDodge)
+            if (shakeMagnitude > shakeDodgeThreshold)    //if (Input.GetKeyDown(KeyCode.Space) && !isDodge)
             {
                 Dodge();
             }
@@ -457,8 +461,6 @@ namespace Network
             }
         }
 
-        private Vector3 lastMoveDir;
-
         private void CharacterMove()
         {
             var h = ReverseHorizontalMove ? -_joystick.Horizontal : _joystick.Horizontal;
@@ -468,55 +470,59 @@ namespace Network
 
             if (isDodge)
             {
-                /*
-                if (moveDir == Vector3.zero)
-                    _animator.SetInteger("animation", 8);
-                */
-
-                var dodgeDir = lastMoveDir.normalized;
-                dodgeDir = transform.TransformDirection(dodgeDir);
+                var dodgeDir = lastMoveDir;
 
                 dodgeDir.x *= dodgeForce;
                 dodgeDir.z *= dodgeForce;
-
+                
                 _characterController.Move(dodgeDir * Runner.DeltaTime);
+
+                LerpLookRotation(_characterTransform, lastMoveDir, 18f);
             }
             else
             {
-                if (Mathf.Abs(h) >= 0.3f ||
-                    Mathf.Abs(v) >= 0.3f)
-                {
-                    lastMoveDir = new Vector3(h, 0, v);
-                }
-
                 // move
                 if (_characterController.isGrounded)
                 {
-                    if (moveDir == Vector3.zero)
-                        _animator.SetInteger("animation", 1);
-                    else
-                        _animator.SetInteger("animation", 18);
+                    if (isWalk)
+                    {
+                        if (h == 0 && v == 0)
+                            _animator.SetInteger("animation", 1);
+                        else
+                        {
+                            _animator.SetInteger("animation", 18);
+                            _animator.SetFloat("walkSpeed", speed * 0.5f);
+                        }
+                    }
 
                     moveDir = new Vector3(h, 0, v);
                     moveDir = transform.TransformDirection(moveDir);
+                    
+                    if (moveDir.magnitude >= 0.3f)
+                        lastMoveDir = moveDir;
+                    
                     moveDir *= speed;
                 }
                 else
                 {
-                    _animator.SetInteger("animation", 9);
+                    jumpDir = new Vector3(h, 0, v);
+                    jumpDir = transform.TransformDirection(jumpDir);
+                    
+                    if (jumpDir.magnitude >= 0.3f)
+                        lastMoveDir = jumpDir;
+                    
+                    jumpDir *= (speed * 0.7f);
 
-                    var tmp = new Vector3(h, 0, v);
-                    tmp = transform.TransformDirection(tmp);
-                    tmp *= (speed * 0.7f);
-
-                    moveDir.x = tmp.x;
-                    moveDir.z = tmp.z;
+                    moveDir.x = jumpDir.x;
+                    moveDir.z = jumpDir.z;
                 }
-
+                
                 if (isJump)
                 {
+                    _animator.SetInteger("animation", 9);
                     moveDir.y = jumpForce;
                     isJump = false;
+                    isWalk = true;
                 }
 
                 moveDir.y -= gravity * Runner.DeltaTime;
@@ -528,32 +534,33 @@ namespace Network
                 RotateToTarget(transform, _target.transform.position, 8f, true);
             }
 
-            // 캐릭터를 이동 방향대로 회전
-            var characterDir = moveDir;
-            var charaterRotateSpeed = 8f;
-
-            if (h * h < 0.36f && v * v < 0.36f)
-            {
-                characterDir = _target.transform.position - _characterTransform.position;
-            }
-
-            if (!_characterController.isGrounded)
-            {
-                charaterRotateSpeed = 3f;
-            }
-
-            LerpLookRotation(_characterTransform, characterDir, charaterRotateSpeed);
+            if (!isDodge)
+                RotateCharacterMoveDir(h, v);
         }
 
         public void Dodge()
         {
-            isDodge = true;
-            DOTween.Sequence()
-                .AppendInterval(0.1f)
-                .OnComplete(() =>
-                {
-                    isDodge = false;
-                });
+            if (!isDodge)
+            {
+                _animator.Rebind();
+                _animator.SetInteger("animation", 8);
+                isDodge = true;
+                DOTween.Sequence()
+                    .AppendInterval(0.1f)
+                    .OnComplete(() =>
+                    {
+                        isDodge = false;
+                        isWalk = true;
+                    });
+            }
+        }
+
+        public void Jump()
+        {
+            if (_characterController.isGrounded && !isJump)
+            {
+                isJump = true;
+            }
         }
 
         public void InitPosition()
@@ -572,6 +579,28 @@ namespace Network
             LerpLookRotation(origin, relativePosition, speed);
         }
 
+        private void RotateCharacterMoveDir(float h, float v)
+        {
+            // 캐릭터를 이동 방향대로 회전
+            var characterDir = new Vector3(h, 0, v);
+            var characterRotateSpeed = 8f;
+            
+            characterDir = transform.TransformDirection(characterDir);
+            
+            if (characterDir.magnitude < 0.5f)
+            {
+                characterDir = _target.transform.position - _characterTransform.position;
+                characterDir.y = 0;
+            }
+
+            if (!_characterController.isGrounded)
+            {
+                characterRotateSpeed = 3f;
+            }
+
+            LerpLookRotation(_characterTransform, characterDir, characterRotateSpeed);
+        }
+
         private void LerpLookRotation(Transform origin, Vector3 dir, float speed)
         {
             var targetRotation = Quaternion.LookRotation(dir);
@@ -582,10 +611,7 @@ namespace Network
         {
             if (hit.gameObject.layer == LayerMask.NameToLayer("World") && hit.normal.y == 0)
             {
-                if (_characterController.isGrounded)
-                {
-                    isJump = true;
-                }
+                Jump();
             }
         }
     }
