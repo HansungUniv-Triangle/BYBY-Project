@@ -16,18 +16,16 @@ public class SynergyPanelCreate : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {
+    {//manager·Î
         if (Input.GetKeyDown(KeyCode.E))
         {
             if (synergyPanel == null)
             {
                 synergyPanel = Instantiate(prefabPanel, transform);
-                synergyPanel.GetComponent<SynergySelectPanel>().MakeSynergyPage();
             }
             else
             {
                 synergyPanel.SetActive(true);
-                synergyPanel.GetComponent<SynergySelectPanel>().MakeSynergyPage();
             }
         }
         else if (Input.GetKeyDown(KeyCode.Escape))
