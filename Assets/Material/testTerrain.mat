@@ -27,10 +27,11 @@ Material:
   - _MK_ALPHA_CLIPPING
   - _MK_ARTISTIC_ANIMATION_STUTTER
   - _MK_IRIDESCENCE_DEFAULT
-  - _MK_LIGHT_RAMP
+  - _MK_LIGHT_BANDED
   - _MK_RECEIVE_SHADOWS
   - _MK_RIM_DEFAULT
   - _MK_THRESHOLD_MAP
+  - _MK_WRAPPED_DIFFUSE
   m_InvalidKeywords:
   - _ALPHACLIPPING_ON
   - _FRESNELHIGHLIGHTS_ON
@@ -41,6 +42,7 @@ Material:
   - _MK_OUTLINE_NOISE
   - _MK_WORKFLOW_SPECULAR
   - _RECEIVESHADOWS_ON
+  - _WRAPPEDLIGHTING_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -259,7 +261,7 @@ Material:
     - _IridescenceSize: 1
     - _IridescenceSmoothness: 0.5
     - _IridescenceThresholdOffset: 0.25
-    - _Light: 3
+    - _Light: 2
     - _LightBands: 4
     - _LightBandsScale: 0.5
     - _LightThreshold: 0.22
@@ -325,7 +327,7 @@ Material:
     - _VertexAnimationIntensity: 0.05
     - _VertexAnimationStutter: 0
     - _Workflow: 1
-    - _WrappedLighting: 0
+    - _WrappedLighting: 1
     - _ZTest: 4
     - _ZWrite: 1
     m_Colors:
@@ -335,12 +337,12 @@ Material:
     - _DissolveBorderColor: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _GoochBrightColor: {r: 1, g: 1, b: 1, a: 1}
-    - _GoochDarkColor: {r: 0.9015826, g: 0.8159487, b: 0.9056604, a: 1}
+    - _GoochDarkColor: {r: 0.71502393, g: 0.6249911, b: 0.7169812, a: 1}
     - _IridescenceColor: {r: 0, g: 0, b: 0, a: 0.29803923}
     - _LightTransmissionColor: {r: 1, g: 0.65, b: 0, a: 1}
     - _OutlineColor: {r: 0, g: 0, b: 0, a: 1}
     - _RimBrightColor: {r: 1, g: 1, b: 1, a: 1}
-    - _RimColor: {r: 0.08490568, g: 0.0076094694, b: 0.021663312, a: 0.39215687}
+    - _RimColor: {r: 0.23584902, g: 0.016464928, b: 0.06199745, a: 0.6039216}
     - _RimDarkColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecularColor: {r: 0.20312497, g: 0.20312497, b: 0.20312497, a: 1}
     - _VertexAnimationFrequency: {r: 2.5, g: 2.5, b: 2.5, a: 1}

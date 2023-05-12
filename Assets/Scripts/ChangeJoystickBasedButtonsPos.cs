@@ -1,3 +1,4 @@
+using Network;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -7,6 +8,7 @@ public class ChangeJoystickBasedButtonsPos : MonoBehaviour, IPointerDownHandler
     private Vector2 pos;
 
     private PlayerCamera playerCamera;
+    private Network.NetworkPlayer networkPlayer;
 
     private void Start()
     {
@@ -23,6 +25,7 @@ public class ChangeJoystickBasedButtonsPos : MonoBehaviour, IPointerDownHandler
             pos = new Vector2(-75, 0);
 
             playerCamera.ReverseCameraPos(false);
+            ChangePlayerGun(true);
         }
         // screen right
         else
@@ -31,9 +34,18 @@ public class ChangeJoystickBasedButtonsPos : MonoBehaviour, IPointerDownHandler
             pos = new Vector2(75, 0);
 
             playerCamera.ReverseCameraPos(true);
+            ChangePlayerGun(false);
         }
 
         buttonPanel.anchoredPosition = pos;
         buttonPanel.Translate(new Vector3(0, eventData.position.y, 0));
+    }
+
+    private void ChangePlayerGun(bool isLeft)
+    {
+        if (networkPlayer is null)
+            networkPlayer = GameManager.Instance.NetworkManager.LocalCharacter.GetComponent<Network.NetworkPlayer>();
+
+        networkPlayer.ChangeGunPos(isLeft);
     }
 }

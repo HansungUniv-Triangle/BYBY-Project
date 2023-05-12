@@ -157,6 +157,7 @@ MonoBehaviour:
   synergyList:
   - {fileID: 11400000, guid: 4dd813c273201e3499f90b7ed0bdda15, type: 2}
   GunPos: {fileID: 0}
+  ShootPoint: {fileID: 0}
   ShotLine: {fileID: 619845798768815705, guid: 4cb0cccc0e5c3ee4ea6eac51e71ebfb7, type: 3}
   UltLine: {fileID: 8321005384874206421, guid: d3c13645ed15bf54f9f9d163e3cda645, type: 3}
   targetPoint: {x: 0, y: 0, z: 0}

@@ -25,7 +25,7 @@ public class LongTouch : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        StartCoroutine(IsLongTouch());
+        StartCoroutine(IsLongTouch(eventData));
     }
 
     public void OnPointerUp(PointerEventData eventData)
@@ -38,18 +38,18 @@ public class LongTouch : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         }
         else
         {
-            StopCoroutine(IsLongTouch());
+            StopAllCoroutines();
         }
     }
 
-    private IEnumerator IsLongTouch()
+    private IEnumerator IsLongTouch(PointerEventData eventData)
     {
         yield return OneSec;
         LongTouched = true;
         RDG.Vibration.Vibrate(20, 1);
 
+        button.OnPointerUp(eventData);
         registerButton();
-        //Debug.Log("LongTouched");
     }
 
     private IEnumerator buttonEnable()
@@ -60,6 +60,8 @@ public class LongTouch : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
     private void registerButton()
     {
+        _doubleTouch.button.transform.GetChild(1).gameObject.SetActive(false);
         _doubleTouch.SetButton(button);
+        button.transform.GetChild(1).gameObject.SetActive(true);
     }
 }

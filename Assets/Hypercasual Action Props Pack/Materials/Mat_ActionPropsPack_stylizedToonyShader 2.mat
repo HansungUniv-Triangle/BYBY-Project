@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Mat_ActionPropsPack_stylizedToonyShader
+  m_Name: Mat_ActionPropsPack_stylizedToonyShader 2
   m_Shader: {fileID: 4800000, guid: 7633a2fd8a3bed44791c9e952ff86e5d, type: 3}
   m_ValidKeywords:
   - _MK_ALBEDO_MAP
@@ -275,7 +275,7 @@ Material:
     - _OutlineFadeMin: 0.25
     - _OutlineNoise: 0
     - _OutlineSize: 5
-    - _OutlineTab: 0
+    - _OutlineTab: 1
     - _Parallax: 0.02
     - _RampSmooth: 0.187
     - _RampThreshold: 0.472

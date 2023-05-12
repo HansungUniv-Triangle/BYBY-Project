@@ -10,6 +10,7 @@ namespace Network
     {
         private BaseStat<WeaponStat> _baseWeaponStat;
         private Transform _weaponTransform;
+        private Transform _weaponShootTransform;
         private int _level;
         private List<NetworkObject> _projectileList;
         [SerializeField]
@@ -25,6 +26,7 @@ namespace Network
             _baseWeaponStat = new BaseStat<WeaponStat>(1, 1);
             _projectileList = new List<NetworkObject>();
             _weaponTransform = gameObject.transform;
+            _weaponShootTransform = gameObject.transform.GetChild(1);
             target = gameObject.transform.forward;
             _baseWeaponStat.AddStat(new Stat<WeaponStat>(WeaponStat.Velocity, 20, 0));
             _baseWeaponStat.AddStat(new Stat<WeaponStat>(WeaponStat.Range, 10, 0));
@@ -62,7 +64,7 @@ namespace Network
             var obj = Runner.Spawn(
                 _projectileObject, 
                 position.position, //+ position.TransformDirection(Vector3.forward), 
-                Quaternion.LookRotation(target - gameObject.transform.position), 
+                Quaternion.LookRotation(target - position.position), 
                 Runner.LocalPlayer,
                 InitializeProjectile
             );
@@ -86,7 +88,7 @@ namespace Network
         {
             if (CanAttack())
             {
-                SpawnProjectile(_weaponTransform);
+                SpawnProjectile(_weaponShootTransform);
             }
         }
         

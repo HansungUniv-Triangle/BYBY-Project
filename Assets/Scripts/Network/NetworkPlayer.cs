@@ -273,7 +273,7 @@ namespace Network
             var aimRayOrigin = aimRay.origin + aimRay.direction * distCam;
             
             /* 총알이 날아갈 지점 구하기 */
-            _gunRay.origin = GunPos.position;
+            _gunRay.origin = ShootPoint.position;
             
             //Debug.DrawRay(aimRayOrigin, aimRay.direction * _shootDistance, Color.blue, 0.3f);
             if (Physics.Raycast(aimRayOrigin, aimRay.direction, out _hit, _shootDistance, shootRayMask))
@@ -310,7 +310,7 @@ namespace Network
                 switch (attackType)
                 {
                     case AttackType.Basic:
-                        WorldManager.Instance.GetWorld().HitBlock(point, 1);
+                        //WorldManager.Instance.GetWorld().HitBlock(point, 1);
                         AddBlockHitData(point, 1);
                         break;
 
@@ -340,6 +340,7 @@ namespace Network
     {
         #region 에임
         public Transform GunPos;
+        public Transform ShootPoint;
         public static bool isCameraFocused = false;
         public LineRenderer ShotLine;
         public LineRenderer UltLine;
@@ -372,11 +373,15 @@ namespace Network
         private bool isDodge = false;
         #endregion
 
+        #region 애니메이션 관련 변수
+        private Animator _animator;
+        [Networked(OnChanged = nameof(UpdatesAnimation))] private int AnimationIdx { get; set; }
+        #endregion
+
         private CanvasManager _canvasManager;
         private GameManager _gameManager;
         private GameUI _gameUI;
         private Camera _camera;
-        private Animator _animator;
         
         public float _maxHP;
         public float _nowHP;
@@ -420,8 +425,10 @@ namespace Network
             }
             
             moveDir = Vector3.zero;
+            lastMoveDir = transform.forward;
             GunPos = transform; // 총 위치로 수정해야함.
-            
+            ShootPoint = transform;
+
             _characterController = GetComponent<CharacterController>();
             _characterTransform = transform.Find("Cat");
             _animator = _characterTransform.GetComponentInChildren<Animator>();
@@ -436,12 +443,32 @@ namespace Network
         public void SetGunPos(Transform transform)
         {
             GunPos = transform;
+            ShootPoint = GunPos.GetChild(1);
         }
         
+        public void ChangeGunPos(bool isLeft)
+        {
+            if (isLeft)
+            {
+                if (GunPos.localPosition.x > 0)
+                    GunPos.localPosition = new Vector3(-GunPos.localPosition.x, GunPos.localPosition.y, GunPos.localPosition.z);
+            }
+            else
+            {
+                if (GunPos.localPosition.x < 0)
+                    GunPos.localPosition = new Vector3(-GunPos.localPosition.x, GunPos.localPosition.y, GunPos.localPosition.z);
+            }
+        }
+
         public override void FixedUpdateNetwork()
         {
             if(!HasStateAuthority) return;
             
+            /*
+            if (Input.GetKeyDown(KeyCode.Space))
+                ScreenCapture.CaptureScreenshot("test.png");
+            */
+
             var shakeMagnitude = Input.acceleration.magnitude;
 
             if (shakeMagnitude > shakeDodgeThreshold)    //if (Input.GetKeyDown(KeyCode.Space) && !isDodge)
@@ -459,6 +486,28 @@ namespace Network
             {
                 CharacterMove();
             }
+        }
+
+        private static void UpdatesAnimation(Changed<NetworkPlayer> changed)
+        {
+            changed.Behaviour.UpdatesAnimation();
+        }
+        private void UpdatesAnimation()
+        {
+            switch (AnimationIdx)
+            {
+                case 8:
+                    _animator.Rebind();
+                    _animator.Update(0f);
+                    break;
+                case 18:
+                    _animator.SetFloat("walkSpeed", _baseCharStat.GetStat(CharStat.Speed).Total * 0.5f);
+                    break;
+                default:
+                    break;
+            }
+
+            _animator.SetInteger("animation", AnimationIdx);
         }
 
         private void CharacterMove()
@@ -487,12 +536,9 @@ namespace Network
                     if (isWalk)
                     {
                         if (h == 0 && v == 0)
-                            _animator.SetInteger("animation", 1);
+                            AnimationIdx = 1;
                         else
-                        {
-                            _animator.SetInteger("animation", 18);
-                            _animator.SetFloat("walkSpeed", speed * 0.5f);
-                        }
+                            AnimationIdx = 18;
                     }
 
                     moveDir = new Vector3(h, 0, v);
@@ -519,7 +565,7 @@ namespace Network
                 
                 if (isJump)
                 {
-                    _animator.SetInteger("animation", 9);
+                    AnimationIdx = 9;
                     moveDir.y = jumpForce;
                     isJump = false;
                     isWalk = true;
@@ -534,7 +580,7 @@ namespace Network
                 RotateToTarget(transform, _target.transform.position, 8f, true);
             }
 
-            if (!isDodge)
+            if (isWalk)
                 RotateCharacterMoveDir(h, v);
         }
 
@@ -542,15 +588,15 @@ namespace Network
         {
             if (!isDodge)
             {
-                _animator.Rebind();
-                _animator.SetInteger("animation", 8);
+                AnimationIdx = 8;
                 isDodge = true;
                 DOTween.Sequence()
-                    .AppendInterval(0.1f)
+                    .AppendInterval(0.15f)
                     .OnComplete(() =>
                     {
                         isDodge = false;
                         isWalk = true;
+                        AnimationIdx = 1;
                     });
             }
         }
