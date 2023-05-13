@@ -180,11 +180,11 @@ public class SynergyPageManager : MonoBehaviour
     private string GetRandomRarity()
     {
         // 무작위 레어도 선택
-        /*List<string> rarityList = new List<string>(rarityGroup.Keys);
+        List<string> rarityList = new List<string>(rarityGroup.Keys);
         float randomRarityChoosingNumber = Random.Range(0f, 1f);
         string randomRarity;
 
-        if (randomRarityChoosingNumber < 0.5f)
+        if (randomRarityChoosingNumber < 0.45f)
         {
             randomRarity = "common";
         }
@@ -196,8 +196,7 @@ public class SynergyPageManager : MonoBehaviour
         {
             randomRarity = "rare";
         }
-        return randomRarity;*/
-        return "common";
+        return randomRarity;
     }
 
     // 시너지를 랜덤으로 생성하는 함수
