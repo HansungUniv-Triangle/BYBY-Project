@@ -7,10 +7,10 @@ namespace Network
     {
         protected override void Attack()
         {
-            var speedValue = GetCharStat(CharStat.Speed).Total; 
-            
             if (CanAttack())
             {
+                var speedValue = GetCharStat(CharStat.Speed).Total; 
+                
                 DOTween.Sequence()
                     .OnStart(() => RemainBullet--)
                     .AppendCallback(() => SpawnProjectile(WeaponTransform))

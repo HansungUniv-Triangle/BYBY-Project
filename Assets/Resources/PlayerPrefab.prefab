@@ -42,8 +42,8 @@ GameObject:
   - component: {fileID: 3038427902770430635}
   - component: {fileID: 3038427902770430637}
   - component: {fileID: 3038427902770430636}
-  - component: {fileID: 8706605853572743626}
   - component: {fileID: -4384871101208360548}
+  - component: {fileID: 3146828219027978989}
   m_Layer: 7
   m_Name: PlayerPrefab
   m_TagString: Untagged
@@ -109,11 +109,35 @@ MonoBehaviour:
     RawGuidValue: e1433cb2b6135a94e92c3f1283df80b1
   NestedObjects: []
   NetworkedBehaviours:
-  - {fileID: 8706605853572743626}
   - {fileID: -4384871101208360548}
+  - {fileID: 3146828219027978989}
   - {fileID: 8257305846867869706}
   SimulationBehaviours: []
---- !u!114 &8706605853572743626
+--- !u!114 &-4384871101208360548
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3038427902770430639}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4ae0786e8214df41b95d10aab707db3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _interpolationDataSource: 0
+  _NetworkSynergyList: 
+  synergyList:
+  - {fileID: 11400000, guid: 4dd813c273201e3499f90b7ed0bdda15, type: 2}
+  GunPos: {fileID: 0}
+  ShootPoint: {fileID: 0}
+  ShotLine: {fileID: 619845798768815705, guid: 4cb0cccc0e5c3ee4ea6eac51e71ebfb7, type: 3}
+  UltLine: {fileID: 8321005384874206421, guid: d3c13645ed15bf54f9f9d163e3cda645, type: 3}
+  _crossHairOrigin: {fileID: 0}
+  targetPoint: {x: 0, y: 0, z: 0}
+  ReverseHorizontalMove: 0
+  _gameUI: {fileID: 0}
+--- !u!114 &3146828219027978989
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -141,30 +165,6 @@ MonoBehaviour:
     RotTeleportRadians: 1.5
   UseLegacySharedModeInterpolation: 0
   TargetInterpolationDelay: 0.03
---- !u!114 &-4384871101208360548
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3038427902770430639}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b4ae0786e8214df41b95d10aab707db3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
-  synergyList:
-  - {fileID: 11400000, guid: 4dd813c273201e3499f90b7ed0bdda15, type: 2}
-  GunPos: {fileID: 0}
-  ShootPoint: {fileID: 0}
-  ShotLine: {fileID: 619845798768815705, guid: 4cb0cccc0e5c3ee4ea6eac51e71ebfb7, type: 3}
-  UltLine: {fileID: 8321005384874206421, guid: d3c13645ed15bf54f9f9d163e3cda645, type: 3}
-  targetPoint: {x: 0, y: 0, z: 0}
-  ReverseHorizontalMove: 0
-  _maxHP: 0
-  _nowHP: 0
-  _NetworkSynergyList: 
 --- !u!1 &3096489019395526915
 GameObject:
   m_ObjectHideFlags: 0
@@ -242,7 +242,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interpolationDataSource: 0
-  InterpolationSpace: 1
+  InterpolationSpace: 0
   InterpolationTarget: {fileID: 6257193720318471331}
   InterpolateErrorCorrection: 1
   InterpolatedErrorCorrectionSettings:

@@ -20,6 +20,12 @@ namespace UIHolder
         public Button vibrateButton;
         public Button dodgeButton;
 
+        public Image playerHpBarImage;
+        public Image enemyHpBarImage;
+
+        public TextMeshProUGUI timeText;
+        public TextMeshProUGUI roundText;
+
         [Serializable]
         public class Settings
         {

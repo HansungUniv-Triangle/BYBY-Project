@@ -57,11 +57,8 @@ namespace Network
             }
             else if (objectLayer.Equals(LayerMask.NameToLayer("Enemy")))
             {
-                if (Object.HasStateAuthority)
-                {
-                    GameManager.Instance.NetworkManager.AddCharacterHitData(Object);
-                    IsHit = true;
-                }
+                GameManager.Instance.NetworkManager.AddCharacterHitData(Object);
+                IsHit = true;
             }
         }
     }

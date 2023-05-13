@@ -17,6 +17,7 @@ namespace Network
         private void OnCollisionEnter(Collision collision)
         {
             if(IsHit || !HasStateAuthority) return;
+            
             var objectLayer = collision.collider.gameObject.layer;
 
             if (objectLayer.Equals(LayerMask.NameToLayer("World")))
@@ -34,11 +35,8 @@ namespace Network
             }
             else if (objectLayer.Equals(LayerMask.NameToLayer("Enemy")))
             {
-                if (Object.HasStateAuthority)
-                {
-                    GameManager.Instance.NetworkManager.AddCharacterHitData(Object);
-                    IsHit = true;
-                }
+                GameManager.Instance.NetworkManager.AddCharacterHitData(Object);
+                IsHit = true;
             }
         }
     }

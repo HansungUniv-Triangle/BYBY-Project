@@ -12,10 +12,6 @@ namespace Network
     public abstract class NetworkProjectileHolder : NetworkBehaviour
     {
         protected BaseStat<WeaponStat> _baseWeaponStat;
-        private Transform _weaponTransform;
-        private Transform _weaponShootTransform;
-
-        private int _level;
         private List<NetworkObject> _projectileList;
         [SerializeField]
         private NetworkObject _projectileObject;
@@ -30,12 +26,8 @@ namespace Network
 
         private void Awake()
         {
-            _level = 1;
             _baseWeaponStat = new BaseStat<WeaponStat>(1, 1);
             _projectileList = new List<NetworkObject>();
-
-            _weaponTransform = gameObject.transform;
-            _weaponShootTransform = gameObject.transform.GetChild(1);
 
             _baseWeaponStat.AddStat(new Stat<WeaponStat>(WeaponStat.Damage, 10, 0));
             _baseWeaponStat.AddStat(new Stat<WeaponStat>(WeaponStat.Velocity, 20, 0));
@@ -57,7 +49,7 @@ namespace Network
             }
             
             RemainBullet = (int)GetWeaponStat(WeaponStat.Bullet).Total;
-            BulletText = (GameManager.Instance.UIHolder as GameUI).bulletText;
+            //BulletText = (GameManager.Instance.UIHolder as GameUI).bulletText;
         }
 
         public override void FixedUpdateNetwork()
@@ -85,12 +77,13 @@ namespace Network
             objInit.Initialized(this);
         }
 
-        protected NetworkObject SpawnProjectile(Transform position)
+        protected NetworkObject SpawnProjectile(Transform transform)
         {
+            var position = transform.position;
             var obj = Runner.Spawn(
                 _projectileObject, 
-                position.position, //+ position.TransformDirection(Vector3.forward), 
-                Quaternion.LookRotation(target - position.position), 
+                position, //+ position.TransformDirection(Vector3.forward), 
+                Quaternion.LookRotation(Target - position), 
                 Runner.LocalPlayer,
                 InitializeProjectile
             );
@@ -156,25 +149,6 @@ namespace Network
         }
 
         protected abstract void Attack();
-
-        #region 레벨
-
-        public void IncreaseLevel()
-        {
-            if (4 > _level) _level++;
-        }
-        
-        public void DecreaseLevel()
-        {
-            if (_level > 1) _level--;
-        }
-
-        public int GetLevel()
-        {
-            return _level;
-        }
-
-        #endregion
 
         #region 스탯
 

@@ -15,7 +15,6 @@ namespace Network
     // HP canvas
     public partial class NetworkPlayer
     {
-        [SerializeField] private Image healthBar;
         [Networked] private float MaxHp { get; set; }
         [Networked(OnChanged = nameof(OnHpChanged))] private float NowHp { get; set; }
 
@@ -26,7 +25,14 @@ namespace Network
 
         private void OnHpChanged()
         {
-            healthBar.DOFillAmount(NowHp / MaxHp, 0.5f);
+            if (HasStateAuthority)
+            {
+                _gameUI.playerHpBarImage.DOFillAmount(NowHp / MaxHp, 0.5f);
+            }
+            else
+            {
+                _gameUI.enemyHpBarImage.DOFillAmount(NowHp / MaxHp, 0.5f);
+            }
         }
 
         public void Healing(float point)
@@ -334,7 +340,6 @@ namespace Network
         private Ray _gunRay;
         private RaycastHit _hit;
         private float _shootDistance = 30f;
-        private int _damage = 1;
         private bool isShooting = true;
         private const int shootRayMask = (int)Layer.Enemy | (int)Layer.World;
 
@@ -372,46 +377,46 @@ namespace Network
                 networkProjectileHolder.SetTarget(targetPoint);
             }
 
-            LaserBeam(_gunRay, _shootDistance, attackType, lineRenderer);
+            //LaserBeam(_gunRay, _shootDistance, attackType, lineRenderer);
             RotateToTarget(GunPos, targetPoint, 8f, false);
         }
 
-        private void LaserBeam(Ray gunRay, float aimDistance, AttackType attackType, LineRenderer lineRenderer)
-        {
-            lineRenderer.SetPosition(0, gunRay.origin);
-
-            /* 실제 총알이 날아가는 경로 */
-            if (Physics.Raycast(gunRay, out _hit, aimDistance, shootRayMask))
-            {
-                var point = _hit.point - _hit.normal * 0.01f;
-
-                if (_hit.transform.gameObject == _target.gameObject)
-                {
-                    // 임시 헤드 판정
-                    var isCritical = _hit.point.y - (_target.transform.position.y - 1) > 1.25f;
-                    _gameUI.hitDamageText.GetComponent<HitDamage>().HitDamageAnimation(_damage, isCritical);
-                }
-                
-                switch (attackType)
-                {
-                    case AttackType.Basic:
-                        AddBlockHitData(point, 1);
-                        break;
-
-                    case AttackType.Ultimate:
-                        WorldManager.Instance.GetWorld().ExplodeBlocks(point, 3, 3);
-                        VibrateUlt();
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(attackType), attackType, null);
-                }
-
-                targetPoint = _hit.point;
-            }
-            
-            GetComponentInChildren<NetworkProjectileHolder>().target = targetPoint;
-            lineRenderer.SetPosition(1, targetPoint);
-        }
+        // private void LaserBeam(Ray gunRay, float aimDistance, AttackType attackType, LineRenderer lineRenderer)
+        // {
+        //     lineRenderer.SetPosition(0, gunRay.origin);
+        //
+        //     /* 실제 총알이 날아가는 경로 */
+        //     if (Physics.Raycast(gunRay, out _hit, aimDistance, shootRayMask))
+        //     {
+        //         var point = _hit.point - _hit.normal * 0.01f;
+        //
+        //         if (_hit.transform.gameObject == _target.gameObject)
+        //         {
+        //             // 임시 헤드 판정
+        //             var isCritical = _hit.point.y - (_target.transform.position.y - 1) > 1.25f;
+        //             _gameUI.hitDamageText.GetComponent<HitDamage>().HitDamageAnimation(_damage, isCritical);
+        //         }
+        //         
+        //         switch (attackType)
+        //         {
+        //             case AttackType.Basic:
+        //                 AddBlockHitData(point, 1);
+        //                 break;
+        //
+        //             case AttackType.Ultimate:
+        //                 WorldManager.Instance.GetWorld().ExplodeBlocks(point, 3, 3);
+        //                 VibrateUlt();
+        //                 break;
+        //             default:
+        //                 throw new ArgumentOutOfRangeException(nameof(attackType), attackType, null);
+        //         }
+        //
+        //         targetPoint = _hit.point;
+        //     }
+        //     
+        //     GetComponentInChildren<NetworkProjectileHolder>().target = targetPoint;
+        //     lineRenderer.SetPosition(1, targetPoint);
+        // }
 
         private Vector3 GetCrossHairPointInScreen()
         {
@@ -471,7 +476,8 @@ namespace Network
 
         #region 애니메이션 관련 변수
         private Animator _animator;
-        [Networked(OnChanged = nameof(UpdatesAnimation))] private int AnimationIdx { get; set; }
+        [Networked(OnChanged = nameof(UpdatesAnimation))] 
+        private int AnimationIdx { get; set; }
         #endregion
 
         private CanvasManager _canvasManager;
@@ -484,7 +490,6 @@ namespace Network
         {
             GunPos = transform.GetChild(2).transform;
             moveDir = Vector3.zero;
-            _transform = gameObject.transform;
             _characterController = GetComponent<CharacterController>();
             
         }
@@ -492,7 +497,6 @@ namespace Network
         public override void Spawned()
         {
             _initPos = transform.position;
-            _canvasManager = CanvasManager.Instance;
             _gameManager = GameManager.Instance;
             _baseCharStat = new BaseStat<CharStat>(1, 1);
             _gameUI = _gameManager.UIHolder as GameUI;
@@ -511,9 +515,11 @@ namespace Network
             }
             
             _canvasManager = _gameUI.canvasManager;
-            _crossHair = _gameUI.crossHair;
             _joystick = _gameUI.joystick;
             _camera = Camera.main;
+            _characterController = GetComponent<CharacterController>();
+            _characterTransform = transform.Find("Cat");
+            _animator = _characterTransform.GetComponentInChildren<Animator>();
             
             if (HasStateAuthority)
             {
@@ -537,20 +543,10 @@ namespace Network
                 return;
             }
             
-            if (_gameManager.UIHolder is RoomUI)
-            {
-                Debug.Log("testtt");
-            }
-
             moveDir = Vector3.zero;
             lastMoveDir = transform.forward;
             GunPos = transform; // 총 위치로 수정해야함.
             ShootPoint = transform;
-
-            _characterController = GetComponent<CharacterController>();
-            _characterTransform = transform.Find("Cat");
-            _animator = _characterTransform.GetComponentInChildren<Animator>();
-
             ShotLine = Instantiate(ShotLine);
             UltLine = Instantiate(UltLine);
 
@@ -610,6 +606,7 @@ namespace Network
         {
             changed.Behaviour.UpdatesAnimation();
         }
+        
         private void UpdatesAnimation()
         {
             switch (AnimationIdx)

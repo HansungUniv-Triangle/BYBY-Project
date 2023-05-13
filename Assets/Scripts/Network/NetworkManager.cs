@@ -17,33 +17,13 @@ namespace Network
         {
             public NetworkString<_16> NickName;
             public NetworkBool IsReady;
-            public NetworkBool IsDoneLoading;
-            public NetworkBehaviourId Character;
+            public NetworkBool IsDoneLoadScene;
             public Color PlayerColor;
         }
 
         private NetworkPlayer _localCharacter;
 
-        public NetworkPlayer LocalCharacter
-        {
-            get
-            {
-                if (_localCharacter is null)
-                {
-                    if (RoomPlayerList.TryGet(Runner.LocalPlayer, out RoomPlayerData roomPlayerData))
-                    {
-                        Runner.TryFindBehaviour(roomPlayerData.Character, out NetworkPlayer networkPlayer);
-                        _localCharacter = networkPlayer;
-                    }
-                    else
-                    {
-                        throw new Exception("히트 데이터 전송 시, 플레이어 데이터 없음");
-                    }
-                }
-
-                return _localCharacter;
-            }
-        }
+        public NetworkPlayer LocalCharacter => _localCharacter;
     }
 
     // 룸 데이터 기반 UI 업데이트
@@ -128,6 +108,21 @@ namespace Network
     {
         [Networked] private TickTimer RoundChangeTimer { get; set; }
         
+        private GameUI _gameUI;
+
+        private GameUI GameUI
+        {
+            get
+            {
+                if (_gameUI is null)
+                {
+                    _gameUI = GameManager.Instance.UIHolder as GameUI;
+                }
+
+                return _gameUI;
+            }
+        }
+        
         private PlayerRef _defeatRef;
         private RoundState _round = RoundState.None;
         private int roundNum = 0;
@@ -198,6 +193,12 @@ namespace Network
 
         private void FixedUpdate()
         {
+            if (RoundChangeTimer.IsRunning)
+            {
+                var time = RoundChangeTimer.RemainingTime(Runner) ?? 0;
+                GameUI.timeText.text = time.ToString("F2");
+            }
+            
             if(!HasStateAuthority) return;
             
             if (RoundChangeTimer.Expired(Runner))
@@ -216,24 +217,18 @@ namespace Network
 
         private void ViewSynergySelect()
         {
-            var gameUI = GameManager.Instance.UIHolder as GameUI;
-            gameUI.roundText.text = $"시너지 고르는 중 입니다.";
+            GameUI.roundText.text = $"시너지 고르는 중 입니다.";
         }
 
         private void ViewWait()
         {
-            var gameUI = GameManager.Instance.UIHolder as GameUI;
-            gameUI.roundText.text = $"기다리십쇼";
+            GameUI.roundText.text = $"기다리십쇼";
         }
         
         private void IncreaseRound()
         {
             roundNum++;
-            var gameUI = GameManager.Instance.UIHolder as GameUI;
-            if (gameUI != null)
-            {
-                gameUI.roundText.text = $"ROUND {roundNum}";
-            } 
+            GameUI.roundText.text = $"ROUND {roundNum}";
         }
 
         private void ViewRoundWinner()
@@ -244,8 +239,7 @@ namespace Network
                 // 임시로 플레이어 이름 나오게 해놨음
                 if (key == _defeatRef)
                 {
-                    var gameUI = GameManager.Instance.UIHolder as GameUI;
-                    gameUI.roundText.text = $"{value.NickName}님이 승리하셨습니다!";
+                    GameUI.roundText.text = $"{value.NickName}님이 승리하셨습니다!";
                     return;
                 }
             }
@@ -258,8 +252,7 @@ namespace Network
             {
                 if (key != _defeatRef)
                 {
-                    var gameUI = GameManager.Instance.UIHolder as GameUI;
-                    gameUI.roundText.text = $"{value.NickName}님이 최종 승리하셨습니다!";
+                    GameUI.roundText.text = $"{value.NickName}님이 최종 승리하셨습니다!";
                     return;
                 }
             }
@@ -291,7 +284,6 @@ namespace Network
         // Mono에서는 Runner를 가져올 수 없어서 만든 Adapter 역할
         public void OnReady()
         {
-            Debug.Log(Runner);
             RPCReady(Runner.LocalPlayer);
         }
 
@@ -322,35 +314,35 @@ namespace Network
 
             return true;
         }
-
-        private void AllPlayerInGame()
+        
+        private bool IsAllPlayerLoadScene()
         {
-            _timer = TickTimer.CreateFromSeconds(Runner, 5f);
+            foreach (var (_, playerData) in RoomPlayerList)
+            {
+                if (playerData.IsDoneLoadScene.Equals(false))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private void SpawnPlayerCharacter(PlayerRef playerRef)
         {
-            //Vector3 spawnPosition = new Vector3((playerRef.RawEncoded % Runner.Config.Simulation.DefaultPlayers) * 3,1,0);
             Vector3 spawnPosition = new Vector3((playerRef.RawEncoded % Runner.Config.Simulation.DefaultPlayers) + 20, 30, 10);
             NetworkObject networkPlayerObject = Runner.Spawn(_playerPrefab, spawnPosition, Quaternion.identity, playerRef);
+            _localCharacter = networkPlayerObject.GetComponent<NetworkPlayer>();
 
             var mainWeapon = GameManager.Instance.SelectWeapon;
-            NetworkObject mainWeaponSpawn = Runner.Spawn(mainWeapon, spawnPosition + Vector3.up, Quaternion.identity, playerRef);
+            NetworkObject mainWeaponSpawn = Runner.Spawn(mainWeapon, spawnPosition + Vector3.right + Vector3.up, Quaternion.identity, playerRef);
             mainWeaponSpawn.transform.SetParent(networkPlayerObject.transform);
 
             var subWeapon = GameManager.Instance.SelectSubWeapon;
             NetworkObject subWeaponSpawn = Runner.Spawn(subWeapon, spawnPosition + Vector3.up * 2, Quaternion.identity, playerRef);
             subWeaponSpawn.transform.SetParent(networkPlayerObject.transform);
-        
-            RPCAddCharacterInPlayerData(playerRef, networkPlayerObject.GetComponent<NetworkPlayer>());
             
-            NetworkObject gun = Runner.Spawn(_handGun, spawnPosition + Vector3.right + Vector3.up, Quaternion.identity, playerRef);
-            gun.transform.SetParent(networkPlayerObject.transform);
-
-            var networkPlayer = networkPlayerObject.GetComponent<NetworkPlayer>();
-            networkPlayer.SetGunPos(gun.transform);
-            
-            RPCAddCharacterInPlayerData(playerRef, networkPlayer);
+            _localCharacter.SetGunPos(mainWeaponSpawn.transform);
         }
         
         public void AddBlockHitData(Vector3 pos, int damage)
@@ -372,7 +364,6 @@ namespace Network
         {
             WorldManager.Instance.GeneratorMap();
             SpawnPlayerCharacter(Runner.LocalPlayer);
-            RPCLoadSceneComplete(Runner.LocalPlayer);
             RPCChangeRound(RoundState.None);
         }
 
@@ -385,7 +376,8 @@ namespace Network
             {
                 yield return null;
             }
-            InitialGame(); 
+            
+            RPCLoadSceneCheck(Runner.LocalPlayer);
             GameManager.Instance.DeActiveLoadingUI();
         }
     }
@@ -404,25 +396,11 @@ namespace Network
             RoomPlayerList.Add(playerRef, new RoomPlayerData {
                 NickName = nick,
                 IsReady = false,
-                IsDoneLoading = false,
+                IsDoneLoadScene = false,
                 PlayerColor = color
             });
         }
-        
-        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        private void RPCAddCharacterInPlayerData(PlayerRef playerRef, NetworkBehaviourId networkBehaviourId)
-        {
-            if (RoomPlayerList.TryGet(playerRef, out RoomPlayerData roomPlayerData))
-            {
-                roomPlayerData.Character = networkBehaviourId;
-                RoomPlayerList.Set(playerRef, roomPlayerData);
-            }
-            else
-            {
-                throw new Exception("캐릭터 추가 시, 플레이어의 데이터가 존재하지 않음");
-            }
-        }
-        
+
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         private void RPCReady(PlayerRef playerRef)
         {
@@ -433,7 +411,7 @@ namespace Network
 
                 if (HasStateAuthority && IsAllPlayerReady())
                 {
-                    RPCStart();
+                    RPCLoadScene();
                 }
             }
             else
@@ -443,16 +421,16 @@ namespace Network
         }
         
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        private void RPCLoadSceneComplete(PlayerRef playerRef)
+        private void RPCLoadSceneCheck(PlayerRef playerRef)
         {
             if (RoomPlayerList.TryGet(playerRef, out RoomPlayerData roomPlayerData))
             {
-                roomPlayerData.IsDoneLoading = true;
+                roomPlayerData.IsDoneLoadScene = true;
                 RoomPlayerList.Set(playerRef, roomPlayerData);
             
-                if (HasStateAuthority && IsAllPlayerReady())
+                if (HasStateAuthority && IsAllPlayerLoadScene())
                 {
-                    AllPlayerInGame();
+                    RPCStartGame();
                 }
             }
             else
@@ -462,10 +440,16 @@ namespace Network
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        private void RPCStart()
+        private void RPCLoadScene()
         {
             Runner.SessionInfo.IsOpen = false;
             StartCoroutine(LoadAsyncScene(1));
+        }
+        
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        private void RPCStartGame()
+        {
+            InitialGame();
         }
         
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]

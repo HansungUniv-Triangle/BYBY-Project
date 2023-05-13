@@ -9,12 +9,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6339508871230178698}
+  - component: {fileID: 731377849170397947}
   - component: {fileID: 6339508871230178697}
   - component: {fileID: 6339508871230178699}
-  - component: {fileID: 731377849170397947}
   - component: {fileID: -2824537534770099128}
+  - component: {fileID: 8033929580875604272}
   m_Layer: 0
-  m_Name: HandGun_Projectile
+  m_Name: Basic_Projectile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -28,7 +29,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6339508871230178710}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.54, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -37,6 +38,31 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &731377849170397947
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6339508871230178710}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObjectInterest: 1
+  DefaultInterestGroups: []
+  DestroyWhenStateAuthorityLeaves: 1
+  AllowStateAuthorityOverride: 0
+  AoiPositionSource: {fileID: 0}
+  Flags: 2305
+  NetworkGuid:
+    RawGuidValue: 2a259965b1266844f92f128fef025bf9
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 6339508871230178697}
+  - {fileID: 6339508871230178699}
+  SimulationBehaviours: []
 --- !u!114 &6339508871230178697
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -78,32 +104,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interpolationDataSource: 0
+  IndividualVelocity: 0
+  IndividualDamage: 0
   _Damage: 0
---- !u!114 &731377849170397947
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6339508871230178710}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ObjectInterest: 1
-  DefaultInterestGroups: []
-  DestroyWhenStateAuthorityLeaves: 1
-  AllowStateAuthorityOverride: 0
-  AoiPositionSource: {fileID: 0}
-  Flags: 2305
-  NetworkGuid:
-    RawGuidValue: 2a259965b1266844f92f128fef025bf9
-  NestedObjects: []
-  NetworkedBehaviours:
-  - {fileID: 6339508871230178697}
-  - {fileID: 6339508871230178699}
-  SimulationBehaviours: []
+  DamageSave: 0
 --- !u!54 &-2824537534770099128
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -119,7 +123,21 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 112
-  m_CollisionDetection: 0
+  m_CollisionDetection: 2
+--- !u!136 &8033929580875604272
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6339508871230178710}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.06
+  m_Height: 0.42
+  m_Direction: 2
+  m_Center: {x: 0, y: 0, z: 0.19}
 --- !u!1 &7451294100547414019
 GameObject:
   m_ObjectHideFlags: 0
@@ -325,26 +343,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 649f464201c569644ad07047f9871c0a, type: 3}
---- !u!1 &6763403557389769226 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3913330877959047391, guid: 649f464201c569644ad07047f9871c0a,
-    type: 3}
-  m_PrefabInstance: {fileID: 7751431634372891349}
-  m_PrefabAsset: {fileID: 0}
---- !u!136 &3301545778500563030
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6763403557389769226}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.06
-  m_Height: 0.42
-  m_Direction: 2
-  m_Center: {x: 0, y: 0, z: 0.19}
 --- !u!4 &8730817320003268220 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1348975528553151657, guid: 649f464201c569644ad07047f9871c0a,
