@@ -208,6 +208,11 @@ namespace Network
             var calcDamage = damage * (100 / (100 + armor));
             NowHp -= calcDamage;
         }
+        
+        public void RotateDebugging()
+        {
+            GetComponent<NetworkTransform>().TeleportToRotation(new Quaternion(5f, 5f, 5f, 5f));
+        }
     }
 
     // 시너지

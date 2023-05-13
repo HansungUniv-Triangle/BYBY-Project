@@ -15,6 +15,7 @@ namespace UIHolder
         public TextMeshProUGUI roundText;
         public TextMeshProUGUI bulletText;
         public Button hitButton;
+        public Button rotateButton;
 
         protected override void Initial()
         {
@@ -36,6 +37,11 @@ namespace UIHolder
             hitButton.onClick.AddListener(() =>
             {
                 GameManager.Instance.NetworkManager.LocalCharacter.OnHitDebugging(5f);
+            });
+            
+            rotateButton.onClick.AddListener(() =>
+            {
+                GameManager.Instance.NetworkManager.LocalCharacter.RotateDebugging();
             });
         }
     }

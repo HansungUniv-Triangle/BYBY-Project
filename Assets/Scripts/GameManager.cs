@@ -234,14 +234,13 @@ public class StatCorrelation<T> where T : Enum
 
 public enum BehaviourEvent
 {
-    명중률,
-    포지셔닝,
-    회피률,
-    재장전대기,
-    받은피해,
-    피해감소,
-    거리유지,
-    거리부족
+    피격,
+    회피,
+    명중,
+    피해,
+    특화,
+    파괴,
+    장전
 }
 
 public class PlayerBehaviorAnalyzer
@@ -249,53 +248,50 @@ public class PlayerBehaviorAnalyzer
     public readonly StatCorrelationList<CharStat> CharStats;
     public readonly StatCorrelationList<WeaponStat> WeaponStats;
     
-    public readonly Dictionary<BehaviourEvent, Enum> BehaviourEventStats = new() {
-        { BehaviourEvent.명중률, CharStat.Calm},
-        { BehaviourEvent.포지셔닝, CharStat.Speed },
-        { BehaviourEvent.회피률, CharStat.Rolling },
-        { BehaviourEvent.재장전대기, WeaponStat.Bullet },
-        { BehaviourEvent.받은피해, CharStat.Health },
-        { BehaviourEvent.피해감소, CharStat.Armor },
-        { BehaviourEvent.거리유지, CharStat.Speed },
-        { BehaviourEvent.거리부족, WeaponStat.Range }
+    public readonly Dictionary<BehaviourEvent, Enum[]> BehaviourEventStats = new() {
+        { BehaviourEvent.피격, new Enum[] {CharStat.Health, CharStat.Armor}},
+        { BehaviourEvent.회피, new Enum[] {CharStat.Speed, CharStat.Rolling}},
+        { BehaviourEvent.명중, new Enum[] {CharStat.Calm, WeaponStat.Velocity}},
+        { BehaviourEvent.피해, new Enum[] {WeaponStat.Damage, WeaponStat.Interval} },
+        { BehaviourEvent.특화, new Enum[] {WeaponStat.Special} },
+        { BehaviourEvent.파괴, new Enum[] {WeaponStat.Range} },
+        { BehaviourEvent.장전, new Enum[] {WeaponStat.Bullet, WeaponStat.Reload} },
     };
     
     public Dictionary<BehaviourEvent, int> BehaviourEventCountPlayer = new() {
-        { BehaviourEvent.명중률, 0 },
-        { BehaviourEvent.포지셔닝, 0 },
-        { BehaviourEvent.회피률, 0 },
-        { BehaviourEvent.재장전대기, 0 },
-        { BehaviourEvent.받은피해, 0 },
-        { BehaviourEvent.피해감소, 0 },
-        { BehaviourEvent.거리유지, 0 },
-        { BehaviourEvent.거리부족, 0 }
+        { BehaviourEvent.피격, 0 },
+        { BehaviourEvent.회피, 0 },
+        { BehaviourEvent.명중, 0 },
+        { BehaviourEvent.피해, 0 },
+        { BehaviourEvent.특화, 0 },
+        { BehaviourEvent.파괴, 0 },
+        { BehaviourEvent.장전, 0 },
     };
 
     public Dictionary<BehaviourEvent, int> BehaviourEventCountEnemy = new() {
-        { BehaviourEvent.명중률, 0 },
-        { BehaviourEvent.포지셔닝, 0 },
-        { BehaviourEvent.회피률, 0 },
-        { BehaviourEvent.재장전대기, 0 },
-        { BehaviourEvent.받은피해, 0 },
-        { BehaviourEvent.피해감소, 0 },
-        { BehaviourEvent.거리유지, 0 },
-        { BehaviourEvent.거리부족, 0 }
+        { BehaviourEvent.피격, 0 },
+        { BehaviourEvent.회피, 0 },
+        { BehaviourEvent.명중, 0 },
+        { BehaviourEvent.피해, 0 },
+        { BehaviourEvent.특화, 0 },
+        { BehaviourEvent.파괴, 0 },
+        { BehaviourEvent.장전, 0 },
     };
     
     public Dictionary<Enum, float> EventResult = new()
     {
-        { CharStat.Health, 1 },
-        { CharStat.Speed, 1 },
-        { CharStat.Rolling, 1 },
-        { CharStat.Armor, 1 },
-        { CharStat.Calm, 1 },
-        { WeaponStat.Interval, 1 },
-        { WeaponStat.Special, 1 },
-        { WeaponStat.Damage, 1 },
-        { WeaponStat.Range, 1 },
-        { WeaponStat.Reload, 1 },
-        { WeaponStat.Bullet, 1 },
-        { WeaponStat.Velocity, 1 },
+        { CharStat.Health, 0 },
+        { CharStat.Speed, 0 },
+        { CharStat.Rolling, 0 },
+        { CharStat.Armor, 0 },
+        { CharStat.Calm, 0 },
+        { WeaponStat.Interval, 0 },
+        { WeaponStat.Special, 0 },
+        { WeaponStat.Damage, 0 },
+        { WeaponStat.Range, 0 },
+        { WeaponStat.Reload, 0 },
+        { WeaponStat.Bullet, 0 },
+        { WeaponStat.Velocity, 0 },
     };
     
     public Dictionary<Enum, int> MyStat = new()
@@ -352,58 +348,57 @@ public class PlayerBehaviorAnalyzer
         WeaponStats = new StatCorrelationList<WeaponStat>();
 
         CharStats.SetCorrelationType(CharStat.Health)
-            .AddCorrelationValue(CharStat.Health, 0.5f)
-            .AddCorrelationValue(CharStat.Armor, 0.5f);
-        
-        CharStats.SetCorrelationType(CharStat.Armor)
-            .AddCorrelationValue(CharStat.Health, 0.5f)
             .AddCorrelationValue(CharStat.Armor, 0.5f);
 
+        CharStats.SetCorrelationType(CharStat.Armor)
+            .AddCorrelationValue(CharStat.Armor, -0.2f)
+            .AddCorrelationValue(CharStat.Health, 0.5f);
+
         CharStats.SetCorrelationType(CharStat.Speed)
-            .AddCorrelationValue(CharStat.Speed, 0.3f)
+            .AddCorrelationValue(CharStat.Calm, -0.1f)
             .AddCorrelationValue(CharStat.Calm, 0.2f)
             .AddCorrelationValue(CharStat.Rolling, 0.1f)
             .AddCorrelationValue(WeaponStat.Range, 0.2f)
             .AddCorrelationValue(WeaponStat.Velocity, 0.2f);
 
         CharStats.SetCorrelationType(CharStat.Rolling)
-            .AddCorrelationValue(CharStat.Rolling, 0.4f)
-            .AddCorrelationValue(CharStat.Speed, 0.6f);
+            .AddCorrelationValue(CharStat.Rolling, -0.5f)
+            .AddCorrelationValue(CharStat.Speed, 0.2f);
         
         CharStats.SetCorrelationType(CharStat.Calm)
-            .AddCorrelationValue(CharStat.Calm, 0.3f)
-            .AddCorrelationValue(CharStat.Speed, 0.7f);
+            .AddCorrelationValue(CharStat.Rolling, -0.4f)
+            .AddCorrelationValue(CharStat.Speed, 0.2f);
 
         WeaponStats.SetCorrelationType(WeaponStat.Interval)
-            .AddCorrelationValue(WeaponStat.Interval, 0.4f)
+            .AddCorrelationValue(WeaponStat.Interval, -0.1f)
+            .AddCorrelationValue(WeaponStat.Damage, 0.3f)
             .AddCorrelationValue(WeaponStat.Bullet, 0.3f)
             .AddCorrelationValue(WeaponStat.Reload, 0.3f);
 
         WeaponStats.SetCorrelationType(WeaponStat.Damage)
-            .AddCorrelationValue(WeaponStat.Damage, 0.2f)
+            .AddCorrelationValue(WeaponStat.Damage, 0.1f)
             .AddCorrelationValue(WeaponStat.Interval, 0.2f)
             .AddCorrelationValue(WeaponStat.Bullet, 0.2f)
             .AddCorrelationValue(WeaponStat.Reload, 0.2f)
             .AddCorrelationValue(WeaponStat.Special, 0.2f);
 
         WeaponStats.SetCorrelationType(WeaponStat.Range)
-            .AddCorrelationValue(WeaponStat.Range, 0.5f)
+            .AddCorrelationValue(WeaponStat.Range, -0.2f)
             .AddCorrelationValue(WeaponStat.Velocity, 0.5f);
 
         WeaponStats.SetCorrelationType(WeaponStat.Velocity)
-            .AddCorrelationValue(WeaponStat.Velocity, 0.5f)
+            .AddCorrelationValue(WeaponStat.Velocity, -0.2f)
             .AddCorrelationValue(WeaponStat.Range, 0.5f);
 
         WeaponStats.SetCorrelationType(WeaponStat.Reload)
-            .AddCorrelationValue(WeaponStat.Reload, 0.3f)
             .AddCorrelationValue(WeaponStat.Bullet, 0.7f);
 
         WeaponStats.SetCorrelationType(WeaponStat.Bullet)
-            .AddCorrelationValue(WeaponStat.Reload, 0.3f)
-            .AddCorrelationValue(WeaponStat.Bullet, 0.7f);
+            .AddCorrelationValue(WeaponStat.Damage, 0.2f)
+            .AddCorrelationValue(WeaponStat.Reload, 0.7f);
 
         WeaponStats.SetCorrelationType(WeaponStat.Special)
-            .AddCorrelationValue(WeaponStat.Special, 1.0f);
+            .AddCorrelationValue(WeaponStat.Special, 0.5f);
         
         
         // 점유율을 랜덤으로 정합니다.
@@ -434,32 +429,48 @@ public class PlayerBehaviorAnalyzer
             }
         }
         
+        var minusToZeroAllSum = StatResult.Where(o=> o.Value > 0).Sum(o => o.Value);
         foreach (var key1 in keys)
         {
-            Debug.Log($"{key1}: {StatResult[key1]}");
+            var statValue = Math.Abs(StatResult[key1]) / minusToZeroAllSum;
+            Debug.Log($"{key1}: 값: {MyStat[key1]} 가중: {StatResult[key1]}, 비율: {statValue * 100}%");
+            StatResult[key1] = StatResult[key1] > 0 ? statValue : -statValue;
         }
         
         // 점유율을 퍼센트로 나누어서 추천률로 변환합니다.
-        Debug.Log($"추천률로 바꾸기");
         foreach (BehaviourEvent behaviourEvent in Enum.GetValues(typeof(BehaviourEvent)))
         {
             var all = BehaviourEventCountPlayer[behaviourEvent] + BehaviourEventCountEnemy[behaviourEvent];
             // 낮을수록 해당 스탯을 높게 챙겨야하기 때문에 1에서 빼준다.
             var percent = 1 - (BehaviourEventCountPlayer[behaviourEvent] / (float)all);
-            Debug.Log($"{behaviourEvent}: {percent * 100}%");
-            foreach (var behaviourEventStat in BehaviourEventStats)
-            {
-                EventResult[behaviourEventStat.Value] += percent;
-            }
             
+            foreach (var key in BehaviourEventStats[behaviourEvent])
+            {
+                if (key is BehaviourEvent.특화)
+                {
+                    EventResult[key] += 0.5f;
+                }
+                else
+                {
+                    EventResult[key] += percent;
+                }
+                Debug.Log($"{key} {EventResult[key]}");
+            }
         }
-        
+
         // 서로 곱해서 결과를 봅시다.
         Debug.Log($"결과는?");
         foreach (var key in keys)
         {
-            RecommendFinal[key] = EventResult[key] * StatResult[key];
-            Debug.Log($"{key}: {RecommendFinal[key]}");
+            RecommendFinal[key] = (1 + EventResult[key]) * (1 + StatResult[key]);
+            Debug.Log($"{key}: 가중({1 + StatResult[key]}) 이벤트({1 + EventResult[key]}) 최종({RecommendFinal[key]})");
+        }
+
+        var count = 1;
+        var sortedDict = from entry in RecommendFinal orderby entry.Value descending select entry;
+        foreach (var keyValuePair in sortedDict)
+        {
+            Debug.Log($"{count++}순위: {keyValuePair.Key}, {keyValuePair.Value}");
         }
     }
 

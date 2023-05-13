@@ -1697,6 +1697,7 @@ MonoBehaviour:
   roundText: {fileID: 288188962}
   bulletText: {fileID: 1225446006}
   hitButton: {fileID: 504245798}
+  rotateButton: {fileID: 1961508120}
 --- !u!4 &147223794
 Transform:
   m_ObjectHideFlags: 0
@@ -13562,10 +13563,10 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 72
+    m_FontSize: 36
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 7
+    m_MinSize: 3
     m_MaxSize: 72
     m_Alignment: 4
     m_AlignByGeometry: 0
@@ -13573,7 +13574,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: wp2
+  m_Text: "\uD14C\uC2A4\uD2B8"
 --- !u!222 &1773230934
 CanvasRenderer:
   m_ObjectHideFlags: 0
