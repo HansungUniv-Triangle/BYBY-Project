@@ -12,6 +12,9 @@ namespace Network
     public abstract class NetworkProjectileHolder : NetworkBehaviour
     {
         protected BaseStat<WeaponStat> _baseWeaponStat;
+        private Transform _weaponTransform;
+        private Transform _weaponShootTransform;
+
         private int _level;
         private List<NetworkObject> _projectileList;
         [SerializeField]
@@ -30,7 +33,10 @@ namespace Network
             _level = 1;
             _baseWeaponStat = new BaseStat<WeaponStat>(1, 1);
             _projectileList = new List<NetworkObject>();
-            
+
+            _weaponTransform = gameObject.transform;
+            _weaponShootTransform = gameObject.transform.GetChild(1);
+
             _baseWeaponStat.AddStat(new Stat<WeaponStat>(WeaponStat.Damage, 10, 0));
             _baseWeaponStat.AddStat(new Stat<WeaponStat>(WeaponStat.Velocity, 20, 0));
             _baseWeaponStat.AddStat(new Stat<WeaponStat>(WeaponStat.Range, 10, 0));
@@ -83,8 +89,8 @@ namespace Network
         {
             var obj = Runner.Spawn(
                 _projectileObject, 
-                position.position + Vector3.forward, 
-                Quaternion.LookRotation(Target), 
+                position.position, //+ position.TransformDirection(Vector3.forward), 
+                Quaternion.LookRotation(target - position.position), 
                 Runner.LocalPlayer,
                 InitializeProjectile
             );

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using DG.Tweening;
 using Fusion;
 using GameStatus;
@@ -307,15 +308,9 @@ namespace Network
                 { 0, 2, 0, 1, 0, 1 };
 
             RDG.Vibration.Vibrate(pattern, amplitudes, -1, true);
-
-            if (isVibrateBeat)
-            {
-                isVibrateBeat = false;
-                VibrateHeartBeat();
-            }
         }
         
-        private void VibrateHeartBeat()
+        public void VibrateHeartBeat()
         {
             if (isVibrateBeat)
             {
@@ -336,29 +331,38 @@ namespace Network
     // 공격
     public partial class NetworkPlayer
     {
-        private Ray _gunRay = new Ray();
+        private Ray _gunRay;
+        private RaycastHit _hit;
         private float _shootDistance = 30f;
         private int _damage = 1;
-        
+        private bool isShooting = true;
+        private const int shootRayMask = (int)Layer.Enemy | (int)Layer.World;
+
+        public void ToggleShooting() { isShooting = !isShooting; }
+
         private void Shoot(AttackType attackType, LineRenderer lineRenderer)    // 라인렌더러는 임시
         {
-            var aimRay = Camera.main.ScreenPointToRay(GetCrossHairPointInScreen());
-            _gunRay.origin = GunPos.position;
-
-            // 화면 중앙으로 쏘는 레이는 원점이 플레이어 앞에서 시작되어야 한다.
-            // 그렇지 않으면 플레이어는 크로스헤어에는 걸렸지만, 뒤에 있는 물체를 부수게 된다.
-            // 발사하는 주체는 제외
+            if (!isShooting) return;
             
-            if (Physics.Raycast(aimRay.origin + aimRay.direction * 10, aimRay.direction, out var hit, _shootDistance) 
-                && hit.transform.gameObject != gameObject)
+            var aimRay = _camera.ScreenPointToRay(GetCrossHairPointInScreen());
+            // 조준점으로 쏘는 레이의 원점이 플레이어 앞에서 시작되어야 한다.
+            // 그렇지 않으면, 플레이어의 총알은 플레이어의 뒤에 있지만, 조준점에는 걸린 물체로 날아가게 된다. 한마디로 뒤로 쏘게 된다.
+            var distCam = Vector3.Distance(_camera.transform.position, transform.position);
+            var aimRayOrigin = aimRay.origin + aimRay.direction * distCam;
+            
+            /* 총알이 날아갈 지점 구하기 */
+            _gunRay.origin = ShootPoint.position;
+            
+            //Debug.DrawRay(aimRayOrigin, aimRay.direction * _shootDistance, Color.blue, 0.3f);
+            if (Physics.Raycast(aimRayOrigin, aimRay.direction, out _hit, _shootDistance, shootRayMask))
             {
-                _gunRay.direction = (hit.point - GunPos.position).normalized;
+                _gunRay.direction = (_hit.point - _gunRay.origin).normalized;
             }
             else
             {
-                _gunRay.direction = ((aimRay.origin + aimRay.direction * 10 + aimRay.direction * _shootDistance) - GunPos.position).normalized;
+                _gunRay.direction = ((aimRayOrigin + aimRay.direction * _shootDistance) - _gunRay.origin).normalized;
             }
-            
+            //Debug.DrawRay(_gunRay.origin, _gunRay.direction * _shootDistance, Color.magenta, 0.3f);
             targetPoint = _gunRay.origin + _gunRay.direction * _shootDistance;
             
             var weapon = GetComponentsInChildren<NetworkProjectileHolder>();
@@ -368,58 +372,51 @@ namespace Network
                 networkProjectileHolder.SetTarget(targetPoint);
             }
 
-            //LaserBeam(_gunRay, _shootDistance, attackType, lineRenderer);
+            LaserBeam(_gunRay, _shootDistance, attackType, lineRenderer);
+            RotateToTarget(GunPos, targetPoint, 8f, false);
         }
 
         private void LaserBeam(Ray gunRay, float aimDistance, AttackType attackType, LineRenderer lineRenderer)
         {
-            // 레이저빔 작동시 spawned에 추가
-            // ShotLine = Instantiate(ShotLine);
-            // UltLine = Instantiate(UltLine);
-            
-            RaycastHit hit;
-            
             lineRenderer.SetPosition(0, gunRay.origin);
-            lineRenderer.SetPosition(1, targetPoint);
-            
-            if (Physics.Raycast(gunRay, out hit, aimDistance, (int)(Layer.World | Layer.Enemy)))
-            {
-                var point = hit.point - hit.normal * 0.01f;
 
-                if (hit.transform.gameObject == _target.gameObject)
+            /* 실제 총알이 날아가는 경로 */
+            if (Physics.Raycast(gunRay, out _hit, aimDistance, shootRayMask))
+            {
+                var point = _hit.point - _hit.normal * 0.01f;
+
+                if (_hit.transform.gameObject == _target.gameObject)
                 {
-                    bool isCritical = hit.point.y - (_target.transform.position.y - 1) > 1.25f;
+                    // 임시 헤드 판정
+                    var isCritical = _hit.point.y - (_target.transform.position.y - 1) > 1.25f;
                     _gameUI.hitDamageText.GetComponent<HitDamage>().HitDamageAnimation(_damage, isCritical);
                 }
                 
                 switch (attackType)
                 {
                     case AttackType.Basic:
-                        WorldManager.Instance.GetWorld().HitBlock(point, 1);
-                        AddBlockHitData(point, 0,1);
+                        AddBlockHitData(point, 1);
                         break;
 
                     case AttackType.Ultimate:
                         WorldManager.Instance.GetWorld().ExplodeBlocks(point, 3, 3);
                         VibrateUlt();
                         break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(attackType), attackType, null);
                 }
 
-                targetPoint = hit.point;
-                lineRenderer.SetPosition(1, targetPoint);
+                targetPoint = _hit.point;
             }
+            
+            GetComponentInChildren<NetworkProjectileHolder>().target = targetPoint;
+            lineRenderer.SetPosition(1, targetPoint);
         }
 
         private Vector3 GetCrossHairPointInScreen()
         {
-            if (_crossHair != null)
-            {
-                return new Vector3(_crossHair.transform.position.x, _crossHair.transform.position.y, 0);
-            }
-            else
-            {
-                return new Vector3(0, 0, 0);
-            }
+            var position = _crossHair.position;
+            return new Vector3(position.x, position.y, 0);
         }
     }
     
@@ -427,6 +424,7 @@ namespace Network
     {
         #region 에임
         public Transform GunPos;
+        public Transform ShootPoint;
         public static bool isCameraFocused = false;
         public LineRenderer ShotLine;
         public LineRenderer UltLine;
@@ -447,30 +445,40 @@ namespace Network
 
         #region 타겟 지정 관련 변수
         private GameObject _target;
-        private RaycastHit _raycast;
-        public float maxDistance = 10.0f;
         #endregion
         
         #region 움직임 관련 변수
         private Joystick _joystick;
-        private Transform _transform;
+        private CharacterController _characterController;
+        private Transform _characterTransform;
+
+        public Vector3 targetPoint;
         private Vector3 moveDir;
+        private Vector3 jumpDir;
+        private Vector3 lastMoveDir;
+        private Vector3 _initPos;
+
         private float gravity = 15.0f;
         private float jumpForce = 7.0f;
         private float dodgeForce = 4.0f;
+        private float shakeDodgeThreshold = 2.0f;
+
         public bool ReverseHorizontalMove = false;
+        private bool isWalk = true;
         private bool isJump = false;
         private bool isDodge = false;
-        private float shakeDodgeThreshold = 2.0f;
-        private CharacterController _characterController;
-        public Vector3 targetPoint;
-        private Vector3 _initPos;
+        #endregion
+
+        #region 애니메이션 관련 변수
+        private Animator _animator;
+        [Networked(OnChanged = nameof(UpdatesAnimation))] private int AnimationIdx { get; set; }
         #endregion
 
         private CanvasManager _canvasManager;
         private GameManager _gameManager;
         [SerializeField]
         private GameUI _gameUI;
+        private Camera _camera;
 
         private void Start()
         {
@@ -496,9 +504,20 @@ namespace Network
             
             InitialStatus();
             
+            _gameUI = _gameManager.UIHolder as GameUI;
+            if (_gameUI == null)
+            {
+                throw new Exception("ui holder가 null임");
+            }
+            
+            _canvasManager = _gameUI.canvasManager;
+            _crossHair = _gameUI.crossHair;
+            _joystick = _gameUI.joystick;
+            _camera = Camera.main;
+            
             if (HasStateAuthority)
             {
-                Camera.main.GetComponent<PlayerCamera>().AddPlayer(transform);
+                _camera.GetComponent<PlayerCamera>().AddPlayer(transform);
                 _target = GameObject.Find("허수아비");
                 _joystick = _gameUI.joystick;
                 
@@ -506,7 +525,7 @@ namespace Network
                 if (Runner.ActivePlayers.Count() == 1)
                 {
                     _target = GameObject.Find("허수아비");
-                    Camera.main.GetComponent<PlayerCamera>().AddEnemy(_target.transform);
+                    _camera.GetComponent<PlayerCamera>().AddEnemy(_target.transform);
                 }
                 _canvasManager.SwitchUI(CanvasType.GameMoving);
             }
@@ -522,23 +541,57 @@ namespace Network
             {
                 Debug.Log("testtt");
             }
+
+            moveDir = Vector3.zero;
+            lastMoveDir = transform.forward;
+            GunPos = transform; // 총 위치로 수정해야함.
+            ShootPoint = transform;
+
+            _characterController = GetComponent<CharacterController>();
+            _characterTransform = transform.Find("Cat");
+            _animator = _characterTransform.GetComponentInChildren<Animator>();
+
+            ShotLine = Instantiate(ShotLine);
+            UltLine = Instantiate(UltLine);
+
+            // 자신은 타겟팅 되지 않기 위해 레이어 변경
+            gameObject.layer = LayerMask.NameToLayer("Player");
+        }
+
+        public void SetGunPos(Transform transform)
+        {
+            GunPos = transform;
+            ShootPoint = GunPos.GetChild(1);
         }
         
+        public void ChangeGunPos(bool isLeft)
+        {
+            if (isLeft)
+            {
+                if (GunPos.localPosition.x > 0)
+                    GunPos.localPosition = new Vector3(-GunPos.localPosition.x, GunPos.localPosition.y, GunPos.localPosition.z);
+            }
+            else
+            {
+                if (GunPos.localPosition.x < 0)
+                    GunPos.localPosition = new Vector3(-GunPos.localPosition.x, GunPos.localPosition.y, GunPos.localPosition.z);
+            }
+        }
+
         public override void FixedUpdateNetwork()
         {
             if(!HasStateAuthority) return;
             
+            /*
+            if (Input.GetKeyDown(KeyCode.Space))
+                ScreenCapture.CaptureScreenshot("test.png");
+            */
+
             var shakeMagnitude = Input.acceleration.magnitude;
 
-            if (shakeMagnitude > shakeDodgeThreshold && !isDodge)    //if (Input.GetKeyDown(KeyCode.Space) && !isDodge)
+            if (shakeMagnitude > shakeDodgeThreshold)    //if (Input.GetKeyDown(KeyCode.Space) && !isDodge)
             {
-                isDodge = true;
-                DOTween.Sequence()
-                    .AppendInterval(0.1f)
-                    .OnComplete(() =>
-                    {
-                        isDodge = false;
-                    });
+                Dodge();
             }
         
             // 임시 자동공격
@@ -553,6 +606,28 @@ namespace Network
             }
         }
 
+        private static void UpdatesAnimation(Changed<NetworkPlayer> changed)
+        {
+            changed.Behaviour.UpdatesAnimation();
+        }
+        private void UpdatesAnimation()
+        {
+            switch (AnimationIdx)
+            {
+                case 8:
+                    _animator.Rebind();
+                    _animator.Update(0f);
+                    break;
+                case 18:
+                    _animator.SetFloat("walkSpeed", _baseCharStat.GetStat(CharStat.Speed).Total * 0.5f);
+                    break;
+                default:
+                    break;
+            }
+
+            _animator.SetInteger("animation", AnimationIdx);
+        }
+
         private void CharacterMove()
         {
             var h = ReverseHorizontalMove ? -_joystick.Horizontal : _joystick.Horizontal;
@@ -560,49 +635,99 @@ namespace Network
 
             var speed = _baseCharStat.GetStat(CharStat.Speed).Total;
             speed = speed > 0 ? speed : 0;
-            
-            // move
-            if (_characterController.isGrounded)
-            {
-                moveDir = new Vector3(h, 0, v);
-                moveDir = _transform.TransformDirection(moveDir);
-                moveDir *= speed;
-            }
-            else
-            {
-                var tmp = new Vector3(h, 0, v);
-                tmp = _transform.TransformDirection(tmp);
-                tmp *= (speed * 0.7f);
-            
-                moveDir.x = tmp.x;
-                moveDir.z = tmp.z;
-            }
-
-            if (isJump)
-            {
-                moveDir.y = jumpForce;
-                isJump = false;
-            }
 
             if (isDodge)
             {
-                moveDir.x *= dodgeForce;
-                moveDir.z *= dodgeForce;
-            }
+                var dodgeDir = lastMoveDir;
 
-            moveDir.y -= gravity * Runner.DeltaTime;
-            _characterController.Move(moveDir * Runner.DeltaTime);
+                dodgeDir.x *= dodgeForce;
+                dodgeDir.z *= dodgeForce;
+                
+                _characterController.Move(dodgeDir * Runner.DeltaTime);
+
+                LerpLookRotation(_characterTransform, lastMoveDir, 18f);
+            }
+            else
+            {
+                // move
+                if (_characterController.isGrounded)
+                {
+                    if (isWalk)
+                    {
+                        if (h == 0 && v == 0)
+                            AnimationIdx = 1;
+                        else
+                            AnimationIdx = 18;
+                    }
+
+                    moveDir = new Vector3(h, 0, v);
+                    moveDir = transform.TransformDirection(moveDir);
+                    
+                    if (moveDir.magnitude >= 0.3f)
+                        lastMoveDir = moveDir;
+                    
+                    moveDir *= speed;
+                }
+                else
+                {
+                    jumpDir = new Vector3(h, 0, v);
+                    jumpDir = transform.TransformDirection(jumpDir);
+                    
+                    if (jumpDir.magnitude >= 0.3f)
+                        lastMoveDir = jumpDir;
+                    
+                    jumpDir *= (speed * 0.7f);
+
+                    moveDir.x = jumpDir.x;
+                    moveDir.z = jumpDir.z;
+                }
+                
+                if (isJump)
+                {
+                    AnimationIdx = 9;
+                    moveDir.y = jumpForce;
+                    isJump = false;
+                    isWalk = true;
+                }
+
+                moveDir.y -= gravity * Runner.DeltaTime;
+                _characterController.Move(moveDir * Runner.DeltaTime);
+            }
 
             if (isCameraFocused == false)
             {
-                var relativePosition = _target.transform.position - transform.position;
-                relativePosition.y = 0; // y축은 바라보지 않도록 함
-                var targetRotation = Quaternion.LookRotation(relativePosition);
+                RotateToTarget(transform, _target.transform.position, 8f, true);
+            }
 
-                _transform.rotation = Quaternion.Lerp(_transform.rotation, targetRotation, Runner.DeltaTime * 8f);
+            if (isWalk)
+                RotateCharacterMoveDir(h, v);
+        }
+
+        public void Dodge()
+        {
+            if (!isDodge)
+            {
+                AnimationIdx = 8;
+                isDodge = true;
+                DOTween.Sequence()
+                    .AppendInterval(0.15f)
+                    .OnComplete(() =>
+                    {
+                        isDodge = false;
+                        isWalk = true;
+                        AnimationIdx = 1;
+                    });
             }
         }
-        
+
+        public void Jump()
+        {
+            if (_characterController.isGrounded && !isJump)
+            {
+                isJump = true;
+            }
+        }
+
         public void InitPosition()
         {
             _characterController.enabled = false;
@@ -610,14 +735,48 @@ namespace Network
             _characterController.enabled = true;
         }
 
+        private void RotateToTarget(Transform origin, Vector3 targetPos, float speed, bool lockAxisY)
+        {
+            var relativePosition = targetPos - origin.position;
+            if (lockAxisY)
+                relativePosition.y = 0; // y축은 바라보지 않도록 함
+
+            LerpLookRotation(origin, relativePosition, speed);
+        }
+
+        private void RotateCharacterMoveDir(float h, float v)
+        {
+            // 캐릭터를 이동 방향대로 회전
+            var characterDir = new Vector3(h, 0, v);
+            var characterRotateSpeed = 8f;
+            
+            characterDir = transform.TransformDirection(characterDir);
+            
+            if (characterDir.magnitude < 0.5f)
+            {
+                characterDir = _target.transform.position - _characterTransform.position;
+                characterDir.y = 0;
+            }
+
+            if (!_characterController.isGrounded)
+            {
+                characterRotateSpeed = 3f;
+            }
+
+            LerpLookRotation(_characterTransform, characterDir, characterRotateSpeed);
+        }
+
+        private void LerpLookRotation(Transform origin, Vector3 dir, float speed)
+        {
+            var targetRotation = Quaternion.LookRotation(dir);
+            origin.rotation = Quaternion.Lerp(origin.rotation, targetRotation, Runner.DeltaTime * speed);
+        }
+
         private void OnControllerColliderHit(ControllerColliderHit hit)
         {
             if (hit.gameObject.layer == LayerMask.NameToLayer("World") && hit.normal.y == 0)
             {
-                if (_characterController.isGrounded)
-                {
-                    isJump = true;
-                }
+                Jump();
             }
         }
     }
@@ -626,6 +785,7 @@ namespace Network
     {
         public void GetUlt()
         {
+            _joystick.OnPointerUp(null);    // joystick 입력값 초기화
             isCameraFocused = !isCameraFocused;
             _canvasManager.SwitchUI(CanvasType.GameAiming);
         }
@@ -636,5 +796,57 @@ namespace Network
             isCameraFocused = false;
             _canvasManager.SwitchUI(CanvasType.GameMoving);
         }
+    }
+
+    // 설정 UI
+    public partial class NetworkPlayer
+    {
+        private List<Stat<CharStat>> _settingsStatlist = new();
+        
+        public string IncreaseSpeed()
+        {
+            _settingsStatlist.Add(new Stat<CharStat>(CharStat.Speed, 1, 0).SetRatio(0));
+            return AdditionalWork(CharStat.Speed);
+        }
+        
+        public string DecreaseSpeed()
+        {
+            _settingsStatlist.Add(new Stat<CharStat>(CharStat.Speed, -1, 0).SetRatio(0));
+            return AdditionalWork(CharStat.Speed);
+        }
+        
+        private string AdditionalWork(CharStat type)
+        {
+            InitialStatus();
+
+            foreach (var s in _settingsStatlist)
+            {
+                _baseCharStat.AddStat(s);
+            }
+        
+            var total = _baseCharStat.GetStat(type).Total;
+
+            return total.ToString();
+        }
+        
+        public string IncreaseJump() { return (++jumpForce).ToString(); }
+        public string DecreaseJump() { return (--jumpForce).ToString(); }
+
+        public string IncreaseDodge(){ return (++dodgeForce).ToString(); }
+        public string DecreaseDodge(){ return (--dodgeForce).ToString(); }
+
+        public string IncreaseShakeSensitivity()
+        {
+            return (shakeDodgeThreshold += 0.1f).ToString("F1");
+        }
+        public string DecreaseShakeSensitivity()
+        {
+            return (shakeDodgeThreshold -= 0.1f).ToString("F1");
+        }
+        
+        public string IncreaseShootDistance() { return (_shootDistance += 5).ToString(); }
+        public string DecreaseShootDistance() { return (_shootDistance -= 5).ToString(); }
+
+        public void ToggleReverseHorizontalMove(bool state) { ReverseHorizontalMove = state; }
     }
 }
