@@ -162,9 +162,9 @@ MonoBehaviour:
   UltLine: {fileID: 8321005384874206421, guid: d3c13645ed15bf54f9f9d163e3cda645, type: 3}
   targetPoint: {x: 0, y: 0, z: 0}
   ReverseHorizontalMove: 0
+  _NetworkSynergyList: 
   _maxHP: 0
   _nowHP: 0
-  _NetworkSynergyList: 
 --- !u!1 &3096489019395526915
 GameObject:
   m_ObjectHideFlags: 0
@@ -326,6 +326,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4732477241362522, guid: f8033fd2a3830384a85381061c2e16df, type: 3}
       propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 95941727656087978, guid: f8033fd2a3830384a85381061c2e16df,
+        type: 3}
+      propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 95941727656087978, guid: f8033fd2a3830384a85381061c2e16df,

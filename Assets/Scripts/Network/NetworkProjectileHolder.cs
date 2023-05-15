@@ -15,6 +15,7 @@ namespace Network
         private List<NetworkObject> _projectileList;
         [SerializeField]
         private NetworkObject _projectileObject;
+        private ParticleSystem _particle;
 
         public Vector3 target;
         
@@ -27,6 +28,7 @@ namespace Network
             _projectileList = new List<NetworkObject>();
             _weaponTransform = gameObject.transform;
             _weaponShootTransform = gameObject.transform.GetChild(1);
+            _particle = gameObject.transform.GetChild(2).GetComponent<ParticleSystem>();
             target = gameObject.transform.forward;
             _baseWeaponStat.AddStat(new Stat<WeaponStat>(WeaponStat.Velocity, 20, 0));
             _baseWeaponStat.AddStat(new Stat<WeaponStat>(WeaponStat.Range, 10, 0));
@@ -88,6 +90,7 @@ namespace Network
         {
             if (CanAttack())
             {
+                _particle.Play();
                 SpawnProjectile(_weaponShootTransform);
             }
         }

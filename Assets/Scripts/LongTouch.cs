@@ -46,10 +46,10 @@ public class LongTouch : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     {
         yield return OneSec;
         LongTouched = true;
-        RDG.Vibration.Vibrate(20, 1);
 
         button.OnPointerUp(eventData);
         registerButton();
+        registeredVibrate();
     }
 
     private IEnumerator buttonEnable()
@@ -63,5 +63,13 @@ public class LongTouch : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         _doubleTouch.button.transform.GetChild(1).gameObject.SetActive(false);
         _doubleTouch.SetButton(button);
         button.transform.GetChild(1).gameObject.SetActive(true);
+    }
+
+    private void registeredVibrate()
+    {
+        long[] pattern = { 0, 10, 1000, 0 };
+        int[] amplitudes = { 0, 1 };
+
+        RDG.Vibration.Vibrate(pattern, amplitudes);
     }
 }

@@ -1709,6 +1709,8 @@ MonoBehaviour:
   attackButton: {fileID: 1078133502}
   vibrateButton: {fileID: 547360348}
   dodgeButton: {fileID: 1891325797}
+  animator: {fileID: 1005980713154550315, guid: e1433cb2b6135a94e92c3f1283df80b1,
+    type: 3}
   settings:
     speedText: {fileID: 657577432}
     SpeedUp: {fileID: 604576272}

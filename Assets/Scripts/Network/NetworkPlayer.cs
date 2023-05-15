@@ -224,10 +224,10 @@ namespace Network
         
         private void VibrateUlt()
         {
-            long[] pattern = 
+            long[] pattern =
                 { 0, 60, 20, 30, 20, 5};
-            int[] amplitudes = 
-                { 0, 2, 0, 1, 0, 1 };
+            int[] amplitudes =
+                { 0, 60, 0, 30, 0, 30};
 
             RDG.Vibration.Vibrate(pattern, amplitudes, -1, true);
         }
@@ -241,7 +241,7 @@ namespace Network
             }
             else
             {
-                long[] pattern = { 1000, 20, 1000, 20 };
+                long[] pattern = { 0, 3, 100, 3, 1000, 0 };
                 int[] amplitudes = { 0, 1 };
 
                 RDG.Vibration.Vibrate(pattern, amplitudes, 0);
@@ -431,7 +431,7 @@ namespace Network
 
             _characterController = GetComponent<CharacterController>();
             _characterTransform = transform.Find("Cat");
-            _animator = _characterTransform.GetComponentInChildren<Animator>();
+            _animator = _characterTransform.GetChild(0).GetComponent<Animator>();
 
             ShotLine = Instantiate(ShotLine);
             UltLine = Instantiate(UltLine);

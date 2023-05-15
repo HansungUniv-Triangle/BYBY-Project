@@ -20,7 +20,9 @@ public class PlayerCamera : MonoBehaviour
 
     private RaycastHit _hit;
     private Ray _ray;
-    
+
+    public float zOffset;
+
     public void AddPlayer(Transform player)
     {
         _player = player;
@@ -81,6 +83,8 @@ public class PlayerCamera : MonoBehaviour
             var targetRotation = Quaternion.LookRotation(relativePosition);
             transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * _rotationSpeed);
         }
+
+        transform.Rotate(new Vector3(0, 0, zOffset));
     }
 
     public void ReverseCameraPos(bool isLeft)
