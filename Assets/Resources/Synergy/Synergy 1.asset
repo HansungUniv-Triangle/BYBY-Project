@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fdc2158cf16b41c4188ea09996d8cbce, type: 3}
   m_Name: Synergy 1
   m_EditorClassIdentifier: 
-  sprite: {fileID: 0}
-  synergyName: "\uC2DC\uB108\uC9C01"
-  synergyExplain: 
+  sprite: {fileID: 21300000, guid: 7ae92991b473b423b84ce9f880d0f5dc, type: 3}
+  synergyName: "\uC2A4\uD53C\uB4DC \uC5C5"
+  synergyExplain: "<color=green>\uC774\uB3D9\uC18D\uB3C4+1<br>\uD0C4\uC18D+1</color>"
   priority: 0
   charStatList:
   - <Type>k__BackingField: 1
