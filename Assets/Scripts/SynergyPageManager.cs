@@ -1,94 +1,91 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using DG.Tweening;
 using TMPro;
+using Types;
 using UnityEngine.EventSystems;
+using Random = UnityEngine.Random;
 
 public class SynergyPageManager : MonoBehaviour
 {
     public GameObject prefabPanel;
     private GameObject synergyPanel;
 
-    public List<Synergy> commonSynergyList = new List<Synergy>();
-    public List<Synergy> uncommonSynergyList = new List<Synergy>();
-    public List<Synergy> rareSynergyList = new List<Synergy>();
-    public Dictionary<string, List<Synergy>> rarityGroup = new Dictionary<string, List<Synergy>>();
-
     //private NetworkPlayer _NetworkPlayer;
-    public SynergyPage[] synergyPages = new SynergyPage[7];
-    public SynergySelectPanel synergySelectPanel;
-    public int currentPage = 0;
+    private SynergyPage[] _synergyPages = new SynergyPage[7];
+    private SynergySelectPanel _synergySelectPanel;
+    public int CurrentPage { get; private set; }
 
     [SerializeField]
-    private Transform spawnPointOrigin;
-    private static Transform[] spawnPoint;
+    private Transform _spawnPointOrigin;
+    private RectTransform[] _spawnPoint;
 
-    void Awake() 
+    private RectTransform _thisRectTransform;
+
+    private void Awake() 
     {
-        rarityGroup.Add("common", commonSynergyList);
-        rarityGroup.Add("uncommon", uncommonSynergyList);
-        rarityGroup.Add("rare", rareSynergyList);
+        synergyPanel = Instantiate(prefabPanel, transform);
+
+        _synergySelectPanel = synergyPanel.GetComponent<SynergySelectPanel>();
+        _synergySelectPanel.SetSynergyPageManager(this);
+
+        _spawnPoint = _spawnPointOrigin.GetComponentsInChildren<RectTransform>();
+        _thisRectTransform = gameObject.GetComponent<RectTransform>();
     }
 
-    void Update()
+    private void Start()
     {
-        if (Input.GetKeyDown(KeyCode.E))
+        GameManager.Instance.SetSynergyPageManager(this);
+    }
+
+    public void SetActiveSynergyPanel(bool value)
+    {
+        if (value)
         {
-            if (synergyPanel == null)
-            {
-                synergyPanel = Instantiate(prefabPanel, transform);
-                MakeSynergyPage();
-            }
-            else
-            {
-                synergyPanel.SetActive(true);
-                MakeSynergyPage();
-            }
+            DOTween.Sequence()
+                .Append(_thisRectTransform.DOAnchorPosY(0, 1f))
+                .OnStart(() => synergyPanel.SetActive(true));
         }
-        else if (Input.GetKeyDown(KeyCode.Escape))
+        else
         {
-            synergyPanel.SetActive(false);
-            
-            synergySelectPanel.RemoveSynergyPages(synergyPages);  
+            DOTween.Sequence()
+                .Append(_thisRectTransform.DOAnchorPosY(1920, 1f))
+                .OnComplete(() => synergyPanel.SetActive(false));
         }
     }
 
     public void MakeSynergyPage()
     {
-        //spawnPointOrigin = synergyPanel.transform.GetChild(3);
-        spawnPoint = new Transform[spawnPointOrigin.transform.childCount];
-        spawnPoint = spawnPointOrigin.GetComponentsInChildren<Transform>();
-        synergySelectPanel = synergyPanel.GetComponent<SynergySelectPanel>();
-    
-        for (var i = 0; i < synergyPages.Length; i++)
+        _synergySelectPanel.RemoveSynergyPages(_synergyPages);
+        CurrentPage = 0;
+
+        for (var i = 0; i < _synergyPages.Length; i++)
         {
-            synergyPages[i] = new SynergyPage();
-            if (i + 2 >= 3)
+            _synergyPages[i] = new SynergyPage();
+            _synergyPages[i].synergyObj = i switch
             {
-                synergyPages[i].synergyObj = synergySelectPanel.SpawnSynergy(synergyPages[i], spawnPoint[3]);
-            }
-            else
-            {
-                synergyPages[i].synergyObj = synergySelectPanel.SpawnSynergy(synergyPages[i], spawnPoint[2]);
-            }
-            CreateRandomSynergy(synergyPages[i]);
-            synergySelectPanel.ApplySynergyToObj(synergyPages[i]);
-            synergyPages[i].pageNumber = i;
+                0 => _synergySelectPanel.SpawnSynergy(_spawnPoint[2]),
+                _ => _synergySelectPanel.SpawnSynergy(_spawnPoint[3])
+            };
+            _synergyPages[i].pageNumber = i;
+
+            _synergyPages[i].Clear();
+            CreateRandomSynergy(_synergyPages[i]);
+            _synergySelectPanel.ApplySynergyToObj(_synergyPages[i]);
         }
-        synergySelectPanel.ChangeOrder();
+        
+        _synergySelectPanel.ChangeOrder();
         GetRecommendationPercentage();
-        synergySelectPanel.ApplySynergyToObj(synergyPages[currentPage]);
-        int j = FindMaxRecommendation(synergyPages[currentPage]);
-        synergySelectPanel.DisplayRecommendation(synergyPages[currentPage], j);
+        _synergySelectPanel.ApplySynergyToObj(_synergyPages[CurrentPage]);
+        int j = FindMaxRecommendation(_synergyPages[CurrentPage]);
+        _synergySelectPanel.DisplayRecommendation(_synergyPages[CurrentPage], j);
     }
 
     public void SelectSynergy()
     {
         string synergyName = EventSystem.current.currentSelectedGameObject.GetComponentInChildren<TextMeshProUGUI>().text;
-        Debug.Log(synergyName);
-        synergyPages[currentPage].FindSelectedSynergyInSynergies(synergyName);
+        _synergyPages[CurrentPage].FindSelectedSynergyInSynergies(synergyName);
     }
 
     public void ApplySelectedSynergyToCharacter()
@@ -98,48 +95,60 @@ public class SynergyPageManager : MonoBehaviour
 
     public void MoveSynergyPageRight()
     {
-        /*if(synergyPages[currentPage + 1] != null)
+        var condition = CurrentPage > 0;
+        var thisPage = _synergyPages[CurrentPage];
+        var prevPage = condition ? _synergyPages[CurrentPage - 1] : _synergyPages[^1];
+
+        if (condition)
         {
-            Vector3 leftSpawnPoint = spawnPoint[1].transform.position;
-            synergyPages[currentPage + 1].synergyObj.transform.position = leftSpawnPoint;
-        }*/
-        if (currentPage > 0)
-        {
-            synergyPages[currentPage].synergyObj.transform.DOMove(spawnPoint[3].transform.position, 1);
-            synergyPages[currentPage - 1].synergyObj.transform.DOMove(spawnPoint[2].transform.position, 1);
-            currentPage--;
-            synergyPages[currentPage].RerollCountClear();
-            synergySelectPanel.DisplayRerolled(synergyPages[currentPage],synergyPages[currentPage].rerollCount);
+            CurrentPage--;
         }
+        else
+        {
+            CurrentPage = _synergyPages.Length - 1;
+        }
+        
+        prevPage.synergyObj.transform.position = _spawnPoint[1].transform.position;
+        thisPage.synergyObj.transform.DOMove(_spawnPoint[3].transform.position, 1);
+        prevPage.synergyObj.transform.DOMove(_spawnPoint[2].transform.position, 1);
+        
+        _synergyPages[CurrentPage].RerollCountClear();
+        _synergySelectPanel.DisplayRerolled(_synergyPages[CurrentPage],_synergyPages[CurrentPage].rerollCount);
     }
 
     public void MoveSynergyPageLeft()
     {
-        /*if(synergyPages[currentPage - 1] != null)
+        var condition = CurrentPage < (_synergyPages.Length - 1);
+        var thisPage = _synergyPages[CurrentPage];
+        var nextPage = condition ? _synergyPages[CurrentPage + 1] : _synergyPages[0];
+        
+        if (condition)
         {
-            Vector3 rightSpawnPoint = spawnPoint[3].transform.position;
-            synergyPages[currentPage - 1].synergyObj.transform.position = rightSpawnPoint;
-        }*/
-        if (currentPage < 6)
-        {
-            synergyPages[currentPage].synergyObj.transform.DOMove(spawnPoint[1].transform.position, 1);
-            synergyPages[currentPage + 1].synergyObj.transform.DOMove(spawnPoint[2].transform.position, 1);
-            currentPage++;
-            synergyPages[currentPage].RerollCountClear();
-            synergySelectPanel.DisplayRerolled(synergyPages[currentPage], synergyPages[currentPage].rerollCount);
+            CurrentPage++;
         }
+        else
+        {
+            CurrentPage = 0;
+        }
+
+        nextPage.synergyObj.transform.position = _spawnPoint[3].transform.position;
+        thisPage.synergyObj.transform.DOMove(_spawnPoint[1].transform.position, 1);
+        nextPage.synergyObj.transform.DOMove(_spawnPoint[2].transform.position, 1);
+        
+        _synergyPages[CurrentPage].RerollCountClear();
+        _synergySelectPanel.DisplayRerolled(_synergyPages[CurrentPage], _synergyPages[CurrentPage].rerollCount);
     }
 
     public void RerollSynergy()
     {
-        if (synergyPages[currentPage].isRerolled == false)
+        if (_synergyPages[CurrentPage].isRerolled == false)
         {
-            synergyPages[currentPage].Clear();
-            CreateRandomSynergy(synergyPages[currentPage]);
-            synergySelectPanel.ApplySynergyToObj(synergyPages[currentPage]);
-            synergyPages[currentPage].rerollCount--;
-            synergySelectPanel.DisplayRerolled(synergyPages[currentPage], synergyPages[currentPage].rerollCount);
-            synergyPages[currentPage].isRerolled = true;
+            _synergyPages[CurrentPage].Clear();
+            CreateRandomSynergy(_synergyPages[CurrentPage]);
+            _synergySelectPanel.ApplySynergyToObj(_synergyPages[CurrentPage]);
+            _synergyPages[CurrentPage].rerollCount--;
+            _synergySelectPanel.DisplayRerolled(_synergyPages[CurrentPage], _synergyPages[CurrentPage].rerollCount);
+            _synergyPages[CurrentPage].isRerolled = true;
         }
     }
 
@@ -162,57 +171,49 @@ public class SynergyPageManager : MonoBehaviour
     {
         int max = 100;
         int recommendation = 0;
-        for (int i = 0; i < synergyPages[currentPage].synergies.Length; i++)
+        for (int i = 0; i < _synergyPages[CurrentPage].synergies.Length; i++)
         {
             if (i == 2)
             {
-                synergyPages[currentPage].synergyRecommendationPercentage[i] = max;
+                _synergyPages[CurrentPage].synergyRecommendationPercentage[i] = max;
             }
             else
             {
                 recommendation = Random.Range(0, max + 1);
                 max -= recommendation;
-                synergyPages[currentPage].synergyRecommendationPercentage[i] = recommendation;
+                _synergyPages[CurrentPage].synergyRecommendationPercentage[i] = recommendation;
             }
         }
     }
 
-    private string GetRandomRarity()
+    public void SetSynergySelectTimer(float value, float max)
     {
-        // ¹«ÀÛÀ§ ·¹¾îµµ ¼±ÅÃ
-        List<string> rarityList = new List<string>(rarityGroup.Keys);
-        float randomRarityChoosingNumber = Random.Range(0f, 1f);
-        string randomRarity;
-
-        if (randomRarityChoosingNumber < 0.45f)
-        {
-            randomRarity = "common";
-        }
-        else if (randomRarityChoosingNumber < 0.8f)
-        {
-            randomRarity = "uncommon";
-        }
-        else
-        {
-            randomRarity = "rare";
-        }
-        return randomRarity;
+        _synergySelectPanel.SetTimerValue(value, max);
     }
 
-    // ½Ã³ÊÁö¸¦ ·£´ýÀ¸·Î »ý¼ºÇÏ´Â ÇÔ¼ö
+    private Rarity GetRandomRarity()
+    {
+        return Random.Range(0f, 1f) switch
+        {
+            < 0.45f => Rarity.Common,
+            < 0.8f => Rarity.UnCommon,
+            _ => Rarity.Rare
+        };
+    }
+
+    // ï¿½Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½
     public void CreateRandomSynergy(SynergyPage synergyPage)
     {
-        synergyPage.Clear();
-        synergyPage.synergyRarity = GetRandomRarity();
+        var rarity = GetRandomRarity();
+        synergyPage.synergyRarity = rarity;
 
         for (int i = 0; i < synergyPage.synergies.Length; i++)
         {
             while (synergyPage.synergies[2] == null) {
-                // ¼±ÅÃµÈ ·¹¾îµµÀÇ ¾ÆÀÌÅÛ ¹«¸®¿¡¼­ ¹«ÀÛÀ§ ¾ÆÀÌÅÛ ¼±ÅÃ
-                List<Synergy> itemGroup = rarityGroup[synergyPage.synergyRarity];
-                int itemGroupRandomNumber = Random.Range(0, itemGroup.Count - 1);
-                Synergy randomSynergy = itemGroup[itemGroupRandomNumber];
-
+                var rarityGroup = GameManager.Instance.SynergyList.FindAll(s => s.rarity.Equals(rarity));
+                var randomNumberRarityGroup = Random.Range(0, rarityGroup.Count);
+                var randomSynergy = GameManager.Instance.SynergyList[randomNumberRarityGroup];
+                
                 if (synergyPage.CheckIsNumInSynergyList(randomSynergy) == false)
                 {
                     synergyPage.IsNumInSynergyList.Add(randomSynergy);

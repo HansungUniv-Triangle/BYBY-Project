@@ -23,6 +23,8 @@ namespace UIHolder
         public Image playerHpBarImage;
         public Image enemyHpBarImage;
 
+        public GameObject gameUIGroup;
+
         public TextMeshProUGUI timeText;
         public TextMeshProUGUI roundText;
 

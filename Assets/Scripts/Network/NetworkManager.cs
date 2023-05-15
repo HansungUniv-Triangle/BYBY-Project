@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Fusion;
+using Types;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
@@ -21,9 +22,7 @@ namespace Network
             public Color PlayerColor;
         }
 
-        private NetworkPlayer _localCharacter;
-
-        public NetworkPlayer LocalCharacter => _localCharacter;
+        public NetworkPlayer LocalCharacter { get; private set; }
     }
 
     // 룸 데이터 기반 UI 업데이트
@@ -78,7 +77,7 @@ namespace Network
     // 네트워크 오브젝트 보관
     public partial class NetworkManager
     {
-        private readonly List<NetworkObject> _networkObjectList = new List<NetworkObject>();
+        private List<NetworkObject> _networkObjectList;
         
         public void AddNetworkObjectInList(NetworkObject networkObject)
         {
@@ -122,26 +121,34 @@ namespace Network
                 return _gameUI;
             }
         }
+
+        private SynergyPageManager _synergyPageManager;
+
+        private SynergyPageManager SynergyPageManager
+        {
+            get
+            {
+                if (_synergyPageManager is null)
+                {
+                    _synergyPageManager = GameManager.Instance.SynergyPageManager;
+                }
+                return _synergyPageManager;
+            }
+        }
         
         private PlayerRef _defeatRef;
         private RoundState _round = RoundState.None;
+        public RoundState GameRoundState => _round;
         private int roundNum = 0;
-
-        private enum RoundState
-        {
-            None,
-            SynergySelect, 
-            WaitToStart,
-            RoundStart,
-            RoundEnd,
-            GameEnd,
-        }
-
+        
         private void ChangeRound(RoundState roundState)
         {
             switch (roundState)
             {
                 case RoundState.None:
+                    _round = RoundState.GameStart;
+                    break;
+                case RoundState.GameStart:
                     _round = RoundState.SynergySelect;
                     break;
                 case RoundState.SynergySelect:
@@ -169,21 +176,24 @@ namespace Network
         {
             switch (_round)
             {
+                case RoundState.GameStart:
+                    SetTimerSec(5f);
+                    break;
                 case RoundState.SynergySelect:
                     ViewSynergySelect();
-                    ChangeRoundFiveSec();
+                    SetTimerSec(10f);
                     break;
                 case RoundState.WaitToStart:
                     ViewWait();
-                    ChangeRoundFiveSec();
+                    SetTimerSec(5f);
                     break;
                 case RoundState.RoundStart:
                     IncreaseRound();
-                    ChangeRoundFiveSec();
+                    SetTimerSec(10f);
                     break;
                 case RoundState.RoundEnd:
                     ViewRoundWinner();
-                    ChangeRoundFiveSec();
+                    SetTimerSec(5f);
                     break;
                 case RoundState.GameEnd: // 게임 나가는 코드 넣어야해
                 default:
@@ -193,10 +203,30 @@ namespace Network
 
         private void FixedUpdate()
         {
-            if (RoundChangeTimer.IsRunning)
+            switch (_round)
             {
-                var time = RoundChangeTimer.RemainingTime(Runner) ?? 0;
-                GameUI.timeText.text = time.ToString("F2");
+                case RoundState.None:
+                    break;
+                case RoundState.GameStart:
+                    UpdateTimerInGame();
+                    break;
+                case RoundState.SynergySelect:
+                    UpdateSynergySelect();
+                    break;
+                case RoundState.WaitToStart:
+                    UpdateTimerInGame();
+                    break;
+                case RoundState.RoundStart:
+                    UpdateTimerInGame();
+                    break;
+                case RoundState.RoundEnd:
+                    UpdateTimerInGame();
+                    break;
+                case RoundState.GameEnd:
+                    UpdateTimerInGame();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
             
             if(!HasStateAuthority) return;
@@ -208,21 +238,40 @@ namespace Network
             }
         }
 
-        private void ChangeRoundFiveSec()
+        private void UpdateTimerInGame()
+        {
+            var time = RoundChangeTimer.RemainingTime(Runner) ?? 00;
+            var min = time / 60f;
+            var sec = time % 60f;
+            GameUI.timeText.text = $"{min:00}:{sec:00}";
+        }
+
+        private void UpdateSynergySelect()
+        {
+            SynergyPageManager.SetSynergySelectTimer(RoundChangeTimer.RemainingTime(Runner) ?? 0, 60f);
+        }
+
+        private void SetTimerSec(float sec)
         {
             if(!HasStateAuthority) return;
             
-            RoundChangeTimer = TickTimer.CreateFromSeconds(Runner, 5.0f);
+            RoundChangeTimer = TickTimer.CreateFromSeconds(Runner, sec);
         }
 
         private void ViewSynergySelect()
         {
-            GameUI.roundText.text = $"시너지 고르는 중 입니다.";
+            _gameUI.gameUIGroup.SetActive(false);
+            SynergyPageManager.SetActiveSynergyPanel(true);
+            
+            SynergyPageManager.MakeSynergyPage();
         }
 
         private void ViewWait()
         {
-            GameUI.roundText.text = $"기다리십쇼";
+            _gameUI.gameUIGroup.SetActive(true);
+            SynergyPageManager.SetActiveSynergyPanel(false);
+
+            GameUI.roundText.text = $"시너지 선택 완료! 기다리세요";
         }
         
         private void IncreaseRound()
@@ -261,8 +310,6 @@ namespace Network
     
     public partial class NetworkManager : NetworkBehaviour
     {
-        [Networked] private TickTimer _timer { get; set; }
-
         private RoomUI _roomUI;
 
         // Player
@@ -277,6 +324,7 @@ namespace Network
             GameManager.Instance.SetNetworkManager(this);
             GameManager.Instance.DeActiveLoadingUI();
             _roomUI = GameManager.Instance.UIHolder as RoomUI;
+            _networkObjectList = new List<NetworkObject>();
 
             RPCAddPlayer(Runner.LocalPlayer, $"Nick{Random.Range(1,100)}", Random.ColorHSV());
         }
@@ -332,7 +380,7 @@ namespace Network
         {
             Vector3 spawnPosition = new Vector3((playerRef.RawEncoded % Runner.Config.Simulation.DefaultPlayers) + 20, 30, 10);
             NetworkObject networkPlayerObject = Runner.Spawn(_playerPrefab, spawnPosition, Quaternion.identity, playerRef);
-            _localCharacter = networkPlayerObject.GetComponent<NetworkPlayer>();
+            LocalCharacter = networkPlayerObject.GetComponent<NetworkPlayer>();
 
             var mainWeapon = GameManager.Instance.SelectWeapon;
             NetworkObject mainWeaponSpawn = Runner.Spawn(mainWeapon, spawnPosition + Vector3.right + Vector3.up, Quaternion.identity, playerRef);
@@ -342,7 +390,7 @@ namespace Network
             NetworkObject subWeaponSpawn = Runner.Spawn(subWeapon, spawnPosition + Vector3.up * 2, Quaternion.identity, playerRef);
             subWeaponSpawn.transform.SetParent(networkPlayerObject.transform);
             
-            _localCharacter.SetGunPos(mainWeaponSpawn.transform);
+            LocalCharacter.SetGunPos(mainWeaponSpawn.transform);
         }
         
         public void AddBlockHitData(Vector3 pos, int damage)

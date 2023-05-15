@@ -63,5 +63,23 @@ namespace Types
         Variable,
         Floating
     }
+    
+    public enum RoundState
+    {
+        None,
+        GameStart,
+        SynergySelect, 
+        WaitToStart,
+        RoundStart,
+        RoundEnd,
+        GameEnd,
+    }
+    
+    public enum Rarity
+    {
+        Common,
+        UnCommon,
+        Rare
+    }
 }
 

@@ -30,10 +30,9 @@ public class GameManager : Singleton<GameManager>
     }
 
     public NetworkManager NetworkManager { get; private set; }
-
-    [SerializeField]
-    private Synergy[] _synergyList;
-    public int SynergyCount => _synergyList.Length;
+    public SynergyPageManager SynergyPageManager { get; private set; }
+    
+    public List<Synergy> SynergyList { get; private set; }
 
     public NetworkPrefabRef[] mainWeaponArray = new NetworkPrefabRef[4];
     public int selectWeaponNum = 0;
@@ -47,7 +46,7 @@ public class GameManager : Singleton<GameManager>
 
     protected override void Initiate()
     {
-        _synergyList = Resources.LoadAll<Synergy>(Path.Synergy);
+        SynergyList = Resources.LoadAll<Synergy>(Path.Synergy).ToList();
         _uiLoadingPrefab = Resources.Load(Path.Loading) as GameObject;
     }
 
@@ -63,19 +62,24 @@ public class GameManager : Singleton<GameManager>
 
     public bool GetSynergy(int index, out Synergy synergy)
     {
-        if (index >= SynergyCount)
+        if (index > SynergyList.Count)
         {
             synergy = null;
-            
             return false;
         }
-        synergy = _synergyList[index];
+
+        synergy = SynergyList[index];
         return true;
     }
 
     public void SetUICanvasHolder(UIHolder.UIHolder uiHolder)
     {
         _uiHolder = uiHolder;
+    }
+    
+    public void SetSynergyPageManager(SynergyPageManager synergyPageManager)
+    {
+        SynergyPageManager = synergyPageManager;
     }
 
     private void AddLoadingUI()

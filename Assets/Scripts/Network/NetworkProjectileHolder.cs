@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using DG.Tweening;
 using Fusion;
 using GameStatus;
@@ -55,6 +56,20 @@ namespace Network
         public override void FixedUpdateNetwork()
         {
             if (!HasInputAuthority) return;
+            
+            switch (GameManager.Instance.NetworkManager.GameRoundState)
+            {
+                case RoundState.RoundStart:
+                    break;
+                case RoundState.None:
+                case RoundState.GameStart:
+                case RoundState.SynergySelect:
+                case RoundState.WaitToStart:
+                case RoundState.RoundEnd:
+                case RoundState.GameEnd:
+                default:
+                    return;
+            }
             
             Attack();
 

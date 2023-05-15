@@ -12,18 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fdc2158cf16b41c4188ea09996d8cbce, type: 3}
   m_Name: Synergy 13
   m_EditorClassIdentifier: 
+  rarity: 2
   sprite: {fileID: 21300000, guid: f08cfd210829743d6915a185fd97c7a6, type: 3}
   synergyName: "\uB808\uC5B4 \uC2DC\uB108\uC9C01"
   synergyExplain: "<color=green>\uCCB4\uB825+2<br>\uACF5\uACA9\uC18D\uB3C4+2</color>"
-  priority: 0
   charStatList:
   - <Type>k__BackingField: 0
     <Amount>k__BackingField: 0
     <Ratio>k__BackingField: 0
+    <Addition>k__BackingField: 0
   weaponStatList:
   - <Type>k__BackingField: 6
     <Amount>k__BackingField: 0
     <Ratio>k__BackingField: 0
+    <Addition>k__BackingField: 0
   - <Type>k__BackingField: 5
     <Amount>k__BackingField: 0
     <Ratio>k__BackingField: 0
+    <Addition>k__BackingField: 0
