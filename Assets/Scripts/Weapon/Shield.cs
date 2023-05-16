@@ -23,7 +23,7 @@ namespace Weapon
 
         protected override void MoveProjectile()
         {
-            transform.Rotate(Vector3.up, TotalVelocity * Time.deltaTime);
+            transform.Rotate(Vector3.up, TotalVelocity);
             AddBulletSize(0.01f);
         }
     }

@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdc2158cf16b41c4188ea09996d8cbce, type: 3}
+  m_Name: Synergy 16
+  m_EditorClassIdentifier: 
+  rarity: 2
+  sprite: {fileID: 21300000, guid: 8e17e3636b277448787a8f399dd84b68, type: 3}
+  synergyName: "\uB808\uC5B4 \uC2DC\uB108\uC9C04"
+  synergyExplain: "<color=green>\uBC29\uC5B4\uB825+5</color><br><color=red>\uC774\uB3D9\uC18D\uB3C4-2</color>"
+  charStatList:
+  - <Type>k__BackingField: 0
+    <Amount>k__BackingField: 0
+    <Ratio>k__BackingField: 0
+    <Addition>k__BackingField: 0
+  weaponStatList:
+  - <Type>k__BackingField: 0
+    <Amount>k__BackingField: 0
+    <Ratio>k__BackingField: 0
+    <Addition>k__BackingField: 0

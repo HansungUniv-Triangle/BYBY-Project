@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Type;
+using Types;
 using UnityEngine;
 using GameStatus;
 
@@ -14,6 +14,10 @@ namespace Weapon
 
         private void Awake()
         {
+            BaseWeaponStat = new BaseStat<WeaponStat>(1 ,1);
+            CoolTime = 0;
+            Level = 0;
+            WeaponPos = GameObject.Find("Gun").transform;
             Initialize();
         }
         
@@ -24,7 +28,7 @@ namespace Weapon
 
         public void IncreaseLevel()
         {
-            if (BaseWeaponStat.GetStat(WeaponStat.MaxLevel).Total > Level) Level++;
+            if (4 > Level) Level++;
         }
         
         public void DecreaseLevel()
@@ -45,6 +49,11 @@ namespace Weapon
         public void AddWeaponStatList(List<Stat<WeaponStat>> statList)
         {
             BaseWeaponStat.AddStatList(statList);
+        }
+        
+        public Stat<WeaponStat> GetWeaponStat(WeaponStat stat)
+        {
+            return BaseWeaponStat.GetStat(stat);
         }
 
         public void ClearWeaponStat()

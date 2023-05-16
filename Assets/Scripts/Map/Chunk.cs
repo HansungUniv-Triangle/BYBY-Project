@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Network;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -180,7 +182,6 @@ public class Chunk
             if (_damagedBlocks.ContainsKey(pos))
             {
                 _damagedBlocks[pos].DestroyGameObject();
-                //_damagedBlocks.Remove(pos);
             }
         }
     }
@@ -188,15 +189,57 @@ public class Chunk
     public void SetGrassBlock()
     {
         var Blocks = WorldManager.Instance.Blocks;
+        var TreeThreshold = WorldManager.Instance.TreeThreshold;
+        var Seed = WorldManager.Instance.Seed;
 
         foreach (var item in _blockMap.ToList())
         {
             var checkPos = item.Key;
             checkPos.y++;
+
             if (!_blockMap.ContainsKey(checkPos) &&
                 item.Value.GetBlockType() == Block.BlockType.Dirt)
             {
-                SetBlock(item.Key, Blocks[(int)Block.BlockType.Grass]);
+                if (_world.GetRandomValue() < TreeThreshold)
+                {
+                    SetTree(checkPos, Blocks);
+                }
+                else
+                    SetBlock(item.Key, Blocks[(int)Block.BlockType.Grass]);
+            }
+        }
+    }
+
+    public void SetTree(Vector3Int centerPos, Block[] blocks)
+    {
+        var WoodHeight = WorldManager.Instance.WoodHeight;
+        var LeafLength = WorldManager.Instance.LeafLength;
+        var LeafHeight = WorldManager.Instance.LeafHeight;
+
+        for (var i = 0; i < WoodHeight; i++, centerPos.y++)
+        {
+            SetBlock(centerPos, blocks[(int)Block.BlockType.Wood]);
+        }
+
+        for (var y = 0; y < LeafHeight; y++)
+        {
+            for (var x = 0; x < LeafLength; x++)
+            {
+                for (var z = 0; z < LeafLength; z++)
+                {
+                    var blockPos = new Vector3Int(centerPos.x - 1 + x, centerPos.y - y, centerPos.z - 1 + z);
+                    
+                    // ë‚˜ë­‡ìžŽ í˜•íƒœ
+                    if (blockPos.x == centerPos.x && blockPos.z == centerPos.z && y != 0)
+                        continue;
+                    if (y == 0 && x != 1 && z != 1)
+                        continue;
+
+                    var chunk = _world.GetChunk(blockPos);
+                    if (chunk?.GetBlock(blockPos) != null)
+                        continue;
+                    chunk?.SetBlock(blockPos, blocks[(int)Block.BlockType.Leaf]);
+                }
             }
         }
     }
@@ -241,23 +284,24 @@ public class Chunk
 
             for (var dir = 0; dir < MeshBlockData.CheckDireactions.Length; dir++)
             {
-                // ¸Ç ¾Æ·¡ (y == 0) ºí·°ÀÇ ¹Ø¸éÀÇ °æ¿ì, ±×¸®Áö ¾Ê±â
+                // ë§¨ ì•„ëž˜ (y == 0) ë¸”ëŸ­ì˜ ë°‘ë©´ì˜ ê²½ìš°, ê·¸ë¦¬ì§€ ì•Šê¸°
                 if (blockPos.y == 0 && dir == 5) { continue; }
 
                 var checkBlockPos = blockPos + MeshBlockData.CheckDireactions[dir];
 
-                if (!_blockMap.ContainsKey(checkBlockPos) || !_blockMap[checkBlockPos].GetSolidType())
+                if (!_blockMap.ContainsKey(checkBlockPos) || !_blockMap[checkBlockPos].GetSolidType() || _blockMap[checkBlockPos].GetTransparencyType())
                 {
-                    // ´ÙÀ½ Ã»Å©¿¡ ÀÖÀ» ¼öµµ ÀÖ¾î ¿¹¿Ü Ã³¸®
+                    // ë‹¤ìŒ ì²­í¬ì— ìžˆì„ ìˆ˜ë„ ìžˆì–´ ì˜ˆì™¸ ì²˜ë¦¬
                     var checkChunkPos = new Vector2Int(_chunkCoord.x + MeshBlockData.CheckDireactions[dir].x,
                                                        _chunkCoord.y + MeshBlockData.CheckDireactions[dir].z);
 
-                    // ´ÙÀ½ Ã»Å©¿¡¼­ ºí·° Á¸ÀçÇÒ °æ¿ì, ÇØ´ç ¸é ±×¸®Áö ¾Ê±â
+                    // ë‹¤ìŒ ì²­í¬ì—ì„œ ë¸”ëŸ­ ì¡´ìž¬í•  ê²½ìš°, í•´ë‹¹ ë©´ ê·¸ë¦¬ì§€ ì•Šê¸°
                     if (_world.IsPositionInWorld(checkChunkPos) &&
-                        _world.GetChunk(checkChunkPos).GetBlock(checkBlockPos) != null)
+                        _world.GetChunk(checkChunkPos).GetBlock(checkBlockPos) != null &&
+                        !_world.GetChunk(checkChunkPos).GetBlock(checkBlockPos).GetTransparencyType())
                         continue;
 
-                    // Culling ¹æ½Ä
+                    // Culling ë°©ì‹
                     for (var idx = 0; idx < MeshBlockData.FaceNumber.GetLength(1); idx++)
                     {
                         var vIdx = MeshBlockData.FaceNumber[dir, idx];

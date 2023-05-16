@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Types;
 
 namespace GameStatus
 {
@@ -16,13 +17,17 @@ namespace GameStatus
         [field: SerializeReference]
         public float Ratio { get; private set; }
         
-        public float Total => Amount * Ratio;
+        [field: SerializeReference]
+        public float Addition { get; private set; }
         
-        public Stat(T type, float amount)
+        public float Total => Amount * Ratio + Addition;
+        
+        public Stat(T type, float amount, float ratio)
         {
             Type = type;
             Amount = amount;
-            Ratio = 1f;
+            Ratio = ratio;
+            Addition = 0;
         }
         
         public Stat<T> SetAmount(float amount)
@@ -37,6 +42,12 @@ namespace GameStatus
             return this;
         }
         
+        public Stat<T> SetAddition(float add)
+        {
+            Addition = add;
+            return this;
+        }
+        
         public Stat<T> AddAmount(float amount)
         {
             Amount += amount;
@@ -46,6 +57,12 @@ namespace GameStatus
         public Stat<T> AddRatio(float ratio)
         {
             Ratio += ratio;
+            return this;
+        }
+        
+        public Stat<T> AddAddition(float add)
+        {
+            Addition += add;
             return this;
         }
 
@@ -63,13 +80,18 @@ namespace GameStatus
     public class BaseStat<T> where T : Enum
     {
         private readonly List<Stat<T>> _statList;
+        private float _defaultAmount;
+        private float _defaultRatio;
         
-        public BaseStat()
+        public BaseStat(int amount, int ratio)
         {
+            _defaultAmount = amount;
+            _defaultRatio = ratio;
+            
             _statList = new List<Stat<T>>();
             foreach (T stat in Enum.GetValues(typeof(T)))
             {
-                _statList.Add(new Stat<T>(stat, 1));
+                _statList.Add(new Stat<T>(stat, amount, ratio));
             }
         }
         
@@ -77,8 +99,9 @@ namespace GameStatus
         {
             foreach (var stat in _statList)
             {
-                stat.SetAmount(1);
-                stat.SetRatio(1);
+                stat.SetAmount(_defaultAmount);
+                stat.SetRatio(_defaultRatio);
+                stat.SetAddition(0);
             }
         }
 

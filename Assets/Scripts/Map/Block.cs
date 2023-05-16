@@ -12,6 +12,9 @@ public class Block
         Grass,
         Dirt,
         Stone,
+        Sand,
+        Wood,
+        Leaf,
         Bedrock
     };
 
@@ -19,6 +22,7 @@ public class Block
 
     [SerializeField] private BlockType _type;
     [SerializeField] private bool _solidType;
+    [SerializeField] private bool _transparencyType;
     [SerializeField] private int _maxHP;
 
     [Space(5f)]
@@ -37,6 +41,11 @@ public class Block
     public bool GetSolidType()
     {
         return _solidType;
+    }
+
+    public bool GetTransparencyType()
+    {
+        return _transparencyType;
     }
 
     public int GetMaxHP()

@@ -6,7 +6,7 @@ Library: D:\GitProject\BYBY\Temp\StagingArea\tempburstlibs\armeabi-v7a\lib_burst
 --meta-data-generation=False
 --dump=Function
 --float-precision=Standard
---compilation-defines=UNITY_2021_3_19
+--compilation-defines=UNITY_2021_3_23
 --compilation-defines=UNITY_2021_3
 --compilation-defines=UNITY_2021
 --compilation-defines=UNITY_5_3_OR_NEWER
@@ -101,6 +101,11 @@ Library: D:\GitProject\BYBY\Temp\StagingArea\tempburstlibs\armeabi-v7a\lib_burst
 --compilation-defines=NET_STANDARD_2_1
 --compilation-defines=NETSTANDARD
 --compilation-defines=NETSTANDARD2_1
+--compilation-defines=DEVELOPMENT_BUILD
+--compilation-defines=ENABLE_PROFILER
+--compilation-defines=DEBUG
+--compilation-defines=TRACE
+--compilation-defines=UNITY_ASSERTIONS
 --compilation-defines=UNITY_PRO_LICENSE
 --compilation-defines=ENABLE_CUSTOM_RENDER_TEXTURE
 --compilation-defines=ENABLE_DIRECTOR
@@ -111,6 +116,7 @@ Library: D:\GitProject\BYBY\Temp\StagingArea\tempburstlibs\armeabi-v7a\lib_burst
 --compilation-defines=ENABLE_TIMELINE
 --compilation-defines=ENABLE_LEGACY_INPUT_MANAGER
 --compilation-defines=TEXTCORE_FONT_ENGINE_1_5_OR_NEWER
+--compilation-defines=FUSION_WEAVER
 --compilation-defines=PACKAGE_PHYSICS
 --compilation-defines=PACKAGE_PHYSICS2D
 --compilation-defines=PACKAGE_TILEMAP
@@ -120,17 +126,13 @@ Library: D:\GitProject\BYBY\Temp\StagingArea\tempburstlibs\armeabi-v7a\lib_burst
 --compilation-defines=CSHARP_7_3_OR_NEWER
 --compilation-defines=ENABLE_VR_MODULE
 --compilation-defines=ENABLE_XR_MODULE
---compilation-defines=MODULE_AI_EXISTS
---compilation-defines=MODULE_ANIMATION_EXISTS
---compilation-defines=MODULE_PHYSICS_EXISTS
---compilation-defines=MODULE_PHYSICS_2D_EXISTS
---compilation-defines=MODULE_PARTICLE_SYSTEM_EXISTS
 --compilation-defines=ENABLE_BURST_1_0_0_OR_NEWER
 --compilation-defines=USING_ANIMATION_MODULE
 --compilation-defines=USING_PHYSICS2D_MODULE
 --compilation-defines=TIMELINE_FRAMEACCURATE
 --generate-link-xml=Temp\burst.link.xml
 --temp-folder=D:\GitProject\BYBY\Temp\Burst
+--debug=Full
 --output=D:\GitProject\BYBY\Temp\StagingArea\tempburstlibs\armeabi-v7a\lib_burst_generated
 --pdb-search-paths=Temp/ManagedSymbols/
 --pdb-search-paths=Temp/ManagedSymbols/

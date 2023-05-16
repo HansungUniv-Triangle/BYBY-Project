@@ -1,6 +1,4 @@
-﻿using GameStatus;
-using Type;
-using UnityEngine;
+﻿using Types;
 
 /* HandGun : WeaponBase
  * 기본적인 권총을 구현한 클래스
@@ -18,24 +16,17 @@ namespace Weapon
         protected override void Initialize()
         {
             _projectileHolder = new ProjectileHolder<BasicBullet>("Bullet");
-            BaseWeaponStat = new BaseStat<WeaponStat>();
-            Level = 0;
-            CoolTime = 0;
-            
-            // 임시로 위치 얻어오기
-            WeaponPos = GameObject.Find("Gun").transform;
         }
 
         public override void Attack()
         {
-            if (CheckCoolTime())
-            {
-                _projectileHolder.GetProjectile(WeaponPos)
-                    .AddBaseStat(BaseWeaponStat.GetStat(WeaponStat.Damage))
-                    .AddBaseStat(BaseWeaponStat.GetStat(WeaponStat.Range))
-                    .AddBaseStat(BaseWeaponStat.GetStat(WeaponStat.Velocity));
-                CoolTime = 0;
-            }
+            if (!CheckCoolTime()) return;
+            
+            _projectileHolder.GetProjectile(WeaponPos)
+                .AddBaseStat(BaseWeaponStat.GetStat(WeaponStat.Damage))
+                .AddBaseStat(BaseWeaponStat.GetStat(WeaponStat.Range))
+                .AddBaseStat(BaseWeaponStat.GetStat(WeaponStat.Velocity));
+            CoolTime = 0;
         }
     }
 }

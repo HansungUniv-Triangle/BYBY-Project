@@ -2,9 +2,7 @@
  * 기본 총알
  */
 
-using System;
 using UnityEngine;
-using Util;
 
 namespace Weapon
 {
@@ -12,7 +10,7 @@ namespace Weapon
     {
         protected override void MoveProjectile()
         {
-            gameObject.transform.Translate(Direction * TotalVelocity);
+            gameObject.transform.Translate(Direction * (TotalVelocity * 0.1f));
         }
         
         protected override bool CheckDestroy()
@@ -29,18 +27,6 @@ namespace Weapon
                 WorldManager.Instance.GetWorld().HitBlock(point, 1);
                 DestroyProjectile();
             }
-            
-            // if (collision.gameObject.CompareTag("Block"))
-            // {
-            //     if (collision.gameObject.TryGetComponent<DamagedBlock>(out var damagedBlockScript))
-            //     {
-            //         damagedBlockScript.DecreaseHP(TotalDamage);
-            //     }
-            //     else
-            //     {
-            //         throw new Exception(Message.CantFindBlockTagInDamagedBlock);
-            //     }
-            // }
         }
     }
 }

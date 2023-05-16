@@ -10,7 +10,7 @@ public class WorldGeneratorEditor : Editor
     {
         WorldManager worldGenerator = (WorldManager)target;
 
-        if(DrawDefaultInspector())  // editorÀÇ °ªÀÌ º¯°æµÇ¾î¼­ ´Ù½Ã ±×·ÁÁú ¶§
+        if(DrawDefaultInspector())  // editorì˜ ê°’ì´ ë³€ê²½ë˜ì–´ì„œ ë‹¤ì‹œ ê·¸ë ¤ì§ˆ ë•Œ
         {
             if(worldGenerator.AutoUpdate)
             {
