@@ -128,6 +128,7 @@ MonoBehaviour:
   _NetworkSynergyList: 
   synergyList:
   - {fileID: 11400000, guid: 4dd813c273201e3499f90b7ed0bdda15, type: 2}
+  _catController: {fileID: 0}
 --- !u!114 &3146828219027978989
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -232,6 +233,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53efe435d546b5045a189f8bd3d30072, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animator: {fileID: 6310122378078074195}
 --- !u!1001 &6252918920177657081
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -265,7 +267,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4732477241362522, guid: f8033fd2a3830384a85381061c2e16df, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.9
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4732477241362522, guid: f8033fd2a3830384a85381061c2e16df, type: 3}
       propertyPath: m_LocalPosition.z
@@ -318,6 +320,12 @@ PrefabInstance:
 --- !u!4 &6257193720318471331 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4732477241362522, guid: f8033fd2a3830384a85381061c2e16df,
+    type: 3}
+  m_PrefabInstance: {fileID: 6252918920177657081}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &6310122378078074195 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 95941727656087978, guid: f8033fd2a3830384a85381061c2e16df,
     type: 3}
   m_PrefabInstance: {fileID: 6252918920177657081}
   m_PrefabAsset: {fileID: 0}

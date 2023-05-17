@@ -471,13 +471,11 @@ namespace Network
         #endregion
 
         #region 애니메이션 관련 변수
-
-        [SerializeField]
         private CatController _catController;
-        
-        private Animator _animator;
         [Networked(OnChanged = nameof(UpdatesAnimation))] 
         private int AnimationIdx { get; set; }
+        [Networked(OnChanged = nameof(UpdatesRotate))] 
+        private Quaternion CatRotate { get; set; }
         #endregion
 
         private CanvasManager _canvasManager;
@@ -502,10 +500,8 @@ namespace Network
             
             _baseCharStat = new BaseStat<CharStat>(1, 1);
             _characterController = GetComponent<CharacterController>();
-            
-            _characterTransform = transform.Find("Cat");
-            _animator = _characterTransform.GetComponentInChildren<Animator>();
-            
+            _catController = GetComponentInChildren<CatController>();
+
             _target = GameObject.Find("허수아비");
             
             _gameManager = GameManager.Instance;
@@ -600,6 +596,8 @@ namespace Network
             {
                 CharacterMove();
             }
+
+            CatRotate = _catController.Rotation;
             
             var hitColliders = Physics.OverlapSphere(transform.position, 10f, (int)Layer.Enemy);
             foreach (var hitCollider in hitColliders)
@@ -630,22 +628,22 @@ namespace Network
         
         private void UpdatesAnimation()
         {
-            switch (AnimationIdx)
-            {
-                case 8:
-                    _animator.Rebind();
-                    _animator.Update(0f);
-                    break;
-                case 18:
-                    _animator.SetFloat("walkSpeed", _baseCharStat.GetStat(CharStat.Speed).Total * 0.5f);
-                    break;
-                default:
-                    break;
-            }
-
-            _animator.SetInteger("animation", AnimationIdx);
+            _catController.UpdateAnimation(AnimationIdx, _baseCharStat.GetStat(CharStat.Speed).Total * 0.5f);
         }
 
+        private static void UpdatesRotate(Changed<NetworkPlayer> changed)
+        {
+            changed.Behaviour.UpdatesRotate();
+        }
+        
+        private void UpdatesRotate()
+        {
+            if (!HasStateAuthority)
+            {
+                _catController.UpdateRotation(CatRotate);
+            }
+        }
+        
         private void CharacterMove()
         {
             var h = _reverseHorizontalMove ? -_joystick.Horizontal : _joystick.Horizontal;
@@ -662,8 +660,7 @@ namespace Network
                 dodgeDir.z *= _dodgeForce;
                 
                 _characterController.Move(dodgeDir * Runner.DeltaTime);
-
-                LerpLookRotation(_characterTransform, _lastMoveDir, 18f);
+                _catController.RotateModel(_lastMoveDir, 18f);
             }
             else
             {
@@ -718,7 +715,9 @@ namespace Network
             }
 
             if (_isWalk)
+            {
                 RotateCharacterMoveDir(h, v);
+            }
         }
 
         public void Dodge()
@@ -772,7 +771,7 @@ namespace Network
             
             if (characterDir.magnitude < 0.5f)
             {
-                characterDir = _target.transform.position - _characterTransform.position;
+                characterDir = _target.transform.position - _catController.Position;
                 characterDir.y = 0;
             }
 
@@ -781,7 +780,7 @@ namespace Network
                 characterRotateSpeed = 3f;
             }
 
-            LerpLookRotation(_characterTransform, characterDir, characterRotateSpeed);
+            _catController.RotateModel(characterDir, characterRotateSpeed);
         }
 
         private void LerpLookRotation(Transform origin, Vector3 dir, float speed)
