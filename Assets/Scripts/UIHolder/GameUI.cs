@@ -67,89 +67,89 @@ namespace UIHolder
             
             resetPositionButton.onClick.AddListener(() =>
             {
-                GameManager.Instance.NetworkManager.LocalCharacter.InitPosition();
+                GameManager.Instance.NetworkManager.PlayerCharacter.InitPosition();
             });
             
             ultButton.onClick.AddListener(() =>
             {
-                GameManager.Instance.NetworkManager.LocalCharacter.GetUlt();
+                GameManager.Instance.NetworkManager.PlayerCharacter.GetUlt();
             });
             
             attackButton.onClick.AddListener(() =>
             {
-                GameManager.Instance.NetworkManager.LocalCharacter.ToggleShooting();
+                GameManager.Instance.NetworkManager.PlayerCharacter.ToggleShooting();
             });
             
             vibrateButton.onClick.AddListener(() =>
             {
-                GameManager.Instance.NetworkManager.LocalCharacter.VibrateHeartBeat();
+                GameManager.Instance.NetworkManager.PlayerCharacter.VibrateHeartBeat();
             });
 
             dodgeButton.onClick.AddListener(() =>
             {
-                GameManager.Instance.NetworkManager.LocalCharacter.Dodge();
+                GameManager.Instance.NetworkManager.PlayerCharacter.Dodge();
             });
 
             /* Settings */
             // speed
             settings.SpeedUp.onClick.AddListener(() =>
             {
-                settings.speedText.text = GameManager.Instance.NetworkManager.LocalCharacter.IncreaseSpeed();
+                settings.speedText.text = GameManager.Instance.NetworkManager.PlayerCharacter.IncreaseSpeed();
             });
             
             settings.SpeedDown.onClick.AddListener(() =>
             {
-                settings.speedText.text = GameManager.Instance.NetworkManager.LocalCharacter.DecreaseSpeed();
+                settings.speedText.text = GameManager.Instance.NetworkManager.PlayerCharacter.DecreaseSpeed();
             });
             
             // jump
             settings.JumpUp.onClick.AddListener(() =>
             {
-                settings.jumpText.text = GameManager.Instance.NetworkManager.LocalCharacter.IncreaseJump();
+                settings.jumpText.text = GameManager.Instance.NetworkManager.PlayerCharacter.IncreaseJump();
             });
             
             settings.JumpDown.onClick.AddListener(() =>
             {
-                settings.jumpText.text = GameManager.Instance.NetworkManager.LocalCharacter.DecreaseJump();
+                settings.jumpText.text = GameManager.Instance.NetworkManager.PlayerCharacter.DecreaseJump();
             });
             
             // dodge
             settings.DodgeUp.onClick.AddListener(() =>
             {
-                settings.dodgeText.text = GameManager.Instance.NetworkManager.LocalCharacter.IncreaseDodge();
+                settings.dodgeText.text = GameManager.Instance.NetworkManager.PlayerCharacter.IncreaseDodge();
             });
             
             settings.DodgeDown.onClick.AddListener(() =>
             {
-                settings.dodgeText.text = GameManager.Instance.NetworkManager.LocalCharacter.DecreaseDodge();
+                settings.dodgeText.text = GameManager.Instance.NetworkManager.PlayerCharacter.DecreaseDodge();
             });
             
             // shake sensitivity
             settings.ShakeSensitivityUp.onClick.AddListener(() =>
             {
-                settings.shakeSensitivityText.text = GameManager.Instance.NetworkManager.LocalCharacter.IncreaseShakeSensitivity();
+                settings.shakeSensitivityText.text = GameManager.Instance.NetworkManager.PlayerCharacter.IncreaseShakeSensitivity();
             });
             
             settings.ShakeSensitivityDown.onClick.AddListener(() =>
             {
-                settings.shakeSensitivityText.text = GameManager.Instance.NetworkManager.LocalCharacter.DecreaseShakeSensitivity();
+                settings.shakeSensitivityText.text = GameManager.Instance.NetworkManager.PlayerCharacter.DecreaseShakeSensitivity();
             });
             
             // shoot distance
             settings.ShootDistanceUp.onClick.AddListener(() =>
             {
-                settings.shootDistanceText.text = GameManager.Instance.NetworkManager.LocalCharacter.IncreaseShootDistance();
+                settings.shootDistanceText.text = GameManager.Instance.NetworkManager.PlayerCharacter.IncreaseShootDistance();
             });
             
             settings.ShootDistanceDown.onClick.AddListener(() =>
             {
-                settings.shootDistanceText.text = GameManager.Instance.NetworkManager.LocalCharacter.DecreaseShootDistance();
+                settings.shootDistanceText.text = GameManager.Instance.NetworkManager.PlayerCharacter.DecreaseShootDistance();
             });
             
             // reverse horizontal moving
             settings.ReverseHorizontalMove.onValueChanged.AddListener( state => 
             {
-                GameManager.Instance.NetworkManager.LocalCharacter.ToggleReverseHorizontalMove(state);
+                GameManager.Instance.NetworkManager.PlayerCharacter.ToggleReverseHorizontalMove(state);
             });
         }
         

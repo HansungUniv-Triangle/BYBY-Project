@@ -40,7 +40,7 @@ namespace Network
         [Networked] protected NetworkBool IsHit { get; set; }
         [Networked] public float Damage { get; set; }
         public float DamageSave;
-         
+
         // 초기화
         public void Initialized(NetworkProjectileHolder holder)
         {
@@ -62,6 +62,11 @@ namespace Network
 
         public override void Spawned()
         {
+            if (!HasStateAuthority)
+            {
+                gameObject.layer = LayerMask.NameToLayer("Enemy");
+            }
+            
             GameManager.Instance.NetworkManager.AddNetworkObjectInList(Object);
         }
 
@@ -83,6 +88,10 @@ namespace Network
             
             if (IsExpirationProjectile())
             {
+                if (_projectileHolder.isMainWeapon && Distance > MaxRange)
+                {
+                    GameManager.Instance.CheckBulletBetweenEnemyAndMe(transform.position);
+                }
                 DestroyProjectile();
             }
         }

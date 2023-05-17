@@ -20,9 +20,10 @@ namespace Network
             public NetworkBool IsReady;
             public NetworkBool IsDoneLoadScene;
             public Color PlayerColor;
+            public NetworkId CharacterID;
         }
 
-        public NetworkPlayer LocalCharacter { get; private set; }
+        public NetworkPlayer PlayerCharacter { get; private set; }
     }
 
     // 룸 데이터 기반 UI 업데이트
@@ -136,7 +137,7 @@ namespace Network
             }
         }
         
-        private PlayerRef _defeatRef;
+        private PlayerRef _winnerRef;
         private RoundState _round = RoundState.None;
         public RoundState GameRoundState => _round;
         private int roundNum = 0;
@@ -158,14 +159,15 @@ namespace Network
                     _round = RoundState.RoundStart;
                     break;
                 case RoundState.RoundStart:
-                    _round = RoundState.RoundEnd;
+                    _round = RoundState.RoundEndResult;
                     break;
-                case RoundState.RoundEnd:
+                case RoundState.RoundEndResult:
+                    _round = RoundState.RoundEndAnalysis;
+                    break;
+                case RoundState.RoundEndAnalysis:
                     _round = RoundState.SynergySelect;
                     break;
                 case RoundState.GameEnd:
-                    // 게임 방 나가는 코드를 넣으쇼
-                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -191,16 +193,20 @@ namespace Network
                     IncreaseRound();
                     SetTimerSec(10f);
                     break;
-                case RoundState.RoundEnd:
-                    ViewRoundWinner();
+                case RoundState.RoundEndResult:
+                    ViewRoundResult();
                     SetTimerSec(5f);
+                    break;
+                case RoundState.RoundEndAnalysis:
+                    ViewRoundAnalysis();
+                    SetTimerSec(10f);
                     break;
                 case RoundState.GameEnd: // 게임 나가는 코드 넣어야해
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
-
+        
         private void FixedUpdate()
         {
             switch (_round)
@@ -208,22 +214,15 @@ namespace Network
                 case RoundState.None:
                     break;
                 case RoundState.GameStart:
+                case RoundState.WaitToStart:
+                case RoundState.RoundStart:
+                case RoundState.RoundEndResult:
+                case RoundState.RoundEndAnalysis:
+                case RoundState.GameEnd:
                     UpdateTimerInGame();
                     break;
                 case RoundState.SynergySelect:
                     UpdateSynergySelect();
-                    break;
-                case RoundState.WaitToStart:
-                    UpdateTimerInGame();
-                    break;
-                case RoundState.RoundStart:
-                    UpdateTimerInGame();
-                    break;
-                case RoundState.RoundEnd:
-                    UpdateTimerInGame();
-                    break;
-                case RoundState.GameEnd:
-                    UpdateTimerInGame();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -262,7 +261,6 @@ namespace Network
         {
             _gameUI.gameUIGroup.SetActive(false);
             SynergyPageManager.SetActiveSynergyPanel(true);
-            
             SynergyPageManager.MakeSynergyPage();
         }
 
@@ -270,7 +268,6 @@ namespace Network
         {
             _gameUI.gameUIGroup.SetActive(true);
             SynergyPageManager.SetActiveSynergyPanel(false);
-
             GameUI.roundText.text = $"시너지 선택 완료! 기다리세요";
         }
         
@@ -280,30 +277,37 @@ namespace Network
             GameUI.roundText.text = $"ROUND {roundNum}";
         }
 
-        private void ViewRoundWinner()
+        private void ViewRoundResult()
         {
-            _defeatRef = Runner.LocalPlayer;
-            foreach (var (key, value) in RoomPlayerList)
+            _winnerRef = Runner.LocalPlayer;
+
+            if (RoomPlayerList.TryGet(_winnerRef, out var data))
             {
-                // 임시로 플레이어 이름 나오게 해놨음
-                if (key == _defeatRef)
-                {
-                    GameUI.roundText.text = $"{value.NickName}님이 승리하셨습니다!";
-                    return;
-                }
+                GameUI.roundText.text = $"{data.NickName}님이 승리하셨습니다!";
             }
+        }
+        
+        private void ViewRoundAnalysis()
+        {
+            var info = GameManager.Instance.GetBehaviourEventCount();
+            var message = "";
+
+            foreach (var (key, value) in info)
+            {
+                message += $"{key.ToString()} : {value}\n";
+            }
+
+            GameUI.roundText.text = message;
+            GameManager.Instance.ResetBehaviourEventCount();
         }
         
         private void ViewGameWinner()
         {
-            _defeatRef = Runner.LocalPlayer;
-            foreach (var (key, value) in RoomPlayerList)
+            _winnerRef = Runner.LocalPlayer;
+            
+            if (RoomPlayerList.TryGet(_winnerRef, out var data))
             {
-                if (key != _defeatRef)
-                {
-                    GameUI.roundText.text = $"{value.NickName}님이 최종 승리하셨습니다!";
-                    return;
-                }
+                GameUI.roundText.text = $"{data.NickName}님이 최종 승리하셨습니다!";
             }
         }
     }
@@ -380,7 +384,7 @@ namespace Network
         {
             Vector3 spawnPosition = new Vector3((playerRef.RawEncoded % Runner.Config.Simulation.DefaultPlayers) + 20, 30, 10);
             NetworkObject networkPlayerObject = Runner.Spawn(_playerPrefab, spawnPosition, Quaternion.identity, playerRef);
-            LocalCharacter = networkPlayerObject.GetComponent<NetworkPlayer>();
+            PlayerCharacter = networkPlayerObject.GetComponent<NetworkPlayer>();
 
             var mainWeapon = GameManager.Instance.SelectWeapon;
             NetworkObject mainWeaponSpawn = Runner.Spawn(mainWeapon, spawnPosition + Vector3.right + Vector3.up, Quaternion.identity, playerRef);
@@ -390,22 +394,24 @@ namespace Network
             NetworkObject subWeaponSpawn = Runner.Spawn(subWeapon, spawnPosition + Vector3.up * 2, Quaternion.identity, playerRef);
             subWeaponSpawn.transform.SetParent(networkPlayerObject.transform);
             
-            LocalCharacter.SetGunPos(mainWeaponSpawn.transform);
+            PlayerCharacter.SetGunPos(mainWeaponSpawn.transform);
+
+            RPCAddCharacterID(Runner.LocalPlayer, networkPlayerObject);
         }
         
         public void AddBlockHitData(Vector3 pos, int damage)
         {
-            LocalCharacter.AddBlockHitData(pos, 0, damage);
+            PlayerCharacter.AddBlockHitData(pos, 0, damage);
         }
         
         public void AddBlockHitData(Vector3 pos, int radius, int damage)
         {
-            LocalCharacter.AddBlockHitData(pos, radius, damage);
+            PlayerCharacter.AddBlockHitData(pos, radius, damage);
         }
         
-        public void AddCharacterHitData(NetworkObject networkObject)
+        public void AddCharacterHitData(NetworkObject networkObject, int damage)
         {
-            LocalCharacter.AddCharacterHitData(networkObject);
+            PlayerCharacter.AddCharacterHitData(networkObject, damage);
         }
 
         private void InitialGame()
@@ -486,6 +492,20 @@ namespace Network
                 throw new Exception("플레이어 준비, 해당 플레이어 리스트에 없음");
             }
         }
+        
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        private void RPCAddCharacterID(PlayerRef playerRef, NetworkId networkId)
+        {
+            if (RoomPlayerList.TryGet(playerRef, out RoomPlayerData roomPlayerData))
+            {
+                roomPlayerData.CharacterID = networkId;
+                RoomPlayerList.Set(playerRef, roomPlayerData);
+            }
+            else
+            {
+                throw new Exception("플레이어 캐릭터 넣기, 해당 플레이어 리스트에 없음");
+            }
+        }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
         private void RPCLoadScene()
@@ -503,7 +523,14 @@ namespace Network
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         private void RPCSendDefeat(PlayerRef playerRef)
         {
-            _defeatRef = playerRef;
+            foreach (var (key, _) in RoomPlayerList)
+            {
+                if (key != playerRef)
+                {
+                    _winnerRef = key;
+                    return;
+                }
+            }
         }
         
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]

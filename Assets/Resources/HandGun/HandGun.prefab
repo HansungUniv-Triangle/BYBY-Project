@@ -51,7 +51,7 @@ MonoBehaviour:
   _interpolationDataSource: 0
   _projectileObject: {fileID: 731377849170397947, guid: 2a259965b1266844f92f128fef025bf9,
     type: 3}
-  target: {x: 0, y: 0, z: 0}
+  isMainWeapon: 1
 --- !u!114 &5565578386045293377
 MonoBehaviour:
   m_ObjectHideFlags: 0

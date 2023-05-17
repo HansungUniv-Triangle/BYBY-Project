@@ -100,7 +100,7 @@ public class PuppetMove : MonoBehaviour
     {
         if (target == null)
         {
-            target = GameManager.Instance.NetworkManager.LocalCharacter.gameObject;
+            target = GameManager.Instance.NetworkManager.PlayerCharacter.gameObject;
         }
         else
         {

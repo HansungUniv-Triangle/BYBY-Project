@@ -22,6 +22,7 @@ public class SynergyPageManager : MonoBehaviour
     private RectTransform[] _spawnPoint;
 
     private RectTransform _thisRectTransform;
+    private float _canvasHeight;
 
     private void Awake() 
     {
@@ -32,6 +33,8 @@ public class SynergyPageManager : MonoBehaviour
 
         _spawnPoint = _spawnPointOrigin.GetComponentsInChildren<RectTransform>();
         _thisRectTransform = gameObject.GetComponent<RectTransform>();
+        _canvasHeight = _thisRectTransform.rect.height;
+        _thisRectTransform.DOAnchorPosY(_canvasHeight, 0);
     }
 
     private void Start()
@@ -50,7 +53,7 @@ public class SynergyPageManager : MonoBehaviour
         else
         {
             DOTween.Sequence()
-                .Append(_thisRectTransform.DOAnchorPosY(1920, 1f))
+                .Append(_thisRectTransform.DOAnchorPosY(_canvasHeight, 1f))
                 .OnComplete(() => synergyPanel.SetActive(false));
         }
     }

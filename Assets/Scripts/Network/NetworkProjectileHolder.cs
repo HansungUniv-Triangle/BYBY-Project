@@ -22,6 +22,8 @@ namespace Network
         protected bool IsDoneShootAction;
         protected int RemainBullet;
         protected TextMeshProUGUI BulletText;
+
+        public bool isMainWeapon = false;
         
         [Networked] protected TickTimer delay { get; set; }
 
@@ -49,26 +51,20 @@ namespace Network
                 Debug.LogError("Holder 연결 에러");
             }
             
-            RemainBullet = (int)GetWeaponStat(WeaponStat.Bullet).Total;
+            if (isMainWeapon)
+            {
+                RemainBullet = (int)GetWeaponStat(WeaponStat.Bullet).Total;
+            }
             //BulletText = (GameManager.Instance.UIHolder as GameUI).bulletText;
         }
 
         public override void FixedUpdateNetwork()
         {
             if (!HasInputAuthority) return;
-            
-            switch (GameManager.Instance.NetworkManager.GameRoundState)
+
+            if (!HasInputAuthority || GameManager.Instance.NetworkManager.GameRoundState != RoundState.RoundStart)
             {
-                case RoundState.RoundStart:
-                    break;
-                case RoundState.None:
-                case RoundState.GameStart:
-                case RoundState.SynergySelect:
-                case RoundState.WaitToStart:
-                case RoundState.RoundEnd:
-                case RoundState.GameEnd:
-                default:
-                    return;
+                return;
             }
             
             Attack();
@@ -153,6 +149,8 @@ namespace Network
             var time = GetWeaponStat(WeaponStat.Reload).Total;
             var separateTime = (50 + time) / (50 * max);
             
+            GameManager.Instance.AddBehaviourEventCount(BehaviourEvent.장전, (int)(max * separateTime));
+            
             for (int i = 0; i < max; i++)
             {
                 reloadSequence
@@ -179,7 +177,7 @@ namespace Network
         
         protected Stat<CharStat> GetCharStat(CharStat stat)
         {
-            var localCharacter = GameManager.Instance.NetworkManager.LocalCharacter;
+            var localCharacter = GameManager.Instance.NetworkManager.PlayerCharacter;
             return localCharacter.GetCharStat(stat);
         }
         

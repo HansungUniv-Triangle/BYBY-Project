@@ -11,6 +11,8 @@ namespace Network
             {
                 var speedValue = GetCharStat(CharStat.Speed).Total; 
                 
+                GameManager.Instance.shootCount += 1;
+                
                 DOTween.Sequence()
                     .OnStart(() => RemainBullet--)
                     .AppendCallback(() => SpawnProjectile(WeaponTransform))

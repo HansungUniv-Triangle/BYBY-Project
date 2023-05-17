@@ -71,7 +71,8 @@ namespace Types
         SynergySelect, 
         WaitToStart,
         RoundStart,
-        RoundEnd,
+        RoundEndResult,
+        RoundEndAnalysis,
         GameEnd,
     }
     
@@ -80,6 +81,17 @@ namespace Types
         Common,
         UnCommon,
         Rare
+    }
+    
+    public enum BehaviourEvent
+    {
+        피격,
+        회피,
+        명중,
+        피해,
+        특화,
+        파괴,
+        장전
     }
 }
 

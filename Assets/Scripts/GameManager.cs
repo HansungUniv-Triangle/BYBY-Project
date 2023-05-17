@@ -6,8 +6,7 @@ using Network;
 using Types;
 using UnityEngine;
 using Utils;
-using UIHolder;
-using UnityEngine.Serialization;
+using NetworkPlayer = Network.NetworkPlayer;
 using Random = UnityEngine.Random;
 
 public class GameManager : Singleton<GameManager>
@@ -44,6 +43,10 @@ public class GameManager : Singleton<GameManager>
 
     public PlayerBehaviorAnalyzer PlayerBehaviorAnalyzer;
 
+    private Dictionary<BehaviourEvent, int> behaviourEventCount;
+    public int shootCount;
+    public int hitCount;
+
     protected override void Initiate()
     {
         SynergyList = Resources.LoadAll<Synergy>(Path.Synergy).ToList();
@@ -53,6 +56,52 @@ public class GameManager : Singleton<GameManager>
     private void Start()
     {
         PlayerBehaviorAnalyzer = new PlayerBehaviorAnalyzer();
+        ResetBehaviourEventCount();
+    }
+
+    public void ResetBehaviourEventCount()
+    {
+        shootCount = 0;
+        hitCount = 0;
+        behaviourEventCount = new Dictionary<BehaviourEvent, int>();
+        foreach (BehaviourEvent value in Enum.GetValues(typeof(BehaviourEvent)))
+        {
+            behaviourEventCount[value] = 0;
+        }
+    }
+
+    public void AddBehaviourEventCount(BehaviourEvent key, int value)
+    {
+        behaviourEventCount[key] += value;
+    }
+
+    public Dictionary<BehaviourEvent, int> GetBehaviourEventCount()
+    {
+        behaviourEventCount[BehaviourEvent.회피] -= behaviourEventCount[BehaviourEvent.피격];
+        behaviourEventCount[BehaviourEvent.명중] = (int)(hitCount / (float)shootCount * 100f);
+        behaviourEventCount[BehaviourEvent.특화] = 50;
+        return behaviourEventCount;
+    }
+    
+    public void CheckBulletBetweenEnemyAndMe(Vector3 bulletPosition)
+    {
+        var player = NetworkPlayer.PlayerCharacter;
+        var enemy = NetworkPlayer.EnemyCharacter;
+
+        if (player == null || enemy == null)
+        {
+            return;
+        }
+
+        if (!(bulletPosition.x > Mathf.Min(enemy.transform.position.x, player.transform.position.x)) || !(bulletPosition.x < Mathf.Max(enemy.transform.position.x, player.transform.position.x)))
+        {
+            return;
+        }
+        
+        if (bulletPosition.y > Mathf.Min(enemy.transform.position.y, player.transform.position.y) && bulletPosition.y < Mathf.Max(enemy.transform.position.y, player.transform.position.y))
+        {
+            behaviourEventCount[BehaviourEvent.파괴] += 1;
+        }
     }
 
     public void SetNetworkManager(NetworkManager networkManager)
@@ -236,30 +285,19 @@ public class StatCorrelation<T> where T : Enum
     }
 }
 
-public enum BehaviourEvent
-{
-    피격,
-    회피,
-    명중,
-    피해,
-    특화,
-    파괴,
-    장전
-}
-
 public class PlayerBehaviorAnalyzer
 {
     public readonly StatCorrelationList<CharStat> CharStats;
     public readonly StatCorrelationList<WeaponStat> WeaponStats;
     
     public readonly Dictionary<BehaviourEvent, Enum[]> BehaviourEventStats = new() {
-        { BehaviourEvent.피격, new Enum[] {CharStat.Health, CharStat.Armor}},
-        { BehaviourEvent.회피, new Enum[] {CharStat.Speed, CharStat.Rolling}},
-        { BehaviourEvent.명중, new Enum[] {CharStat.Calm, WeaponStat.Velocity}},
-        { BehaviourEvent.피해, new Enum[] {WeaponStat.Damage, WeaponStat.Interval} },
-        { BehaviourEvent.특화, new Enum[] {WeaponStat.Special} },
-        { BehaviourEvent.파괴, new Enum[] {WeaponStat.Range} },
-        { BehaviourEvent.장전, new Enum[] {WeaponStat.Bullet, WeaponStat.Reload} },
+        { BehaviourEvent.피격, new Enum[] { CharStat.Health, CharStat.Armor} },
+        { BehaviourEvent.회피, new Enum[] { CharStat.Speed, CharStat.Rolling} },
+        { BehaviourEvent.명중, new Enum[] { CharStat.Calm, WeaponStat.Velocity} },
+        { BehaviourEvent.피해, new Enum[] { WeaponStat.Damage, WeaponStat.Interval} },
+        { BehaviourEvent.특화, new Enum[] { WeaponStat.Special} },
+        { BehaviourEvent.파괴, new Enum[] { WeaponStat.Range} },
+        { BehaviourEvent.장전, new Enum[] { WeaponStat.Bullet, WeaponStat.Reload } },
     };
     
     public Dictionary<BehaviourEvent, int> BehaviourEventCountPlayer = new() {

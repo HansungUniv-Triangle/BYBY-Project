@@ -66,9 +66,7 @@ public class PlayerCamera : MonoBehaviour
 
     private void CameraMovement()
     {
-        //_rotationSpeed = _networkPlayer.GetCharStat(CharStat.Speed).Total;
-
-        if (NetworkPlayer.isCameraFocused)
+        if (_networkPlayer.IsCameraFocused)
         {
             transform.position = Vector3.Lerp(transform.position, _cameraFocusPos.position, Time.deltaTime * _moveSpeed);
             transform.rotation = Quaternion.Lerp(transform.rotation, _cameraFocusPos.rotation, Time.deltaTime * _rotationSpeed);

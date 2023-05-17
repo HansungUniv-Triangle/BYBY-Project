@@ -36,7 +36,7 @@ namespace Network
             {
                 if (Object.HasStateAuthority)
                 {
-                    GameManager.Instance.NetworkManager.AddCharacterHitData(Object);
+                    GameManager.Instance.NetworkManager.AddCharacterHitData(Object, (int)Damage);
                     IsHit = true;
                 }
             }

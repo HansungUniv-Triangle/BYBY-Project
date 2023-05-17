@@ -186,3 +186,4 @@ MonoBehaviour:
   _interpolationDataSource: 0
   _projectileObject: {fileID: 731377849170397947, guid: e45726408c37aa140bf2bb2b7cc75c1f,
     type: 3}
+  isMainWeapon: 1
