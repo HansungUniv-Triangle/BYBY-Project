@@ -20,6 +20,7 @@ namespace Network
             public NetworkBool IsReady;
             public NetworkBool IsDoneLoadScene;
             public Color PlayerColor;
+            public int Score;
         }
 
         public NetworkPlayer PlayerCharacter { get; private set; }
@@ -161,46 +162,101 @@ namespace Network
             }
         }
         
-        private PlayerRef _winnerRef;
-        private RoundState _round = RoundState.None;
-        public RoundState GameRoundState => _round;
-        private int roundNum = 0;
+        // 승리 판정
+        private PlayerRef _roundWinnerRef;
+        private PlayerRef _finalWinnerRef;
+        public bool IsPlayerWin => Runner.LocalPlayer == _roundWinnerRef;
+
+        // 라운드 관련
+        public RoundState GameRoundState => (RoundState)NetworkRoundState;
+        [Networked(OnChanged = nameof(UpdateRoundState))] 
+        private int NetworkRoundState { get; set; }
+        private int _roundNum;
         
-        private void ChangeRound(RoundState roundState)
+        private const int MaxRound = 5;
+        private const int WinRound = MaxRound / 2 + 1;
+        
+        private PlayerCamera _playerCamera;
+        private PlayerCamera PlayerCamera
         {
-            switch (roundState)
+            get
+            {
+                if (_playerCamera is not null)
+                {
+                    return _playerCamera;
+                }
+                
+                if (Camera.main is not null)
+                {
+                    _playerCamera = Camera.main.GetComponent<PlayerCamera>();
+                    return _playerCamera;
+                }
+
+                throw new Exception("카메라가 없음");
+            }
+        }
+        
+        public static void UpdateRoundState(Changed<NetworkManager> changed)
+        {
+            changed.Behaviour.UpdateRoundState();
+        }
+
+        private void UpdateRoundState()
+        {
+            InitialRound();
+        }
+
+        private void ChangeRound()
+        {
+            RoundState roundState;
+            
+            switch (GameRoundState)
             {
                 case RoundState.None:
-                    _round = RoundState.GameStart;
+                    roundState = RoundState.GameStart;
                     break;
                 case RoundState.GameStart:
-                    _round = RoundState.SynergySelect;
+                    roundState = RoundState.SynergySelect;
                     break;
                 case RoundState.SynergySelect:
-                    _round = RoundState.WaitToStart;
+                    roundState = RoundState.WaitToStart;
                     break;
                 case RoundState.WaitToStart:
-                    _round = RoundState.RoundStart;
+                    roundState = RoundState.RoundStart;
                     break;
                 case RoundState.RoundStart:
-                    _round = RoundState.RoundEndResult;
+                    roundState = RoundState.RoundEndResult;
                     break;
                 case RoundState.RoundEndResult:
-                    _round = RoundState.RoundEndAnalysis;
+                    roundState = RoundState.RoundEndAnalysis;
                     break;
                 case RoundState.RoundEndAnalysis:
-                    _round = RoundState.SynergySelect;
+                    roundState = RoundState.SynergySelect;
+                    foreach (var (key, value) in RoomPlayerList)
+                    {
+                        if (value.Score == WinRound)
+                        {
+                            _finalWinnerRef = key;
+                            roundState = RoundState.GameEnd;
+                        }
+                    }
                     break;
                 case RoundState.GameEnd:
+                    roundState = RoundState.None;
+                    DisconnectingServer();
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            StartRound();
+
+            NetworkRoundState = (int)roundState;
         }
         
-        private void StartRound()
+        private void InitialRound()
         {
-            switch (_round)
+            RoundChangeTimer = TickTimer.None;
+            
+            switch (GameRoundState)
             {
                 case RoundState.GameStart:
                     SetTimerSec(5f);
@@ -225,7 +281,10 @@ namespace Network
                     ViewRoundAnalysis();
                     SetTimerSec(10f);
                     break;
-                case RoundState.GameEnd: // 게임 나가는 코드 넣어야해
+                case RoundState.GameEnd:
+                    ViewGameWinner();
+                    SetTimerSec(30f);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -233,7 +292,7 @@ namespace Network
         
         private void FixedUpdate()
         {
-            switch (_round)
+            switch (GameRoundState)
             {
                 case RoundState.None:
                     break;
@@ -256,8 +315,23 @@ namespace Network
             
             if (RoundChangeTimer.Expired(Runner))
             {
-                RoundChangeTimer = TickTimer.None;
-                RPCChangeRound(_round);
+                if (GameRoundState == RoundState.RoundStart)
+                {
+                    if (PlayerCharacter is null || EnemyCharacter is null)
+                    {
+                        SetWinner(Runner.LocalPlayer);
+                    }
+                    
+                    if (PlayerCharacter.GetNowHp() > EnemyCharacter.GetNowHp())
+                    {
+                        SetWinner(PlayerCharacter.Object.StateAuthority);
+                    }
+                    else
+                    {
+                        SetWinner(EnemyCharacter.Object.StateAuthority);
+                    }
+                }
+                ChangeRound();
             }
         }
 
@@ -280,16 +354,47 @@ namespace Network
             
             RoundChangeTimer = TickTimer.CreateFromSeconds(Runner, sec);
         }
+        
+        public void SetWinner(PlayerRef winnerRef)
+        {
+            if (GameRoundState == RoundState.RoundStart)
+            {
+                _roundWinnerRef = winnerRef;
+                if (RoomPlayerList.TryGet(winnerRef, out var data))
+                {
+                    data.Score++;
+                    RoomPlayerList.Set(winnerRef, data);
+                    
+                    if (winnerRef == Runner.LocalPlayer)
+                    {
+                        _gameUI.playerScoreText.text = data.Score.ToString();
+                    }
+                    else
+                    {
+                        _gameUI.enemyScoreText.text = data.Score.ToString();
+                    }
+                }
+                ChangeRound();
+            }
+        }
 
+        /// <summary>
+        /// 시너지 선택 할 때 화면
+        /// </summary>
         private void ViewSynergySelect()
         {
+            PlayerCamera.ChangeCameraMode(CameraMode.None);
             _gameUI.gameUIGroup.SetActive(false);
             SynergyPageManager.SetActiveSynergyPanel(true);
             SynergyPageManager.MakeSynergyPage();
         }
 
+        /// <summary>
+        /// 시너시 선택 후 게임 시작 전 잠시 대기
+        /// </summary>
         private void ViewWait()
         {
+            PlayerCamera.ChangeCameraMode(CameraMode.Game);
             _gameUI.gameUIGroup.SetActive(true);
             SynergyPageManager.SetActiveSynergyPanel(false);
             PlayerCharacter.InitialStatus();
@@ -298,27 +403,37 @@ namespace Network
         
         private void IncreaseRound()
         {
-            roundNum++;
-            GameUI.roundText.text = $"ROUND {roundNum}";
+            _roundNum++;
+            GameUI.roundText.text = $"ROUND {_roundNum}";
         }
 
         private void ViewRoundResult()
         {
-            _winnerRef = Runner.LocalPlayer;
+            PlayerCamera.ChangeCameraMode(CameraMode.Winner);
+            
             PlayerCharacter.ConversionBehaviorData();
-
-            if (RoomPlayerList.TryGet(_winnerRef, out var data))
+            PlayerCharacter.Healing(999f);
+            
+            if (RoomPlayerList.TryGet(_roundWinnerRef, out var data))
             {
                 GameUI.roundText.text = $"{data.NickName}님이 승리하셨습니다!";
             }
         }
-        
+
         private void ViewRoundAnalysis()
         {
+            PlayerCamera.ChangeCameraMode(CameraMode.Player);
+            
+            if (EnemyCharacter is null)
+            {
+                GameManager.Instance.ResetBehaviourEventCount();
+                return;
+            }
+            
             var message = "";
             var playerData = PlayerCharacter.CharacterBehaviorData;
             var enemyData = EnemyCharacter.CharacterBehaviorData;
-
+            
             message += $"피격 : {playerData.HitRate} vs {enemyData.HitRate} : 피격\n";
             message += $"회피 : {playerData.DodgeRate} vs {enemyData.DodgeRate} : 회피\n";
             message += $"명중 : {playerData.Accuracy} vs {enemyData.Accuracy} : 명중\n";
@@ -333,9 +448,9 @@ namespace Network
         
         private void ViewGameWinner()
         {
-            _winnerRef = Runner.LocalPlayer;
+            PlayerCamera.ChangeCameraMode(CameraMode.Player);
             
-            if (RoomPlayerList.TryGet(_winnerRef, out var data))
+            if (RoomPlayerList.TryGet(_finalWinnerRef, out var data))
             {
                 GameUI.roundText.text = $"{data.NickName}님이 최종 승리하셨습니다!";
             }
@@ -445,9 +560,11 @@ namespace Network
 
         private void InitialGame()
         {
+            NetworkRoundState = 0;
+            _roundNum = 0;
             WorldManager.Instance.GeneratorMap(Seed);
             SpawnPlayerCharacter(Runner.LocalPlayer);
-            RPCChangeRound(RoundState.None);
+            ChangeRound();
         }
 
         private IEnumerator LoadAsyncScene(int sceneNum)
@@ -490,7 +607,8 @@ namespace Network
                 NickName = nick,
                 IsReady = false,
                 IsDoneLoadScene = false,
-                PlayerColor = color
+                PlayerColor = color,
+                Score = 0
             });
         }
 
@@ -543,25 +661,6 @@ namespace Network
         private void RPCStartGame()
         {
             InitialGame();
-        }
-        
-        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        private void RPCSendDefeat(PlayerRef playerRef)
-        {
-            foreach (var (key, _) in RoomPlayerList)
-            {
-                if (key != playerRef)
-                {
-                    _winnerRef = key;
-                    return;
-                }
-            }
-        }
-        
-        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        private void RPCChangeRound(RoundState roundState)
-        {
-            ChangeRound(roundState);
         }
     }
 }

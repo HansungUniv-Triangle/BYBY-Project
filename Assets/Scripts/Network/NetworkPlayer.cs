@@ -23,6 +23,11 @@ namespace Network
 
         private void OnHpChanged()
         {
+            if (NowHp < 0)
+            {
+                _gameManager.NetworkManager.SetWinner(Object.StateAuthority);
+            }
+            
             if (HasStateAuthority)
             {
                 _gameUI.playerHpBarImage.DOFillAmount(NowHp / MaxHp, 0.5f);
@@ -41,7 +46,6 @@ namespace Network
             {
                 NowHp = MaxHp;
             }
-            Debug.Log("힐링 되엇ㅅ브니다");
         }
 
         public float GetNowHp()
@@ -269,7 +273,6 @@ namespace Network
             }
 
             CharacterBehaviorData = netBehaviorData;
-            _gameManager.ResetBehaviourEventCount();
         }
     }
 
@@ -318,6 +321,7 @@ namespace Network
         {
             InitialCharacterStatus();
             InitialWeaponStatus();
+            Healing(999f);
         }
 
         private void InitialCharacterStatus()
@@ -560,8 +564,6 @@ namespace Network
             _baseCharStat = new BaseStat<CharStat>(1, 1);
             _characterController = GetComponent<CharacterController>();
             _catController = GetComponentInChildren<CatController>();
-
-            _target = GameObject.Find("허수아비");
             
             _gameManager = GameManager.Instance;
             _gameUI = _gameManager.UIHolder as GameUI;
@@ -571,6 +573,7 @@ namespace Network
             
             if (Runner.ActivePlayers.Count() == 1)
             {
+                _target = GameObject.Find("허수아비");
                 _camera.GetComponent<PlayerCamera>().AddPlayer(transform);
                 _camera.GetComponent<PlayerCamera>().AddEnemy(_target.transform);
             }

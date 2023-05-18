@@ -1716,6 +1716,8 @@ MonoBehaviour:
   gameUIGroup: {fileID: 1057175912}
   timeText: {fileID: 168960249}
   roundText: {fileID: 1154504620}
+  playerScoreText: {fileID: 1281966169}
+  enemyScoreText: {fileID: 1685911962}
   settings:
     speedText: {fileID: 657577432}
     SpeedUp: {fileID: 604576272}
@@ -1747,6 +1749,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &151732953
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 151732954}
+  m_Layer: 0
+  m_Name: CameraPos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &151732954
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 151732953}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 30, y: 20, z: 30}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &161740303
 GameObject:
@@ -4448,6 +4481,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be6c83d095a8a18449cb8f31f50df422, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  distance: 10
+  height: 5
+  smoothSpeed: 0.5
+  horizontalSpeed: 0.1
+  _worldViewPos: {fileID: 151732954}
 --- !u!1 &364444293
 GameObject:
   m_ObjectHideFlags: 0
@@ -11703,7 +11741,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 1
+  m_text: '0
+
+'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 0b0364526ef4dba489670e96ebf8e80d, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: e4561292625cb734d90497f1e33cc969, type: 2}
@@ -15053,7 +15093,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 2
+  m_text: '0
+
+'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 0b0364526ef4dba489670e96ebf8e80d, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: e20ef67fe54d88741a81da5bb33ef4c0, type: 2}

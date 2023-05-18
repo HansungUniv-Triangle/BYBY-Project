@@ -96,6 +96,7 @@ namespace Types
 
     public enum CameraMode
     {
+        None,
         Game,
         Winner,
         Player

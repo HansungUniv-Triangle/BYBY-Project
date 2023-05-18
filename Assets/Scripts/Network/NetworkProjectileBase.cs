@@ -92,6 +92,7 @@ namespace Network
                 {
                     GameManager.Instance.CheckBulletBetweenEnemyAndMe(transform.position);
                 }
+                
                 DestroyProjectile();
             }
         }

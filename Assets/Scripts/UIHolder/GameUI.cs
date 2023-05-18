@@ -28,6 +28,9 @@ namespace UIHolder
 
         public TextMeshProUGUI timeText;
         public TextMeshProUGUI roundText;
+        
+        public TextMeshProUGUI playerScoreText;
+        public TextMeshProUGUI enemyScoreText;
 
         [Serializable]
         public class Settings
