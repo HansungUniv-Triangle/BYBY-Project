@@ -86,9 +86,11 @@ public class SynergyPageManager : MonoBehaviour
 
     public void SelectSynergy()
     {
-        string synergyName = EventSystem.current.currentSelectedGameObject.GetComponentInChildren<TextMeshProUGUI>().text;
-        Debug.Log(synergyName);
-        synergyPages[currentPage].FindSelectedSynergyInSynergies(synergyName);
+        string synergyExplain = EventSystem.current.currentSelectedGameObject.GetComponentInChildren<TextMeshProUGUI>().text;
+        GameObject selectedSynergy = EventSystem.current.currentSelectedGameObject;
+        Debug.Log(synergyExplain);
+        synergySelectPanel.DisplaySynergySelected(synergyPages[currentPage], selectedSynergy);
+        synergyPages[currentPage].FindSelectedSynergyInSynergies(synergyExplain);
     }
 
     public void ApplySelectedSynergyToCharacter()

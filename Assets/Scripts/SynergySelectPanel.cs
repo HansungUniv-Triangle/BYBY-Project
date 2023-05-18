@@ -44,8 +44,30 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
     public GameObject SpawnSynergy(SynergyPage synergyPage, Transform spawnPoint)
     {
         //synergyPage.Clear();
-        GameObject instance = Instantiate(prefabSynergyPage, spawnPoint.position, Quaternion.identity, GameObject.Find("ItemSelectPanel(Clone)").transform);         
+        GameObject instance = Instantiate(prefabSynergyPage, spawnPoint.position, Quaternion.identity, GameObject.Find("ItemSelectPanel(Clone)").transform);
+        instance.transform.SetSiblingIndex(3);
+        for (int i = 0; i < instance.GetComponentsInChildren<Button>().Length; i++)
+        {
+            instance.GetComponentsInChildren<Button>()[i].onClick.AddListener(() => synergyPageManager.SelectSynergy());
+        }
         return instance;
+    }
+
+    public void DisplaySynergySelected(SynergyPage synergyPage, GameObject synergyButton)
+    {
+        for (int i = 1; i < synergyPage.synergyObj.transform.childCount; i++)
+        {
+            GameObject child = synergyPage.synergyObj.transform.GetChild(i).gameObject;
+
+            if (child != synergyButton)
+            {
+                child.GetComponent<CanvasGroup>().alpha = 0.5f;
+            }
+            else
+            {
+                child.GetComponent<CanvasGroup>().alpha = 1f;
+            }
+        }
     }
 
     public void DisplayRerolled(SynergyPage synergy, int rerollCount)
@@ -76,7 +98,7 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
             GameObject child = synergyPage.synergyObj.transform.GetChild(i).gameObject;
             if (i == 0)
             {
-                child.GetComponent<TextMeshProUGUI>().text = synergyPage.synergyRarity;
+                child.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = synergyPage.synergyRarity;      
             }
             else
             {
@@ -84,7 +106,7 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
                 //child.GetComponentsInChildren<TextMeshProUGUI>()[0].text = synergyPage.synergies[i - 1].synergyName;
                 child.transform.GetChild(3).GetComponentsInChildren<TextMeshProUGUI>()[0].text = synergyPage.synergies[i - 1].synergyExplain;
                 child.transform.GetChild(4).GetComponentsInChildren<Image>()[0].GetComponentsInChildren<TextMeshProUGUI>()[0].text = synergyPage.synergyRecommendationPercentage[i - 1].ToString() + "%";
-                child.GetComponentsInChildren<Button>()[0].onClick.AddListener(() => synergyPageManager.SelectSynergy());
+                child.GetComponent<CanvasGroup>().alpha = 1f;
             }
         }
     }
@@ -96,7 +118,7 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
         
         for (int i = 0; i < 7; i++)
         {
-            Image temp = synergySelectPanel.transform.GetChild(2).GetChild(i).GetComponent<Image>();
+            Image temp = synergySelectPanel.transform.GetChild(1).GetChild(i).GetComponent<Image>();
             if (i == synergyPageManager.currentPage)
             {
                 temp.sprite = spriteCurrent;
@@ -159,8 +181,13 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
                         BeforeSynergy();
                         // 오른쪽으로 스와이프됨
                     }
-                    else { }
-                        //ActiveStat();
+                    else
+                    {
+                        if (statPageStatus == true)
+                        {
+                            ActiveStat();
+                        }
+                    }
                     // 아래쪽으로 스와이프됨
                 }
                 else if (swipeDelta.y > 0f)
@@ -173,8 +200,13 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
                     {
                         BeforeSynergy();
                     }
-                    else { }
-                       // ActiveStat();
+                    else
+                    {
+                        if (statPageStatus == false)
+                        {
+                            ActiveStat();
+                        }
+                    }
                     // 위쪽으로 스와이프됨
                 }
             }
@@ -186,16 +218,15 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
     }
     public void ActiveStat()
     {
-        /*if(statPageStatus == false)
+        if(statPageStatus == false)
         {
-            statPage.SetActive(true);
+            statPage.transform.DOMoveY(1500f,1f);
             statPageStatus = true;
         }
         else
         {
-            statPage.SetActive(false);
+            statPage.transform.DOMoveY(25f,1f);
             statPageStatus = false;
-        }*/
-        
+        } 
     }
 }

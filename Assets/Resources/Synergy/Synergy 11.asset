@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sprite: {fileID: 21300000, guid: 26d7f12bfcfdb4004856218288a6b1b0, type: 3}
   synergyName: "\uC5B8\uCEE4\uBA3C \uC2DC\uB108\uC9C05"
-  synergyExplain: "<color=green>\uD761\uD608+2<br></color><color=red>\uACF5\uACA9\uB825-1</color>"
+  synergyExplain: "<color=green>\uD68C\uD53C+3</color><br><color=red>\uCC28\uBD84\uD568-1</color>"
   priority: 0
   charStatList:
   - <Type>k__BackingField: 2
