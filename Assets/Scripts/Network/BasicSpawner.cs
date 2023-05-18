@@ -31,25 +31,6 @@ namespace Network
                 }
             }
         }
-        
-        private IEnumerator LoadAsyncScene(int sceneNum)
-        {
-            GameManager.Instance.ActiveLoadingUI();
-            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneNum);
-
-            while (!asyncLoad.isDone)
-            {
-                yield return null;
-            }
-            
-            GameManager.Instance.DeActiveLoadingUI();
-        }
-
-        public void DisconnectingServer()
-        {
-            _runner.Shutdown();
-            StartCoroutine(LoadAsyncScene(0));
-        }
 
         #region Fusion
         public async void StartGame(GameMode mode)

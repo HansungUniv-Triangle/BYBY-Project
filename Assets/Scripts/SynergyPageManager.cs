@@ -54,7 +54,11 @@ public class SynergyPageManager : MonoBehaviour
         {
             DOTween.Sequence()
                 .Append(_thisRectTransform.DOAnchorPosY(_canvasHeight, 1f))
-                .OnComplete(() => synergyPanel.SetActive(false));
+                .OnComplete(() =>
+                {
+                    synergyPanel.SetActive(false);
+                    ApplySelectedSynergyToCharacter();
+                });
         }
     }
 
@@ -89,11 +93,27 @@ public class SynergyPageManager : MonoBehaviour
     {
         string synergyName = EventSystem.current.currentSelectedGameObject.GetComponentInChildren<TextMeshProUGUI>().text;
         _synergyPages[CurrentPage].FindSelectedSynergyInSynergies(synergyName);
+        Debug.Log($"{synergyName}");
     }
 
     public void ApplySelectedSynergyToCharacter()
     {
-        
+        foreach (var synergyPage in _synergyPages)
+        {
+            var selectedSynergyName = synergyPage.selectedSynergy.synergyName;
+            var index = GameManager.Instance.SynergyList.FindIndex(synergy => synergy.synergyName == selectedSynergyName);
+
+            Debug.Log($"{selectedSynergyName} {index}");
+            
+            if (index != -1)
+            {
+                GameManager.Instance.NetworkManager.PlayerCharacter.AddSynergy(index);
+            }
+            else
+            {
+                throw new Exception("선택된 시너지 찾기 실패");
+            }
+        }
     }
 
     public void MoveSynergyPageRight()

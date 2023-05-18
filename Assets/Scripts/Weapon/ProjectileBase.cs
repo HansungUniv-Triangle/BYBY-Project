@@ -77,7 +77,7 @@ namespace Weapon
         {
             if (_projectileHolder is null)
             {
-                throw new Exception($"{nameof(T)} : {Message.CantAssignHolder}");
+                throw new Exception("홀더 지정 에러");
             }
             _projectileHolder.RemoveProjectile(this);
         }

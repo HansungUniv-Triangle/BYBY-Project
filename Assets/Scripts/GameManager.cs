@@ -169,12 +169,6 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
-    // adapter
-    public void DisconnectedSever()
-    {
-        GameObject.Find("Spawner").GetComponent<Network.BasicSpawner>().DisconnectingServer();
-    }
-
     public void OnReady()
     {
         if (NetworkManager == null) return;

@@ -171,7 +171,7 @@ namespace Network
                         {
                             _gameManager.NetworkManager.PlayerCharacter.OnDamaged(networkObject);
                         }
-                        GameManager.Instance.AddBehaviourEventCount(BehaviourEvent.피격, 1);
+                        _gameManager.AddBehaviourEventCount(BehaviourEvent.피격, 1);
                     }
                     tick = data.Tick;
                 }
@@ -186,8 +186,8 @@ namespace Network
                 CharacterHitList.Remove(CharacterHitList.Get(0));
             }
             
-            GameManager.Instance.hitCount++;
-            GameManager.Instance.AddBehaviourEventCount(BehaviourEvent.피해, damage);
+            _gameManager.hitCount++;
+            _gameManager.AddBehaviourEventCount(BehaviourEvent.피해, damage);
             
             CharacterHitList.Add(new CharacterHitData
             {
@@ -217,14 +217,70 @@ namespace Network
         }
     }
 
+    public partial class NetworkPlayer
+    {
+        public struct BehaviorData : INetworkStruct
+        {
+            public int HitRate;
+            public int DodgeRate;
+            public int Accuracy;
+            public int Damage;
+            public int Special;
+            public int DestroyBullet;
+            public int Reload;
+        }
+
+        [Networked]
+        public BehaviorData CharacterBehaviorData { get; set; }
+
+        public void ConversionBehaviorData()
+        {
+            var netBehaviorData = new BehaviorData();
+            var behaviorData = _gameManager.GetBehaviourEventCount();
+            
+            foreach (var (key, value) in behaviorData)
+            {
+                switch (key)
+                {
+                    case BehaviourEvent.피격:
+                        netBehaviorData.HitRate = value;
+                        break;
+                    case BehaviourEvent.회피:
+                        netBehaviorData.DodgeRate = value;
+                        break;
+                    case BehaviourEvent.명중:
+                        netBehaviorData.Accuracy = value;
+                        break;
+                    case BehaviourEvent.피해:
+                        netBehaviorData.Damage = value;
+                        break;
+                    case BehaviourEvent.특화:
+                        netBehaviorData.Special = value;
+                        break;
+                    case BehaviourEvent.파괴:
+                        netBehaviorData.DestroyBullet = value;
+                        break;
+                    case BehaviourEvent.장전:
+                        netBehaviorData.Reload = value;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+
+            CharacterBehaviorData = netBehaviorData;
+            _gameManager.ResetBehaviourEventCount();
+        }
+    }
+
     // 시너지
     public partial class NetworkPlayer
     {
         public List<Synergy> synergyList = new List<Synergy>();
 
-        [Networked(OnChanged = nameof(OnSynergyChange)), Capacity(30)]
+        [Networked(OnChanged = nameof(OnSynergyChange)), Capacity(50)]
         [UnitySerializeField]
-        public NetworkLinkedList<int> NetworkSynergyList => default;
+        private NetworkLinkedList<int> NetworkSynergyList => default;
 
         public static void OnSynergyChange(Changed<NetworkPlayer> changed)
         {
@@ -236,17 +292,20 @@ namespace Network
             synergyList.Clear();
             foreach (var num in NetworkSynergyList)
             {
-                if (GameManager.Instance.GetSynergy(num, out var synergy))
+                if (_gameManager.GetSynergy(num, out var synergy))
                 {
                     synergyList.Add(synergy);
                 }
                 else
                 {
-                    Debug.Log("시너지 범위 초과");
+                    throw new Exception("시너지 범위 초과");
                 }
             }
+        }
 
-            InitialStatus();
+        public void AddSynergy(int index)
+        {
+            NetworkSynergyList.Add(index);
         }
     }
 
@@ -529,6 +588,7 @@ namespace Network
             else
             {
                 gameObject.layer = LayerMask.NameToLayer("Enemy");
+                _gameManager.NetworkManager.EnemyCharacter = this;
             }
         }
 

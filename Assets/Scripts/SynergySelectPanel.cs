@@ -39,8 +39,6 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
     {
         rerollBtn = synergySelectPanel.GetComponentsInChildren<Button>()[0];
         rerollBtn.onClick.AddListener(() => synergyPageManager.RerollSynergy());
-        finishBtn = synergySelectPanel.GetComponentsInChildren<Button>()[2];
-        finishBtn.onClick.AddListener(() => synergyPageManager.ApplySelectedSynergyToCharacter());
     }
 
     public void SetSynergyPageManager(SynergyPageManager synergyPageManager)

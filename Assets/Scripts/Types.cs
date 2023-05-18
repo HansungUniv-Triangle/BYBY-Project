@@ -93,5 +93,12 @@ namespace Types
         파괴,
         장전
     }
+
+    public enum CameraMode
+    {
+        Game,
+        Winner,
+        Player
+    }
 }
 

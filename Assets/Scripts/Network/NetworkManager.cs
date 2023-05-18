@@ -6,12 +6,12 @@ using Fusion;
 using Types;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Random = UnityEngine.Random;
 using UIHolder;
+using Random = UnityEngine.Random;
 
 namespace Network
 {
-    // 구조체
+    // 데이터
     public partial class NetworkManager
     {
         private struct RoomPlayerData : INetworkStruct
@@ -20,10 +20,34 @@ namespace Network
             public NetworkBool IsReady;
             public NetworkBool IsDoneLoadScene;
             public Color PlayerColor;
-            public NetworkId CharacterID;
         }
 
         public NetworkPlayer PlayerCharacter { get; private set; }
+
+        public NetworkPlayer EnemyCharacter;
+
+        private PlayerRef _enemyRef;
+        public PlayerRef EnemyRef
+        {
+            get
+            {
+                if (_enemyRef.IsNone)
+                {
+                    foreach (var runnerActivePlayer in Runner.ActivePlayers)
+                    {
+                        if (runnerActivePlayer != Runner.LocalPlayer)
+                        {
+                            _enemyRef = runnerActivePlayer;
+                        }
+                    }
+                }
+                
+                return _enemyRef;
+            }
+        }
+
+        [Networked]
+        public int Seed { get; set; }
     }
 
     // 룸 데이터 기반 UI 업데이트
@@ -268,6 +292,7 @@ namespace Network
         {
             _gameUI.gameUIGroup.SetActive(true);
             SynergyPageManager.SetActiveSynergyPanel(false);
+            PlayerCharacter.InitialStatus();
             GameUI.roundText.text = $"시너지 선택 완료! 기다리세요";
         }
         
@@ -280,6 +305,7 @@ namespace Network
         private void ViewRoundResult()
         {
             _winnerRef = Runner.LocalPlayer;
+            PlayerCharacter.ConversionBehaviorData();
 
             if (RoomPlayerList.TryGet(_winnerRef, out var data))
             {
@@ -289,13 +315,17 @@ namespace Network
         
         private void ViewRoundAnalysis()
         {
-            var info = GameManager.Instance.GetBehaviourEventCount();
             var message = "";
+            var playerData = PlayerCharacter.CharacterBehaviorData;
+            var enemyData = EnemyCharacter.CharacterBehaviorData;
 
-            foreach (var (key, value) in info)
-            {
-                message += $"{key.ToString()} : {value}\n";
-            }
+            message += $"피격 : {playerData.HitRate} vs {enemyData.HitRate} : 피격\n";
+            message += $"회피 : {playerData.DodgeRate} vs {enemyData.DodgeRate} : 회피\n";
+            message += $"명중 : {playerData.Accuracy} vs {enemyData.Accuracy} : 명중\n";
+            message += $"피해 : {playerData.Damage} vs {enemyData.Damage} : 피해\n";
+            message += $"특화 : {playerData.Special} vs {enemyData.Special} : 특화\n";
+            message += $"파괴 : {playerData.DestroyBullet} vs {enemyData.DestroyBullet} : 파괴\n";
+            message += $"장전 : {playerData.Reload} vs {enemyData.Reload} : 장전\n";
 
             GameUI.roundText.text = message;
             GameManager.Instance.ResetBehaviourEventCount();
@@ -329,6 +359,7 @@ namespace Network
             GameManager.Instance.DeActiveLoadingUI();
             _roomUI = GameManager.Instance.UIHolder as RoomUI;
             _networkObjectList = new List<NetworkObject>();
+            Seed = Random.Range(0, 10000);
 
             RPCAddPlayer(Runner.LocalPlayer, $"Nick{Random.Range(1,100)}", Random.ColorHSV());
         }
@@ -395,8 +426,6 @@ namespace Network
             subWeaponSpawn.transform.SetParent(networkPlayerObject.transform);
             
             PlayerCharacter.SetGunPos(mainWeaponSpawn.transform);
-
-            RPCAddCharacterID(Runner.LocalPlayer, networkPlayerObject);
         }
         
         public void AddBlockHitData(Vector3 pos, int damage)
@@ -416,7 +445,7 @@ namespace Network
 
         private void InitialGame()
         {
-            WorldManager.Instance.GeneratorMap();
+            WorldManager.Instance.GeneratorMap(Seed);
             SpawnPlayerCharacter(Runner.LocalPlayer);
             RPCChangeRound(RoundState.None);
         }
@@ -430,9 +459,19 @@ namespace Network
             {
                 yield return null;
             }
+
+            if (!Runner.IsShutdown)
+            {
+                RPCLoadSceneCheck(Runner.LocalPlayer);
+            }
             
-            RPCLoadSceneCheck(Runner.LocalPlayer);
             GameManager.Instance.DeActiveLoadingUI();
+        }
+        
+        public void DisconnectingServer()
+        {
+            Runner.Shutdown();
+            StartCoroutine(LoadAsyncScene(0));
         }
     }
 
@@ -490,20 +529,6 @@ namespace Network
             else
             {
                 throw new Exception("플레이어 준비, 해당 플레이어 리스트에 없음");
-            }
-        }
-        
-        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        private void RPCAddCharacterID(PlayerRef playerRef, NetworkId networkId)
-        {
-            if (RoomPlayerList.TryGet(playerRef, out RoomPlayerData roomPlayerData))
-            {
-                roomPlayerData.CharacterID = networkId;
-                RoomPlayerList.Set(playerRef, roomPlayerData);
-            }
-            else
-            {
-                throw new Exception("플레이어 캐릭터 넣기, 해당 플레이어 리스트에 없음");
             }
         }
 

@@ -19,6 +19,7 @@ namespace UIHolder
         public Button attackButton;
         public Button vibrateButton;
         public Button dodgeButton;
+        public Button disconnectButton;
 
         public Image playerHpBarImage;
         public Image enemyHpBarImage;
@@ -88,6 +89,11 @@ namespace UIHolder
             dodgeButton.onClick.AddListener(() =>
             {
                 GameManager.Instance.NetworkManager.PlayerCharacter.Dodge();
+            });
+            
+            disconnectButton.onClick.AddListener(() =>
+            {
+                GameManager.Instance.NetworkManager.DisconnectingServer();
             });
 
             /* Settings */
