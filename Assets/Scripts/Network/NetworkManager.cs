@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Fusion;
+using Types;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
@@ -17,37 +18,11 @@ namespace Network
         {
             public NetworkString<_16> NickName;
             public NetworkBool IsReady;
-            public NetworkBool DoneLoading;
-            public NetworkBehaviourId Character;
+            public NetworkBool IsDoneLoadScene;
             public Color PlayerColor;
         }
 
-        private NetworkPlayer _localCharacter;
-
-        public NetworkPlayer LocalCharacter
-        {
-            get
-            {
-                if (_localCharacter is null)
-                {
-                    if (RoomPlayerList.TryGet(Runner.LocalPlayer, out RoomPlayerData roomPlayerData))
-                    {
-                        Runner.TryFindBehaviour(roomPlayerData.Character, out NetworkPlayer networkPlayer);
-                        _localCharacter = networkPlayer;
-                        if (networkPlayer is null)
-                        {
-                            throw new Exception("networkplayer를 찾을 수 없었음");
-                        }
-                    }
-                    else
-                    {
-                        throw new Exception("히트 데이터 전송 시, 플레이어 데이터 없음");
-                    }
-                }
-
-                return _localCharacter;
-            }
-        }
+        public NetworkPlayer LocalCharacter { get; private set; }
     }
 
     // 룸 데이터 기반 UI 업데이트
@@ -102,20 +77,18 @@ namespace Network
     // 네트워크 오브젝트 보관
     public partial class NetworkManager
     {
-        private readonly List<NetworkObject> _networkObjectList = new List<NetworkObject>();
+        private List<NetworkObject> _networkObjectList;
         
         public void AddNetworkObjectInList(NetworkObject networkObject)
         {
-            if (_networkObjectList.Count > 10)
+            if (_networkObjectList.Count > 50)
             {
-                RemoveNetworkObjectInList(_networkObjectList[0]);
+                if (_networkObjectList[0].HasStateAuthority)
+                {
+                    Runner.Despawn(_networkObjectList[0]);
+                }
             }
             _networkObjectList.Add(networkObject);
-        }
-        
-        public void RemoveNetworkObjectInList(NetworkObject networkObject)
-        {
-            Runner.Despawn(networkObject);
         }
         
         public void RemoveDeSpawnNetworkObject(NetworkObject networkObject)
@@ -128,42 +101,234 @@ namespace Network
             return _networkObjectList.FirstOrDefault(networkObject => networkObject.Id.Equals(networkId));
         }
     }
+
+    // 라운드 조작 관련
+    public partial class NetworkManager
+    {
+        [Networked] private TickTimer RoundChangeTimer { get; set; }
+        
+        private GameUI _gameUI;
+
+        private GameUI GameUI
+        {
+            get
+            {
+                if (_gameUI is null)
+                {
+                    _gameUI = GameManager.Instance.UIHolder as GameUI;
+                }
+
+                return _gameUI;
+            }
+        }
+
+        private SynergyPageManager _synergyPageManager;
+
+        private SynergyPageManager SynergyPageManager
+        {
+            get
+            {
+                if (_synergyPageManager is null)
+                {
+                    _synergyPageManager = GameManager.Instance.SynergyPageManager;
+                }
+                return _synergyPageManager;
+            }
+        }
+        
+        private PlayerRef _defeatRef;
+        private RoundState _round = RoundState.None;
+        public RoundState GameRoundState => _round;
+        private int roundNum = 0;
+        
+        private void ChangeRound(RoundState roundState)
+        {
+            switch (roundState)
+            {
+                case RoundState.None:
+                    _round = RoundState.GameStart;
+                    break;
+                case RoundState.GameStart:
+                    _round = RoundState.SynergySelect;
+                    break;
+                case RoundState.SynergySelect:
+                    _round = RoundState.WaitToStart;
+                    break;
+                case RoundState.WaitToStart:
+                    _round = RoundState.RoundStart;
+                    break;
+                case RoundState.RoundStart:
+                    _round = RoundState.RoundEnd;
+                    break;
+                case RoundState.RoundEnd:
+                    _round = RoundState.SynergySelect;
+                    break;
+                case RoundState.GameEnd:
+                    // 게임 방 나가는 코드를 넣으쇼
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            StartRound();
+        }
+        
+        private void StartRound()
+        {
+            switch (_round)
+            {
+                case RoundState.GameStart:
+                    SetTimerSec(5f);
+                    break;
+                case RoundState.SynergySelect:
+                    ViewSynergySelect();
+                    SetTimerSec(10f);
+                    break;
+                case RoundState.WaitToStart:
+                    ViewWait();
+                    SetTimerSec(5f);
+                    break;
+                case RoundState.RoundStart:
+                    IncreaseRound();
+                    SetTimerSec(10f);
+                    break;
+                case RoundState.RoundEnd:
+                    ViewRoundWinner();
+                    SetTimerSec(5f);
+                    break;
+                case RoundState.GameEnd: // 게임 나가는 코드 넣어야해
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private void FixedUpdate()
+        {
+            switch (_round)
+            {
+                case RoundState.None:
+                    break;
+                case RoundState.GameStart:
+                    UpdateTimerInGame();
+                    break;
+                case RoundState.SynergySelect:
+                    UpdateSynergySelect();
+                    break;
+                case RoundState.WaitToStart:
+                    UpdateTimerInGame();
+                    break;
+                case RoundState.RoundStart:
+                    UpdateTimerInGame();
+                    break;
+                case RoundState.RoundEnd:
+                    UpdateTimerInGame();
+                    break;
+                case RoundState.GameEnd:
+                    UpdateTimerInGame();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            
+            if(!HasStateAuthority) return;
+            
+            if (RoundChangeTimer.Expired(Runner))
+            {
+                RoundChangeTimer = TickTimer.None;
+                RPCChangeRound(_round);
+            }
+        }
+
+        private void UpdateTimerInGame()
+        {
+            var time = RoundChangeTimer.RemainingTime(Runner) ?? 00;
+            var min = time / 60f;
+            var sec = time % 60f;
+            GameUI.timeText.text = $"{min:00}:{sec:00}";
+        }
+
+        private void UpdateSynergySelect()
+        {
+            SynergyPageManager.SetSynergySelectTimer(RoundChangeTimer.RemainingTime(Runner) ?? 0, 60f);
+        }
+
+        private void SetTimerSec(float sec)
+        {
+            if(!HasStateAuthority) return;
+            
+            RoundChangeTimer = TickTimer.CreateFromSeconds(Runner, sec);
+        }
+
+        private void ViewSynergySelect()
+        {
+            _gameUI.gameUIGroup.SetActive(false);
+            SynergyPageManager.SetActiveSynergyPanel(true);
+            
+            SynergyPageManager.MakeSynergyPage();
+        }
+
+        private void ViewWait()
+        {
+            _gameUI.gameUIGroup.SetActive(true);
+            SynergyPageManager.SetActiveSynergyPanel(false);
+
+            GameUI.roundText.text = $"시너지 선택 완료! 기다리세요";
+        }
+        
+        private void IncreaseRound()
+        {
+            roundNum++;
+            GameUI.roundText.text = $"ROUND {roundNum}";
+        }
+
+        private void ViewRoundWinner()
+        {
+            _defeatRef = Runner.LocalPlayer;
+            foreach (var (key, value) in RoomPlayerList)
+            {
+                // 임시로 플레이어 이름 나오게 해놨음
+                if (key == _defeatRef)
+                {
+                    GameUI.roundText.text = $"{value.NickName}님이 승리하셨습니다!";
+                    return;
+                }
+            }
+        }
+        
+        private void ViewGameWinner()
+        {
+            _defeatRef = Runner.LocalPlayer;
+            foreach (var (key, value) in RoomPlayerList)
+            {
+                if (key != _defeatRef)
+                {
+                    GameUI.roundText.text = $"{value.NickName}님이 최종 승리하셨습니다!";
+                    return;
+                }
+            }
+        }
+    }
     
     public partial class NetworkManager : NetworkBehaviour
     {
-        [Networked]
-        private TickTimer _timer { get; set; }
-    
         private RoomUI _roomUI;
 
         // Player
         [SerializeField] private NetworkPrefabRef _playerPrefab;
-        [SerializeField] private NetworkPrefabRef _handGun;
-    
+
         private readonly Color32 _ready = Color.green;
         private readonly Color32 _notReady = Color.red;
-
+        
         public override void Spawned()
         {
             DontDestroyOnLoad(this);
+            GameManager.Instance.SetNetworkManager(this);
             GameManager.Instance.DeActiveLoadingUI();
             _roomUI = GameManager.Instance.UIHolder as RoomUI;
+            _networkObjectList = new List<NetworkObject>();
+
             RPCAddPlayer(Runner.LocalPlayer, $"Nick{Random.Range(1,100)}", Random.ColorHSV());
         }
-    
-        public override void FixedUpdateNetwork()
-        {
-            // if (_timer.Expired(Runner))
-            // {
-            //     _timer = TickTimer.None;
-            //     GameObject.Find("테스트입니다").SetActive(false);
-            // }
-            // else if (_timer.IsRunning)
-            // {
-            //     GameObject.Find("테스트입니다").GetComponent<TMP_Text>().text = _timer.RemainingTime(Runner).ToString();
-            // }
-        }
-        
+
         // Mono에서는 Runner를 가져올 수 없어서 만든 Adapter 역할
         public void OnReady()
         {
@@ -197,46 +362,71 @@ namespace Network
 
             return true;
         }
-
-        private void AllPlayerInGame()
+        
+        private bool IsAllPlayerLoadScene()
         {
-            _timer = TickTimer.CreateFromSeconds(Runner, 5f);
+            foreach (var (_, playerData) in RoomPlayerList)
+            {
+                if (playerData.IsDoneLoadScene.Equals(false))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private void SpawnPlayerCharacter(PlayerRef playerRef)
         {
-            //Vector3 spawnPosition = new Vector3((playerRef.RawEncoded % Runner.Config.Simulation.DefaultPlayers) * 3,1,0);
             Vector3 spawnPosition = new Vector3((playerRef.RawEncoded % Runner.Config.Simulation.DefaultPlayers) + 20, 30, 10);
             NetworkObject networkPlayerObject = Runner.Spawn(_playerPrefab, spawnPosition, Quaternion.identity, playerRef);
+            LocalCharacter = networkPlayerObject.GetComponent<NetworkPlayer>();
+
+            var mainWeapon = GameManager.Instance.SelectWeapon;
+            NetworkObject mainWeaponSpawn = Runner.Spawn(mainWeapon, spawnPosition + Vector3.right + Vector3.up, Quaternion.identity, playerRef);
+            mainWeaponSpawn.transform.SetParent(networkPlayerObject.transform);
+
+            var subWeapon = GameManager.Instance.SelectSubWeapon;
+            NetworkObject subWeaponSpawn = Runner.Spawn(subWeapon, spawnPosition + Vector3.up * 2, Quaternion.identity, playerRef);
+            subWeaponSpawn.transform.SetParent(networkPlayerObject.transform);
             
-            NetworkObject gun = Runner.Spawn(_handGun, spawnPosition + Vector3.up, Quaternion.identity, playerRef);
-            gun.transform.SetParent(networkPlayerObject.transform);
-        
-            RPCAddCharacterInPlayerData(playerRef, networkPlayerObject.GetComponent<NetworkPlayer>());
+            LocalCharacter.SetGunPos(mainWeaponSpawn.transform);
         }
         
-        public void AddHitData(Vector3 pos, float damage)
+        public void AddBlockHitData(Vector3 pos, int damage)
         {
-            LocalCharacter.AddBlockHitData(pos, damage);
+            LocalCharacter.AddBlockHitData(pos, 0, damage);
+        }
+        
+        public void AddBlockHitData(Vector3 pos, int radius, int damage)
+        {
+            LocalCharacter.AddBlockHitData(pos, radius, damage);
+        }
+        
+        public void AddCharacterHitData(NetworkObject networkObject)
+        {
+            LocalCharacter.AddCharacterHitData(networkObject);
         }
 
         private void InitialGame()
         {
+            WorldManager.Instance.GeneratorMap();
             SpawnPlayerCharacter(Runner.LocalPlayer);
-            RPCLoadSceneComplete(Runner.LocalPlayer);
-            GameManager.Instance.DeActiveLoadingUI();
+            RPCChangeRound(RoundState.None);
         }
 
-        private IEnumerator LoadYourAsyncScene()
+        private IEnumerator LoadAsyncScene(int sceneNum)
         {
-            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(1);
-        
+            GameManager.Instance.ActiveLoadingUI();
+            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneNum);
+
             while (!asyncLoad.isDone)
             {
                 yield return null;
             }
-
-            InitialGame();
+            
+            RPCLoadSceneCheck(Runner.LocalPlayer);
+            GameManager.Instance.DeActiveLoadingUI();
         }
     }
 
@@ -254,25 +444,11 @@ namespace Network
             RoomPlayerList.Add(playerRef, new RoomPlayerData {
                 NickName = nick,
                 IsReady = false,
-                DoneLoading = false,
+                IsDoneLoadScene = false,
                 PlayerColor = color
             });
         }
-        
-        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        private void RPCAddCharacterInPlayerData(PlayerRef playerRef, NetworkBehaviourId networkBehaviourId)
-        {
-            if (RoomPlayerList.TryGet(playerRef, out RoomPlayerData roomPlayerData))
-            {
-                roomPlayerData.Character = networkBehaviourId;
-                RoomPlayerList.Set(playerRef, roomPlayerData);
-            }
-            else
-            {
-                throw new Exception("캐릭터 추가 시, 플레이어의 데이터가 존재하지 않음");
-            }
-        }
-        
+
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
         private void RPCReady(PlayerRef playerRef)
         {
@@ -283,7 +459,7 @@ namespace Network
 
                 if (HasStateAuthority && IsAllPlayerReady())
                 {
-                    RPCStart();
+                    RPCLoadScene();
                 }
             }
             else
@@ -293,16 +469,16 @@ namespace Network
         }
         
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        private void RPCLoadSceneComplete(PlayerRef playerRef)
+        private void RPCLoadSceneCheck(PlayerRef playerRef)
         {
             if (RoomPlayerList.TryGet(playerRef, out RoomPlayerData roomPlayerData))
             {
-                roomPlayerData.DoneLoading = true;
+                roomPlayerData.IsDoneLoadScene = true;
                 RoomPlayerList.Set(playerRef, roomPlayerData);
             
-                if (HasStateAuthority && IsAllPlayerReady())
+                if (HasStateAuthority && IsAllPlayerLoadScene())
                 {
-                    AllPlayerInGame();
+                    RPCStartGame();
                 }
             }
             else
@@ -312,11 +488,28 @@ namespace Network
         }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        private void RPCStart()
+        private void RPCLoadScene()
         {
             Runner.SessionInfo.IsOpen = false;
-            GameManager.Instance.ActiveLoadingUI();
-            StartCoroutine(LoadYourAsyncScene());
+            StartCoroutine(LoadAsyncScene(1));
+        }
+        
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        private void RPCStartGame()
+        {
+            InitialGame();
+        }
+        
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        private void RPCSendDefeat(PlayerRef playerRef)
+        {
+            _defeatRef = playerRef;
+        }
+        
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        private void RPCChangeRound(RoundState roundState)
+        {
+            ChangeRound(roundState);
         }
     }
 }

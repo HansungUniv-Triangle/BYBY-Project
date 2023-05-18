@@ -5,14 +5,22 @@ using NetworkPlayer = Network.NetworkPlayer;
 public class PlayerCamera : MonoBehaviour
 {
     private bool _isReady = false;
+    
     private Transform _target;
     private Transform _player;
     private NetworkPlayer _networkPlayer;
     private Transform _cameraPos;
     private Transform _cameraFocusPos;
+    
     private Vector3 _originalCameraPos;
     private Vector3 _originalCameraFocusPos;
 
+    private readonly float _moveSpeed = 3f; // 고정된 값 필요, 너무 빠르면 어지러움증 유발
+    private readonly float _rotationSpeed = 8f;
+
+    private RaycastHit _hit;
+    private Ray _ray;
+    
     public void AddPlayer(Transform player)
     {
         _player = player;
@@ -35,14 +43,14 @@ public class PlayerCamera : MonoBehaviour
         if(!_isReady) return;
 
         var position = _player.position;
-        var dir = (_cameraPos.position - position).normalized;
-        var ray = new Ray(position, dir);
+        _ray.origin = position;
+        _ray.direction = (_cameraPos.position - position).normalized;
 
         //Debug.DrawRay(ray.origin, ray.direction * 10, Color.white);
-        if (Physics.Raycast(ray, out RaycastHit hit, 10, (int)Layer.World))
+        if (Physics.Raycast(_ray, out _hit, 10, (int)Layer.World))
         {
-            _cameraPos.position = hit.point;
-            _cameraFocusPos.position = hit.point;
+            _cameraPos.position = _hit.point;
+            _cameraFocusPos.position = _hit.point;
         }
         else
         {
@@ -58,20 +66,46 @@ public class PlayerCamera : MonoBehaviour
 
     private void CameraMovement()
     {
-        var cameraSpeed = _networkPlayer.GetCharStat(CharStat.Speed).Total;
+        //_rotationSpeed = _networkPlayer.GetCharStat(CharStat.Speed).Total;
 
         if (NetworkPlayer.isCameraFocused)
         {
-            transform.position = Vector3.Lerp(transform.position, _cameraFocusPos.position, Time.deltaTime * cameraSpeed);
-            transform.rotation = Quaternion.Lerp(transform.rotation, _cameraFocusPos.rotation, Time.deltaTime * cameraSpeed);
+            transform.position = Vector3.Lerp(transform.position, _cameraFocusPos.position, Time.deltaTime * _moveSpeed);
+            transform.rotation = Quaternion.Lerp(transform.rotation, _cameraFocusPos.rotation, Time.deltaTime * _rotationSpeed);
         }
         else
         {
-            transform.position = Vector3.Lerp(transform.position, _cameraPos.position, Time.deltaTime * cameraSpeed);
+            transform.position = Vector3.Lerp(transform.position, _cameraPos.position, Time.deltaTime * _moveSpeed);
 
             var relativePosition = _target.position - transform.position;
             var targetRotation = Quaternion.LookRotation(relativePosition);
-            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * cameraSpeed);
+            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * _rotationSpeed);
+        }
+    }
+
+    public void ReverseCameraPos(bool isLeft)
+    {
+        if (isLeft)
+        {
+            if (_cameraPos.localPosition.x < 0)
+            {
+                _cameraPos.localPosition = new Vector3(_cameraPos.localPosition.x * -1, _cameraPos.localPosition.y, _cameraPos.localPosition.z);
+                _cameraFocusPos.localPosition = new Vector3(_cameraFocusPos.localPosition.x * -1, _cameraFocusPos.localPosition.y, _cameraFocusPos.localPosition.z);
+
+                _originalCameraPos = new Vector3(_originalCameraPos.x * -1, _originalCameraPos.y, _originalCameraPos.z);
+                _originalCameraFocusPos = new Vector3(_originalCameraFocusPos.x * -1, _originalCameraFocusPos.y, _originalCameraFocusPos.z);
+            }
+        }
+        else
+        {
+            if (_cameraPos.localPosition.x > 0)
+            {
+                _cameraPos.localPosition = new Vector3(_cameraPos.localPosition.x * -1, _cameraPos.localPosition.y, _cameraPos.localPosition.z);
+                _cameraFocusPos.localPosition = new Vector3(_cameraFocusPos.localPosition.x * -1, _cameraFocusPos.localPosition.y, _cameraFocusPos.localPosition.z);
+
+                _originalCameraPos = new Vector3(_originalCameraPos.x * -1, _originalCameraPos.y, _originalCameraPos.z);
+                _originalCameraFocusPos = new Vector3(_originalCameraFocusPos.x * -1, _originalCameraFocusPos.y, _originalCameraFocusPos.z);
+            }
         }
     }
 }

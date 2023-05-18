@@ -35,7 +35,8 @@ public class HitDamage : MonoBehaviour
         if (isCritical)
         {
             textMesh.color = Color.black;
-            damage *= 2;
+            damage = 100;
+            //damage *= 2;
         }
 
         _damage += damage;

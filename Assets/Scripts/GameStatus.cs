@@ -17,13 +17,17 @@ namespace GameStatus
         [field: SerializeReference]
         public float Ratio { get; private set; }
         
-        public float Total => Amount * Ratio;
+        [field: SerializeReference]
+        public float Addition { get; private set; }
+        
+        public float Total => Amount * Ratio + Addition;
         
         public Stat(T type, float amount, float ratio)
         {
             Type = type;
             Amount = amount;
             Ratio = ratio;
+            Addition = 0;
         }
         
         public Stat<T> SetAmount(float amount)
@@ -38,6 +42,12 @@ namespace GameStatus
             return this;
         }
         
+        public Stat<T> SetAddition(float add)
+        {
+            Addition = add;
+            return this;
+        }
+        
         public Stat<T> AddAmount(float amount)
         {
             Amount += amount;
@@ -47,6 +57,12 @@ namespace GameStatus
         public Stat<T> AddRatio(float ratio)
         {
             Ratio += ratio;
+            return this;
+        }
+        
+        public Stat<T> AddAddition(float add)
+        {
+            Addition += add;
             return this;
         }
 
@@ -85,6 +101,7 @@ namespace GameStatus
             {
                 stat.SetAmount(_defaultAmount);
                 stat.SetRatio(_defaultRatio);
+                stat.SetAddition(0);
             }
         }
 

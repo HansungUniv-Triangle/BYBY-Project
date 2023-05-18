@@ -1,12 +1,17 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace UIHolder
 {
     public abstract class UIHolder : MonoBehaviour
     {
-        private void Start()
+        private void Awake()
         {
             GameManager.Instance.SetUICanvasHolder(this);
+        }
+
+        private void Start()
+        {
             Initial();
         }
 

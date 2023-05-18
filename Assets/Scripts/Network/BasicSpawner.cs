@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Fusion;
 using Fusion.Sockets;
@@ -11,10 +12,11 @@ namespace Network
     {
         // Network
         private NetworkRunner _runner;
-        private NetworkManager _manager;
 
-        private List<NetworkObject> _networkObjectList = new List<NetworkObject>();
-        
+        [SerializeField]
+        private NetworkPrefabRef NetworkManagerPrefab;
+        private NetworkObject NetworkManager;
+
         private void OnGUI()
         {
             if (_runner == null)
@@ -28,6 +30,25 @@ namespace Network
                     StartGame(GameMode.Shared);
                 }
             }
+        }
+        
+        private IEnumerator LoadAsyncScene(int sceneNum)
+        {
+            GameManager.Instance.ActiveLoadingUI();
+            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneNum);
+
+            while (!asyncLoad.isDone)
+            {
+                yield return null;
+            }
+            
+            GameManager.Instance.DeActiveLoadingUI();
+        }
+
+        public void DisconnectingServer()
+        {
+            _runner.Shutdown();
+            StartCoroutine(LoadAsyncScene(0));
         }
 
         #region Fusion
@@ -47,33 +68,16 @@ namespace Network
 
         public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
         {
-            
-        }
-        
-        public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
-        {
-            if (_manager)
+            if (player.PlayerId == 0)
             {
-                _manager.OnPlayerLeft(player);
-            }
-            else
-            {
-                throw new Exception("플레이어 종료, 네트워크 룸 찾을 수 없음");
+                runner.Spawn(NetworkManagerPrefab);
             }
         }
         
+        public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
         public void OnConnectedToServer(NetworkRunner runner) { }
-        
-        public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
-        {
-            Debug.Log("shut down player");
-        }
-
-        public void OnDisconnectedFromServer(NetworkRunner runner)
-        {
-            Debug.Log("disconenected from server");
-        }
-        
+        public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
+        public void OnDisconnectedFromServer(NetworkRunner runner) { }
         public void OnInput(NetworkRunner runner, NetworkInput input) { }
         public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
         public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token) { }

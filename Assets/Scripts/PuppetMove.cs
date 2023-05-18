@@ -10,7 +10,7 @@ using Random = UnityEngine.Random;
 
 public class PuppetMove : MonoBehaviour
 {
-    public GameObject target;
+    private GameObject target;
 
     #region 움직임 관련 변수
     public float Speed = 11.0f;
@@ -18,9 +18,7 @@ public class PuppetMove : MonoBehaviour
     public float jumpForce = 7.0f;
     public float dodgeForce = 4.0f;
     public float dodgeFrequency = 0.1f;
-    
-    public bool ReverseHorizontalMove = false;
-    
+
     private float h, v;
     private float inputH, inputV;
     private Vector3 moveDir;
@@ -100,13 +98,14 @@ public class PuppetMove : MonoBehaviour
     
     void Update()
     {
-        return;
-        if (target is null)
+        if (target == null)
         {
             target = GameManager.Instance.NetworkManager.LocalCharacter.gameObject;
-            return;
         }
-        Move();
+        else
+        {
+            Move();
+        }
     }
     private void Move()
     {
@@ -152,7 +151,7 @@ public class PuppetMove : MonoBehaviour
 
         _characterController.Move(moveDir * Time.deltaTime);
         
-        if (isCameraFocused == false)
+        if (isCameraFocused == false && target is not null)
         {
             var relativePosition = target.transform.position - transform.position;
             relativePosition.y = 0; // y축은 바라보지 않도록 함

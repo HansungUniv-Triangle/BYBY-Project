@@ -320,7 +320,7 @@ public class World
     {
         if (_worldMap == null)
             return;
-
+        
         var child = gameObject.transform.GetComponentsInChildren<Transform>(true);
         foreach (var c in child)
         {
@@ -328,6 +328,7 @@ public class World
             c.parent = null;
             UnityEngine.Object.Destroy(c.gameObject);
         }
+
         ClearWorldMap();
     }
 

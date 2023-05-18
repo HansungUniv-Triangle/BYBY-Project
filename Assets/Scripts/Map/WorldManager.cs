@@ -63,8 +63,6 @@ public class WorldManager : Singleton<WorldManager>
     {
         //Seed = DateTime.Now.Millisecond;
         Seed = 230412;
-        _world = new World();
-        GeneratorMap();
     }
 
     public World GetWorld()
@@ -75,9 +73,11 @@ public class WorldManager : Singleton<WorldManager>
     public void GeneratorMap()
     {
         _noiseMap = Noise.GeneratePerlinNoise(MapWidth, MapHeight, Seed, NoiseScale, Octaves, Persistance, Lacunarity, Offset);
-
+        Seed = 230412;
+        
         if (Application.isPlaying)
         {
+            _world = new World();
             _world.DestroyWorld();
             _world.GenerateWorld(_noiseMap);
             _world.RenderWorld();

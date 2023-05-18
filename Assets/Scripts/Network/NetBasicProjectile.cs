@@ -14,14 +14,10 @@ namespace Network
             return Distance > MaxRange;
         }
 
-        protected override void UpdateProjectile()
-        {
-            transform.position += gameObject.transform.forward * (TotalVelocity * Runner.DeltaTime);
-        }
-
         private void OnCollisionEnter(Collision collision)
         {
-            if(IsHit) return;
+            if(IsHit || !HasStateAuthority) return;
+            
             var objectLayer = collision.collider.gameObject.layer;
 
             if (objectLayer.Equals(LayerMask.NameToLayer("World")))
@@ -34,16 +30,13 @@ namespace Network
                 point.z = (float)Math.Round(point.z, 3);
 
                 WorldManager.Instance.GetWorld().HitBlock(point, 1);
-                GameManager.Instance.NetworkManager.AddHitData(point, 1);
+                GameManager.Instance.NetworkManager.AddBlockHitData(point, 1);
                 IsHit = true;
             }
-            else if (objectLayer.Equals(LayerMask.NameToLayer("Player")))
+            else if (objectLayer.Equals(LayerMask.NameToLayer("Enemy")))
             {
-                if (!Object.HasStateAuthority)
-                {
-                    GetNetworkPlayer(collision.gameObject).NetworkOnHit(Object);
-                    RPCHitPlayer();
-                }
+                GameManager.Instance.NetworkManager.AddCharacterHitData(Object);
+                IsHit = true;
             }
         }
     }

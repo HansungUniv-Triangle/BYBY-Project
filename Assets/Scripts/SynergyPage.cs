@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using Types;
 using UnityEngine;
 
 public class SynergyPage
 {
     public bool isRerolled = false;
     public int rerollCount = 1;
-    public string synergyRarity;
+    public Rarity synergyRarity;
     public Synergy[] synergies = new Synergy[3];
     public GameObject synergyObj = null;
     public List<Synergy> IsNumInSynergyList = new List<Synergy>();
@@ -43,7 +44,7 @@ public class SynergyPage
         synergies[1] = null;
         synergies[2] = null;
         IsNumInSynergyList.Clear();
-        // ÃÊ±âÈ­ ÀÛ¾÷...
+        // ï¿½Ê±ï¿½È­ ï¿½Û¾ï¿½...
     }
 
     public void RerollCountClear()
@@ -66,7 +67,7 @@ public class SynergyPage
         }
     }
 
-    // ½Ã³ÊÁö ¸®½ºÆ®¿¡ Áßº¹µÈ ¼ýÀÚ ÀÖ´ÂÁö È®ÀÎ
+    // ï¿½Ã³ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ßºï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ È®ï¿½ï¿½
     public bool CheckIsNumInSynergyList(Synergy randomSynergy)
     {
         if (IsNumInSynergyList.Contains(randomSynergy))

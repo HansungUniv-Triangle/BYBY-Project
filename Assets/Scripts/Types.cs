@@ -29,28 +29,20 @@ namespace Types
     {
         Health, // 체력
         Speed, // 속도
-        Shield, // 쉴드 비율
-        Vampire, // 피흡
+        Rolling, // 구르기
         Armor, // 방어력
-        Ultimate, // 필살기 횟수
-        DamageRatio, // 최종 데미지 비율
-        IntervalRatio, // 연사 비율
+        Calm // 차분함
     }
 
     public enum WeaponStat
-    {
+    { // 발사주기, 크기, 재장전, 탄장, 정확도, 데미지,
         Interval, // 연사력 주기적인 발사
-        ShotAtOnce, // 한번에 발사
+        Special, // 무기별 특화
+        Damage, // 기본 데미지
+        Range, // 사거리
         Reload, // 재장전 속도
         Bullet, // 탄창수
-        Range, // 사거리
-        ShieldBreak, // 쉴드에 입히는 데미지
-        Damage, // 기본 데미지
-        BulletSize, // 총알 크기
         Velocity, // 총알 속도
-        Special, // 무기별 특화
-        Pierce, // 관통수
-        MaxLevel, // 최대 성장 레벨
     }
 
     public enum CanvasType 
@@ -70,6 +62,24 @@ namespace Types
     {
         Variable,
         Floating
+    }
+    
+    public enum RoundState
+    {
+        None,
+        GameStart,
+        SynergySelect, 
+        WaitToStart,
+        RoundStart,
+        RoundEnd,
+        GameEnd,
+    }
+    
+    public enum Rarity
+    {
+        Common,
+        UnCommon,
+        Rare
     }
 }
 

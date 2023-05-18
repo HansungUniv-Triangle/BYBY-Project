@@ -1765,9 +1765,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   crossHair: {fileID: 857902445}
   joystick: {fileID: 1192764155}
-  resetPlayerLocation: {fileID: 2062290028}
   hitDamageText: {fileID: 212322210}
+  resetPositionButton: {fileID: 0}
   ultButton: {fileID: 87949604}
+  attackButton: {fileID: 0}
+  vibrateButton: {fileID: 0}
+  dodgeButton: {fileID: 0}
+  playerHpBarImage: {fileID: 0}
+  enemyHpBarImage: {fileID: 0}
+  timeText: {fileID: 0}
+  roundText: {fileID: 0}
+  settings:
+    speedText: {fileID: 0}
+    SpeedUp: {fileID: 0}
+    SpeedDown: {fileID: 0}
+    jumpText: {fileID: 0}
+    JumpUp: {fileID: 0}
+    JumpDown: {fileID: 0}
+    dodgeText: {fileID: 0}
+    DodgeUp: {fileID: 0}
+    DodgeDown: {fileID: 0}
+    shakeSensitivityText: {fileID: 0}
+    ShakeSensitivityUp: {fileID: 0}
+    ShakeSensitivityDown: {fileID: 0}
+    shootDistanceText: {fileID: 0}
+    ShootDistanceUp: {fileID: 0}
+    ShootDistanceDown: {fileID: 0}
+    ReverseHorizontalMove: {fileID: 0}
 --- !u!4 &147223794
 Transform:
   m_ObjectHideFlags: 0
@@ -4657,9 +4681,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 35a88709487955644b8e22917569e085, type: 2}
   - {fileID: 11400000, guid: d3b44127e1f167c4db872941d3e1baeb, type: 2}
   - {fileID: 11400000, guid: 99ca88d60b48d7b459b8d5ab7e992fe1, type: 2}
-  synergySelectPanel: {fileID: 0}
-  currentPage: 0
-  spawnPointOrigin: {fileID: 318385336}
+  _spawnPointOrigin: {fileID: 0}
 --- !u!1 &557122978
 GameObject:
   m_ObjectHideFlags: 0
@@ -5617,8 +5639,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 683401466}
-  - component: {fileID: 683401469}
-  - component: {fileID: 683401468}
   m_Layer: 0
   m_Name: Manager
   m_TagString: Untagged
@@ -5641,148 +5661,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &683401468
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 683401464}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6cdd7357cef44014cb458ed6e5e98f14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  AutoUpdate: 0
-  MapWidth: 64
-  MapHeight: 64
-  Seed: 0
-  NoiseScale: 30
-  Offset: {x: 0, y: 0}
-  Octaves: 3
-  Persistance: 0.69
-  Lacunarity: 2.21
-  Offset3D: {x: 0, y: 0, z: 0}
-  Scale: 0.07
-  NoneThreshold: 0.38
-  SandThreshold: 0.6
-  BlockThreshold: 0.47
-  TreeThreshold: 0.04
-  TerrainHeight: 15
-  TerrainBaseHeight: 6
-  ChunkSize: {x: 8, y: 64, z: 8}
-  WorldChunkWidth: 8
-  WorldChunkHeight: 8
-  WoodHeight: 6
-  LeafLength: 3
-  LeafHeight: 3
-  BlockPrefab: {fileID: 816225532686834975, guid: 80bff01fa4349dd49ad27151436bf1fe,
-    type: 3}
-  ChunkPrefab: {fileID: 6540796871913182244, guid: 530366b1a242d9749ad4553f4a9925ef,
-    type: 3}
-  BarrierPrefab: {fileID: 213965518067091350, guid: f8aca200eadf34ab4b7720d104086169,
-    type: 3}
-  Blocks:
-  - Name: Air
-    _type: 0
-    _solidType: 0
-    _transparencyType: 0
-    _maxHP: 0
-    _frontFaceTextureID: 0
-    _rightFaceTextureID: 0
-    _topFaceTextureID: 0
-    _backFaceTextureID: 0
-    _leftFaceTextureID: 0
-    _bottomFaceTextureID: 0
-  - Name: Grass
-    _type: 1
-    _solidType: 1
-    _transparencyType: 0
-    _maxHP: 3
-    _frontFaceTextureID: 43
-    _rightFaceTextureID: 43
-    _topFaceTextureID: 15
-    _backFaceTextureID: 43
-    _leftFaceTextureID: 43
-    _bottomFaceTextureID: 52
-  - Name: Dirt
-    _type: 2
-    _solidType: 1
-    _transparencyType: 0
-    _maxHP: 2
-    _frontFaceTextureID: 52
-    _rightFaceTextureID: 52
-    _topFaceTextureID: 52
-    _backFaceTextureID: 52
-    _leftFaceTextureID: 52
-    _bottomFaceTextureID: 52
-  - Name: Stone
-    _type: 3
-    _solidType: 1
-    _transparencyType: 0
-    _maxHP: 5
-    _frontFaceTextureID: 39
-    _rightFaceTextureID: 39
-    _topFaceTextureID: 39
-    _backFaceTextureID: 39
-    _leftFaceTextureID: 39
-    _bottomFaceTextureID: 39
-  - Name: Sand
-    _type: 4
-    _solidType: 1
-    _transparencyType: 0
-    _maxHP: 2
-    _frontFaceTextureID: 57
-    _rightFaceTextureID: 57
-    _topFaceTextureID: 57
-    _backFaceTextureID: 57
-    _leftFaceTextureID: 57
-    _bottomFaceTextureID: 57
-  - Name: Wood
-    _type: 5
-    _solidType: 1
-    _transparencyType: 0
-    _maxHP: 4
-    _frontFaceTextureID: 1
-    _rightFaceTextureID: 1
-    _topFaceTextureID: 81
-    _backFaceTextureID: 1
-    _leftFaceTextureID: 1
-    _bottomFaceTextureID: 81
-  - Name: Leaf
-    _type: 6
-    _solidType: 1
-    _transparencyType: 1
-    _maxHP: 1
-    _frontFaceTextureID: 76
-    _rightFaceTextureID: 76
-    _topFaceTextureID: 76
-    _backFaceTextureID: 76
-    _leftFaceTextureID: 76
-    _bottomFaceTextureID: 76
-  - Name: Bedrock
-    _type: 7
-    _solidType: 1
-    _transparencyType: 0
-    _maxHP: 0
-    _frontFaceTextureID: 68
-    _rightFaceTextureID: 68
-    _topFaceTextureID: 68
-    _backFaceTextureID: 68
-    _leftFaceTextureID: 68
-    _bottomFaceTextureID: 68
---- !u!114 &683401469
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 683401464}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 02f31eb29cb19e9428ce907e2643e467, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &688429399
 GameObject:
   m_ObjectHideFlags: 0
@@ -7375,8 +7253,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e122425d0039244168b49950048a552b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  move: {fileID: 0}
-  SubCrossHairTransform: {fileID: 857902445}
   MaxAimingRange: 120
   Speed: 15
   ReverseMove: 1
@@ -16235,13 +16111,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6d1e8f1a9529004fa093e4fdd6139cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
   Speed: 11
   gravity: 15
   jumpForce: 7
   dodgeForce: 4
   dodgeFrequency: 0.1
-  ReverseHorizontalMove: 0
   isCameraFocused: 0
 --- !u!1 &1975676279
 GameObject:
@@ -16811,7 +16685,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 683401468}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: WorldManager, Assembly-CSharp
         m_MethodName: GeneratorMap
         m_Mode: 1

@@ -28,29 +28,29 @@ public class TouchRotateCamera : MonoBehaviour, IBeginDragHandler, IDragHandler,
 
     private void Update()
     {
-        if (camPivot == null)
-        {
-            Debug.Log("is null");
-            if (GameManager.Instance.NetworkManager.LocalCharacter)
-            {
-                Debug.Log("find character");
-                camPivot = GameManager.Instance.NetworkManager.LocalCharacter.gameObject.transform;
-            }
-        }
-        else
-        {
-            Debug.Log("im ready");
-            isReady = true;
-        }
+        FindCamPivot();
     }
 
     private void OnEnable()
     {
         if (!isReady) return;
-        
+
         Quaternion rotation = camPivot.rotation;
         xAngle = 0;
         yAngle = rotation.eulerAngles.y;
+    }
+
+    private void FindCamPivot()
+    {
+        if (camPivot == null)
+        {
+            if (GameManager.Instance.NetworkManager.LocalCharacter)
+            {
+                camPivot = GameManager.Instance.NetworkManager.LocalCharacter.transform;
+                isReady = true;
+                OnEnable();
+            }
+        }
     }
 
     public void OnBeginDrag(PointerEventData eventData)
