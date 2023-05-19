@@ -45,21 +45,17 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
 
     public void SetSynergyPageManager(SynergyPageManager synergyPageManager)
     {
-        //synergyPage.Clear();
-        GameObject instance = Instantiate(prefabSynergyPage, transform.position, Quaternion.identity, GameObject.Find("ItemSelectPanel(Clone)").transform);
-        instance.transform.SetSiblingIndex(3);
-        for (int i = 0; i < instance.GetComponentsInChildren<Button>().Length; i++)
-        {
-            instance.GetComponentsInChildren<Button>()[i].onClick.AddListener(() => synergyPageManager.SelectSynergy());
-        }
-
         this.synergyPageManager = synergyPageManager;
     }
 
     public GameObject SpawnSynergy(Transform spawnPoint)
     {
-        var instance = Instantiate(prefabSynergyPage, spawnPoint.position, Quaternion.identity, gameObject.transform);         
-
+        var instance = Instantiate(prefabSynergyPage, spawnPoint.position, Quaternion.identity, gameObject.transform);
+        instance.transform.SetSiblingIndex(3);
+        for (int i = 0; i < instance.GetComponentsInChildren<Button>().Length; i++)
+        {
+            instance.GetComponentsInChildren<Button>()[i].onClick.AddListener(() => synergyPageManager.SelectSynergy());
+        }
         return instance;
     }
 
@@ -68,7 +64,7 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
         for (int i = 1; i < synergyPage.synergyObj.transform.childCount; i++)
         {
             GameObject child = synergyPage.synergyObj.transform.GetChild(i).gameObject;
-
+            Debug.Log(child);
             if (child != synergyButton)
             {
                 child.GetComponent<CanvasGroup>().alpha = 0.5f;
