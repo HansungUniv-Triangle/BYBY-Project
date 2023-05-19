@@ -1,5 +1,6 @@
 ﻿using DG.Tweening;
 using Types;
+using UnityEngine;
 
 namespace Network
 {
@@ -13,7 +14,7 @@ namespace Network
                 
                 DOTween.Sequence()
                     .OnStart(() => RemainBullet--)
-                    .AppendCallback(() => SpawnProjectile(WeaponTransform))
+                    .AppendCallback(() => SpawnProjectile(ShootPointTransform))
                     .AppendCallback(() => AddCharAdditionStat(CharStat.Speed, +speedValue))
                     .AppendInterval(0.1f)
                     .AppendCallback(() => AddCharAdditionStat(CharStat.Speed, -speedValue));

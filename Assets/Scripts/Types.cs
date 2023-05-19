@@ -81,5 +81,10 @@ namespace Types
         UnCommon,
         Rare
     }
+
+    public enum HitEffectType { 
+        Everything,
+        Player
+    }
 }
 
