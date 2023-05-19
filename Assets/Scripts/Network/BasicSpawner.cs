@@ -15,8 +15,8 @@ namespace Network
 
         [SerializeField]
         private NetworkPrefabRef NetworkManagerPrefab;
-        private NetworkObject NetworkManager;
-
+        private NetworkManager _networkManager;
+        
         private void OnGUI()
         {
             if (_runner == null)
@@ -51,11 +51,16 @@ namespace Network
         {
             if (player.PlayerId == 0)
             {
-                runner.Spawn(NetworkManagerPrefab);
+                var obj = runner.Spawn(NetworkManagerPrefab);
+                _networkManager = obj.GetComponent<NetworkManager>();
             }
         }
+
+        public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
+        {
+            _networkManager.OnPlayerLeft(player);
+        }
         
-        public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
         public void OnConnectedToServer(NetworkRunner runner) { }
         public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
         public void OnDisconnectedFromServer(NetworkRunner runner) { }

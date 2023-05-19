@@ -13,6 +13,8 @@ public class GameManager : Singleton<GameManager>
 {
     private GameObject _uiLoadingPrefab;
     private GameObject _uiLoading;
+    private GameObject _uiDisconnectPrefab;
+    private GameObject _uiDisconnect;
 
     [SerializeField]
     private UIHolder.UIHolder _uiHolder;
@@ -51,12 +53,12 @@ public class GameManager : Singleton<GameManager>
     {
         SynergyList = Resources.LoadAll<Synergy>(Path.Synergy).ToList();
         _uiLoadingPrefab = Resources.Load(Path.Loading) as GameObject;
+        _uiDisconnectPrefab = Resources.Load(Path.Disconnect) as GameObject;
     }
 
     private void Start()
     {
         PlayerBehaviorAnalyzer = new PlayerBehaviorAnalyzer();
-        ResetBehaviourEventCount();
     }
 
     public void ResetBehaviourEventCount()
@@ -78,6 +80,10 @@ public class GameManager : Singleton<GameManager>
     public Dictionary<BehaviourEvent, int> GetBehaviourEventCount()
     {
         behaviourEventCount[BehaviourEvent.회피] -= behaviourEventCount[BehaviourEvent.피격];
+        if (behaviourEventCount[BehaviourEvent.회피] < 0)
+        {
+            behaviourEventCount[BehaviourEvent.회피] = 0;
+        }
         behaviourEventCount[BehaviourEvent.명중] = (int)(hitCount / (float)shootCount * 100f);
         behaviourEventCount[BehaviourEvent.특화] = 50;
         return behaviourEventCount;
@@ -166,6 +172,44 @@ public class GameManager : Singleton<GameManager>
         {
             AddLoadingUI();
             _uiLoading.SetActive(false);
+        }
+    }
+    
+    private void AddDisconnectUI()
+    {
+        GameObject canvas = GameObject.Find("Canvas");
+        if (canvas)
+        { 
+            _uiDisconnect = Instantiate(_uiDisconnectPrefab, canvas.transform);
+            return;
+        }
+
+        throw new Exception("로딩 UI, 캔버스가 없음");
+    }
+    
+    public void ActiveDisconnectUI()
+    {
+        if (_uiDisconnect)
+        {
+            _uiDisconnect.SetActive(true);
+        }
+        else
+        {
+            AddDisconnectUI();
+            _uiDisconnect.SetActive(true);
+        }
+    }
+    
+    public void DeActiveDisconnectUI()
+    {
+        if (_uiDisconnect)
+        {
+            _uiDisconnect.SetActive(false);
+        }
+        else
+        {
+            AddLoadingUI();
+            _uiDisconnect.SetActive(false);
         }
     }
 

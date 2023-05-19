@@ -49,8 +49,12 @@ namespace Network
                 Debug.LogError("ProjectileBase가 2번 초기화 되었습니다.");
             }
             
+            if (!HasStateAuthority)
+            {
+                gameObject.layer = LayerMask.NameToLayer("Enemy");
+            }
+            
             _projectileHolder = holder;
-
             IndividualVelocity = 0;
             IndividualDamage = 0;
         }
@@ -62,11 +66,6 @@ namespace Network
 
         public override void Spawned()
         {
-            if (!HasStateAuthority)
-            {
-                gameObject.layer = LayerMask.NameToLayer("Enemy");
-            }
-            
             GameManager.Instance.NetworkManager.AddNetworkObjectInList(Object);
         }
 
@@ -86,7 +85,7 @@ namespace Network
             
             UpdateProjectile();
             
-            if (IsExpirationProjectile())
+            if (IsExpirationProjectile() &&NetworkActive)
             {
                 if (_projectileHolder.isMainWeapon && Distance > MaxRange)
                 {

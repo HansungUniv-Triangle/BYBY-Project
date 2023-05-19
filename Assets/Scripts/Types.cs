@@ -71,8 +71,9 @@ namespace Types
         SynergySelect, 
         WaitToStart,
         RoundStart,
-        RoundEndResult,
-        RoundEndAnalysis,
+        RoundEnd,
+        RoundResult,
+        RoundAnalysis,
         GameEnd,
     }
     

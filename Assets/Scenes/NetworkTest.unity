@@ -950,7 +950,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _uiHolder: {fileID: 0}
-  _synergyList: []
   mainWeaponArray:
   - RawGuidValue: 613db97d09b872848b8e308bae6c0147
   - RawGuidValue: 7f4e05c005528794984ac0c2d1b8d793
@@ -964,6 +963,8 @@ MonoBehaviour:
   - RawGuidValue: 1551d93755355834387741eb44046ccd
   - RawGuidValue: 723f5f3e32b663e4da87e0bbb0de1330
   selectSubWeaponNum: 0
+  shootCount: 0
+  hitCount: 0
 --- !u!4 &923374320
 Transform:
   m_ObjectHideFlags: 0

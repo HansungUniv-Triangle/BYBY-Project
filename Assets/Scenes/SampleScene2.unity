@@ -1771,10 +1771,14 @@ MonoBehaviour:
   attackButton: {fileID: 0}
   vibrateButton: {fileID: 0}
   dodgeButton: {fileID: 0}
+  disconnectButton: {fileID: 0}
   playerHpBarImage: {fileID: 0}
   enemyHpBarImage: {fileID: 0}
+  gameUIGroup: {fileID: 0}
   timeText: {fileID: 0}
   roundText: {fileID: 0}
+  playerScoreText: {fileID: 0}
+  enemyScoreText: {fileID: 0}
   settings:
     speedText: {fileID: 0}
     SpeedUp: {fileID: 0}
@@ -3334,6 +3338,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be6c83d095a8a18449cb8f31f50df422, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  distance: 10
+  height: 5
+  smoothSpeed: 0.25
+  horizontalSpeed: 0.1
+  _worldViewPos: {fileID: 0}
 --- !u!1 &364444293
 GameObject:
   m_ObjectHideFlags: 0
@@ -4660,27 +4669,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabPanel: {fileID: 786599049981614816, guid: d38e6ebbfda0bb849a06419a0a33eb8f,
     type: 3}
-  commonSynergyList:
-  - {fileID: 11400000, guid: 4dd813c273201e3499f90b7ed0bdda15, type: 2}
-  - {fileID: 11400000, guid: 00d4c3ca0825c0040a3290d5b5b65b61, type: 2}
-  - {fileID: 11400000, guid: 7b8e0f607fe4e1347953888d3abd9100, type: 2}
-  - {fileID: 11400000, guid: 6201d83668f0ab745bfb55e53cad71c2, type: 2}
-  - {fileID: 11400000, guid: 60d33938e72a537468fb088151ae39b0, type: 2}
-  - {fileID: 11400000, guid: 534061533dbb305488d9f526bf571bfc, type: 2}
-  uncommonSynergyList:
-  - {fileID: 11400000, guid: 6f1cfa86a08817547a030f8efbd152fe, type: 2}
-  - {fileID: 11400000, guid: a4277ab6cf41a5c47933cc90f4fd10f0, type: 2}
-  - {fileID: 11400000, guid: c260fd7c4b53a7a4882408a1bed91b8e, type: 2}
-  - {fileID: 11400000, guid: ef9a57b900e9576458696bd8c3676952, type: 2}
-  - {fileID: 11400000, guid: 0bbddc0b4dc99e846a602e1163729b1d, type: 2}
-  - {fileID: 11400000, guid: 103bdff2f5d1e5649850a611572ee66c, type: 2}
-  rareSynergyList:
-  - {fileID: 11400000, guid: de5f01e8f91286b44bcc3a8f9badf8d6, type: 2}
-  - {fileID: 11400000, guid: 084c5e53da8b83e43a5587fa155ece30, type: 2}
-  - {fileID: 11400000, guid: 18f88ed32537d784fb380fa0ee26b690, type: 2}
-  - {fileID: 11400000, guid: 35a88709487955644b8e22917569e085, type: 2}
-  - {fileID: 11400000, guid: d3b44127e1f167c4db872941d3e1baeb, type: 2}
-  - {fileID: 11400000, guid: 99ca88d60b48d7b459b8d5ab7e992fe1, type: 2}
   _spawnPointOrigin: {fileID: 0}
 --- !u!1 &557122978
 GameObject:

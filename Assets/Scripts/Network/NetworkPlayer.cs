@@ -25,7 +25,7 @@ namespace Network
         {
             if (NowHp < 0)
             {
-                _gameManager.NetworkManager.SetWinner(Object.StateAuthority);
+                _gameManager.NetworkManager.EndedRound();
             }
             
             if (HasStateAuthority)
@@ -183,16 +183,19 @@ namespace Network
             }
         }
 
-        public void AddCharacterHitData(NetworkObject networkObject, int damage)
+        public void AddCharacterHitData(NetworkObject networkObject, int damage, bool isMainWeapon)
         {
             if (CharacterHitList.Count == CharacterHitList.Capacity)
             {
                 CharacterHitList.Remove(CharacterHitList.Get(0));
             }
             
-            _gameManager.hitCount++;
-            _gameManager.AddBehaviourEventCount(BehaviourEvent.피해, damage);
-            
+            if (isMainWeapon)
+            {
+                _gameManager.hitCount++;
+                _gameManager.AddBehaviourEventCount(BehaviourEvent.피해, damage);
+            }
+
             CharacterHitList.Add(new CharacterHitData
             {
                 Tick = Runner.Tick,
@@ -640,10 +643,9 @@ namespace Network
         
         public override void FixedUpdateNetwork()
         {
-            if(!HasStateAuthority) return;
+            if(!HasStateAuthority || GameManager.Instance.NetworkManager.GameRoundState != RoundState.RoundStart) return;
 
             var shakeMagnitude = Input.acceleration.magnitude;
-
             if (shakeMagnitude > _shakeDodgeThreshold)    //if (Input.GetKeyDown(KeyCode.Space) && !isDodge)
             {
                 Dodge();
@@ -654,13 +656,12 @@ namespace Network
             {
                 Shoot(AttackType.Basic);
             }
-            
-            if (_joystick is not null)
+
+            if (_joystick is not null && _target is not null)
             {
                 CharacterMove();
+                CatRotate = _catController.Rotation;
             }
-
-            CatRotate = _catController.Rotation;
             
             var hitColliders = Physics.OverlapSphere(transform.position, 10f, (int)Layer.Enemy);
             foreach (var hitCollider in hitColliders)

@@ -53,11 +53,18 @@ public class SynergyPageManager : MonoBehaviour
         else
         {
             DOTween.Sequence()
+                .OnStart(ApplySelectedSynergyToCharacter)
+                .OnStart(() =>
+                {
+                    foreach (var synergyPage in _synergyPages)
+                    {
+                        synergyPage.synergyObj.transform.DOKill();
+                    }
+                })
                 .Append(_thisRectTransform.DOAnchorPosY(_canvasHeight, 1f))
                 .OnComplete(() =>
                 {
                     synergyPanel.SetActive(false);
-                    ApplySelectedSynergyToCharacter();
                 });
         }
     }
