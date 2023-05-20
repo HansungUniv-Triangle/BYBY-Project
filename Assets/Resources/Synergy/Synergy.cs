@@ -29,7 +29,7 @@ public class Synergy : ScriptableObject
             Debug.LogWarning($"{synergyName}에 중복된 stat이 존재합니다.");
         }
 
-        if (charStatList.Count == 0 || weaponStatList.Count == 0)
+        if (charStatList.Count == 0 && weaponStatList.Count == 0)
         {
             Debug.LogWarning($"{synergyName}에 시너지 정보가 없어요.");
         }

@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16dae06ff98f4f57b8499b1ebbcb3123, type: 3}
+  m_Name: Cannon
+  m_EditorClassIdentifier: 
+  sprite: {fileID: 0}
+  weaponName: "\uCE90\uB17C"
+  weaponExplain: "\uB300\uD3EC\uC785\uB2C8\uB2E4. \uB113\uC740 \uBC94\uC704\uB97C
+    \uBD80\uC154\uBC84\uB9BD\uB2C8\uB2E4."
+  weaponPrefabRef:
+    RawGuidValue: 90cb8f3dbab3e774aba3c9e03092e851
+  bulletPrefabRef:
+    RawGuidValue: e45726408c37aa140bf2bb2b7cc75c1f
+  bulletShoot: {fileID: 19813786, guid: b0e7b6d77eafddf48a3ad293dc71a53e, type: 3}
+  bulletHit: {fileID: 19809874, guid: 51b115f247c922a47aa9a80144450be4, type: 3}
+  bulletHitToPlayer: {fileID: 19835194, guid: 16fb2cc8f64c08d46a5f2d055cc4f0c2, type: 3}
+  isMainWeapon: 1

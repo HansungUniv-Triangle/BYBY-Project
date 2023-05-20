@@ -11,7 +11,7 @@ namespace Network
         {
             if (CanAttack())
             {
-                NetworkPlayer player = GameManager.Instance.NetworkManager.LocalCharacter;
+                NetworkPlayer player = GameManager.Instance.NetworkManager.PlayerCharacter;
                 if (player.GetNowHp() < (player.GetMaxHp() / 3))
                 {
                     var armor = player.GetCharStat(CharStat.Armor);

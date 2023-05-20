@@ -14,13 +14,13 @@ public class WorldGeneratorEditor : Editor
         {
             if(worldGenerator.AutoUpdate)
             {
-                worldGenerator.GeneratorMap();
+                worldGenerator.GeneratorMap(1);
             }
         }
 
         if (GUILayout.Button ("Generate"))
         {
-            worldGenerator.GeneratorMap();
+            worldGenerator.GeneratorMap(1);
         }
     }
 }

@@ -1,11 +1,15 @@
+using System;
+using System.Collections;
+using Fusion;
 using UnityEngine;
 using Types;
 using NetworkPlayer = Network.NetworkPlayer;
+using Random = UnityEngine.Random;
 
 public class PlayerCamera : MonoBehaviour
 {
-    private bool _isReady = false;
-    
+    private CameraMode _cameraMode;
+
     private Transform _target;
     private Transform _player;
     private NetworkPlayer _networkPlayer;
@@ -20,6 +24,19 @@ public class PlayerCamera : MonoBehaviour
 
     private RaycastHit _hit;
     private Ray _ray;
+
+    public float distance = 10.0f; // 카메라와 캐릭터 사이의 거리
+    public float height = 5.0f; // 카메라의 높이
+    public float smoothSpeed = 0.25f; // 카메라 이동 속도
+    public float horizontalSpeed = 0.1f; // 카메라 수평 이동 속도
+    private float _timer;
+    public Transform _worldViewPos;
+    
+    private void Start()
+    {
+        _cameraMode = CameraMode.None;
+        _timer = 11f;
+    }
     
     public void AddPlayer(Transform player)
     {
@@ -29,19 +46,76 @@ public class PlayerCamera : MonoBehaviour
         _cameraFocusPos = player.transform.Find("CameraFocusPos");
         _originalCameraPos = _cameraPos.localPosition;
         _originalCameraFocusPos = _cameraFocusPos.localPosition;
-        _isReady = (_target != null);
+
+        if (_target != null)
+        {
+            _cameraMode = CameraMode.Player;
+        }
     }
     
     public void AddEnemy(Transform enemy)
     {
         _target = enemy;
-        _isReady = (_player != null);
+
+        if (_player != null)
+        {
+            _cameraMode = CameraMode.Player;
+        }
+    }
+
+    public void ChangeCameraMode(CameraMode cameraMode)
+    {
+        _cameraMode = cameraMode;
+        _timer = 11f;
     }
 
     private void FixedUpdate()
     {
-        if(!_isReady) return;
+        switch (_cameraMode)
+        {
+            case CameraMode.None:
+                WorldView();
+                break;
+            case CameraMode.Game:
+                GameView();
+                break;
+            case CameraMode.Winner:
+                RotateCamera(GameManager.Instance.NetworkManager.IsPlayerWin ? _player : _target);
+                break;
+            case CameraMode.Player:
+                RotateCamera(_player);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
 
+    private void WorldView()
+    {
+        RotateCamera(_worldViewPos);
+    }
+
+    private void RotateCamera(Transform target)
+    {
+        if (_timer > 10.0f)
+        {
+            var randomPosition = Random.insideUnitSphere * distance;
+            randomPosition = target.position + randomPosition;
+            randomPosition.y = Mathf.Max(randomPosition.y, target.position.y + height);
+            transform.position = randomPosition;
+            _timer = 0;
+        }
+        else
+        {
+            var newPosition = Quaternion.AngleAxis(horizontalSpeed, Vector3.up) * transform.position;
+            transform.position = Vector3.Lerp(transform.position, newPosition, smoothSpeed);
+            transform.LookAt(target);
+            _timer += Time.deltaTime;
+        }
+    }
+
+    private void GameView()
+    {
         var position = _player.position;
         _ray.origin = position;
         _ray.direction = (_cameraPos.position - position).normalized;
@@ -61,14 +135,7 @@ public class PlayerCamera : MonoBehaviour
                 _cameraFocusPos.localPosition = _originalCameraFocusPos;
         }
 
-        CameraMovement();
-    }
-
-    private void CameraMovement()
-    {
-        //_rotationSpeed = _networkPlayer.GetCharStat(CharStat.Speed).Total;
-
-        if (NetworkPlayer.isCameraFocused)
+        if (_networkPlayer.IsCameraFocused)
         {
             transform.position = Vector3.Lerp(transform.position, _cameraFocusPos.position, Time.deltaTime * _moveSpeed);
             transform.rotation = Quaternion.Lerp(transform.rotation, _cameraFocusPos.rotation, Time.deltaTime * _rotationSpeed);

@@ -44,7 +44,7 @@ public class ChangeJoystickBasedButtonsPos : MonoBehaviour, IPointerDownHandler
     private void ChangePlayerGun(bool isLeft)
     {
         if (networkPlayer is null)
-            networkPlayer = GameManager.Instance.NetworkManager.LocalCharacter.GetComponent<Network.NetworkPlayer>();
+            networkPlayer = GameManager.Instance.NetworkManager.PlayerCharacter.GetComponent<Network.NetworkPlayer>();
 
         networkPlayer.ChangeGunPos(isLeft);
     }
