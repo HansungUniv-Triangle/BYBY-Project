@@ -62,7 +62,6 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
         for (int i = 1; i < synergyPage.synergyObj.transform.childCount; i++)
         {
             GameObject child = synergyPage.synergyObj.transform.GetChild(i).gameObject;
-            Debug.Log(child);
             if (child != synergyButton)
             {
                 child.GetComponent<CanvasGroup>().alpha = 0.5f;
@@ -109,6 +108,26 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
             {
                 child.transform.GetChild(0).GetComponentsInChildren<Image>()[0].sprite = synergyPage.synergies[i - 1].sprite;
                 child.transform.GetChild(3).GetComponentsInChildren<TextMeshProUGUI>()[0].text = synergyPage.synergies[i - 1].synergyExplain;
+                child.transform.GetChild(4).GetComponentsInChildren<Image>()[0].GetComponentsInChildren<TextMeshProUGUI>()[0].text = synergyPage.synergyRecommendationPercentage[i - 1].ToString() + "%";
+                child.GetComponent<CanvasGroup>().alpha = 1f;
+            }
+        }
+    }
+    
+    public void ApplyWeaponToObj(SynergyPage synergyPage)
+    {
+        // 시너지 그려서 화면에 적용
+        for (int i = 0; i < synergyPage.synergyObj.transform.childCount; i++)
+        {
+            GameObject child = synergyPage.synergyObj.transform.GetChild(i).gameObject;
+            if (i == 0)
+            {
+                child.GetComponent<TextMeshProUGUI>().text = "보조 무기";
+            }
+            else
+            {
+                child.transform.GetChild(0).GetComponentsInChildren<Image>()[0].sprite = synergyPage.weapons[i - 1].sprite;
+                child.transform.GetChild(3).GetComponentsInChildren<TextMeshProUGUI>()[0].text = synergyPage.weapons[i - 1].weaponExplain;
                 child.transform.GetChild(4).GetComponentsInChildren<Image>()[0].GetComponentsInChildren<TextMeshProUGUI>()[0].text = synergyPage.synergyRecommendationPercentage[i - 1].ToString() + "%";
                 child.GetComponent<CanvasGroup>().alpha = 1f;
             }

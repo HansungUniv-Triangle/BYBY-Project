@@ -47,7 +47,7 @@ public class GameManager : Singleton<GameManager>
     protected override void Initiate()
     {
         SynergyList = Resources.LoadAll<Synergy>(Path.Synergy).ToList();
-        WeaponList = Resources.LoadAll<Weapon>(Path.Weapon).ToList();
+        //WeaponList = Resources.LoadAll<Weapon>(Path.Weapon).ToList();
         _uiLoadingPrefab = Resources.Load(Path.Loading) as GameObject;
         _uiDisconnectPrefab = Resources.Load(Path.Disconnect) as GameObject;
     }

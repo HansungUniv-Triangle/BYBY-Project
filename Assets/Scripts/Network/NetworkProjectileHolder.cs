@@ -13,8 +13,6 @@ namespace Network
     public abstract class NetworkProjectileHolder : NetworkBehaviour
     {
         private List<NetworkObject> _projectileList;
-        private NetworkPrefabRef _projectileObject;
-        
         protected BaseStat<WeaponStat> _baseWeaponStat;
         protected Transform WeaponTransform;
         protected Transform ShootPointTransform;
@@ -22,10 +20,24 @@ namespace Network
         protected bool IsDoneShootAction;
         protected int RemainBullet;
         protected TextMeshProUGUI BulletText;
-        
-        public bool IsMainWeapon { get; private set; }
-        
-        [Networked] protected TickTimer delay { get; set; }
+        protected TickTimer delay;
+
+        [Networked] private int NetWeaponData { get; set; } = -1;
+
+        private Weapon _weaponData;
+        public Weapon WeaponData
+        {
+            get
+            {
+                if (_weaponData is null && NetWeaponData != -1)
+                {
+                    _weaponData = GameManager.Instance.WeaponList[NetWeaponData];
+                }
+
+                return _weaponData;
+            }
+            private set => _weaponData = value;
+        }
 
         private void Awake()
         {
@@ -55,7 +67,7 @@ namespace Network
 
         private void Start()
         {
-            if (IsMainWeapon)
+            if (WeaponData.isMainWeapon)
             {
                 RemainBullet = (int)GetWeaponStat(WeaponStat.Bullet).Total;
             }
@@ -74,10 +86,10 @@ namespace Network
             //BulletText.text = RemainBullet.ToString();
         }
 
-        public void InitialHolder(bool isMain, NetworkPrefabRef prefabRef)
+        public void InitialHolder(Weapon weaponData)
         {
-            IsMainWeapon = isMain;
-            _projectileObject = prefabRef;
+            WeaponData = weaponData;
+            NetWeaponData = GameManager.Instance.WeaponList.FindIndex(data => data.Equals(weaponData));
         }
 
         public void SetTarget(Vector3 target)
@@ -98,14 +110,14 @@ namespace Network
         private void InitializeProjectile(NetworkRunner runner, NetworkObject obj)
         {
             var objInit = obj.GetComponent<NetworkProjectileBase>();
-            objInit.Initialized(this);
+            objInit.Initialized(this, NetWeaponData);
         }
 
         protected NetworkObject SpawnProjectile(Transform transform)
         {
             var position = transform.position;
             var obj = Runner.Spawn(
-                _projectileObject, 
+                WeaponData.bulletPrefabRef, 
                 position, //+ position.TransformDirection(Vector3.forward), 
                 Quaternion.LookRotation(Target - position), 
                 Runner.LocalPlayer,

@@ -337,7 +337,7 @@ namespace Network
                     break;
                 case RoundState.RoundStart:
                     ViewRoundStart();
-                    SetTimerSec(180f);
+                    SetTimerSec(10f);
                     break;
                 case RoundState.RoundEnd:
                     OrganizeRound();
@@ -638,6 +638,8 @@ namespace Network
 
             return true;
         }
+        
+        
 
         private void SpawnPlayerCharacter(PlayerRef playerRef)
         {
@@ -649,11 +651,16 @@ namespace Network
             SpawnWeapon(playerRef, weaponData, spawnPosition, networkPlayerObject.transform);
         }
 
-        // ReSharper disable Unity.PerformanceAnalysis
         private void SpawnWeapon(PlayerRef playerRef, Weapon weaponData, Vector3 spawnPosition, Transform parent)
         {
-            var weapon = Runner.Spawn(weaponData.weaponPrefabRef, spawnPosition + Vector3.right + Vector3.up, Quaternion.identity, playerRef);
-            weapon.GetComponent<NetworkProjectileHolder>().InitialHolder(weaponData.isMainWeapon, weaponData.bulletPrefabRef);
+            var weapon = Runner.Spawn(
+                weaponData.weaponPrefabRef, 
+                spawnPosition + Vector3.right + Vector3.up, 
+                Quaternion.identity, 
+                playerRef
+            );
+            
+            weapon.GetComponent<NetworkProjectileHolder>().InitialHolder(weaponData);
             weapon.transform.SetParent(parent);
 
             if (weaponData.isMainWeapon)

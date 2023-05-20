@@ -35,7 +35,7 @@ namespace Network
                 Collider[] hitColliders = Physics.OverlapSphere(gameObject.transform.position, special, (int)Layer.Enemy);
                 if (hitColliders.Length > 0)
                 {
-                    GameManager.Instance.NetworkManager.AddCharacterHitData(Object, (int)Damage, _projectileHolder.IsMainWeapon);
+                    GameManager.Instance.NetworkManager.AddCharacterHitData(Object, (int)Damage, _projectileHolder.WeaponData.isMainWeapon);
                 }
 
                 IsHit = true;
