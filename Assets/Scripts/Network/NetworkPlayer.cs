@@ -311,7 +311,7 @@ namespace Network
             int[] amplitudes =
                 { 0, 60, 0, 30, 0, 30};
 
-            RDG.Vibration.Vibrate(pattern, amplitudes, -1, true);
+            RDG.Vibration.Vibrate(pattern, amplitudes, -1);
         }
         
         public void VibrateHeartBeat()
@@ -326,6 +326,7 @@ namespace Network
                 long[] pattern = { 0, 3, 100, 3, 1000, 0 };
                 int[] amplitudes = { 0, 1 };
 
+                isVibrateBeat = true;
                 RDG.Vibration.Vibrate(pattern, amplitudes, 0);
             }
         }
@@ -476,6 +477,7 @@ namespace Network
         private bool isWalk = true;
         private bool isJump = false;
         private bool isDodge = false;
+        private bool isDodgeReady = true;
         #endregion
 
         #region 애니메이션 관련 변수
@@ -623,8 +625,13 @@ namespace Network
 
         private void CharacterMove()
         {
-            var h = ReverseHorizontalMove ? -_joystick.Horizontal : _joystick.Horizontal;
-            var v = _joystick.Vertical;
+            var oh = ReverseHorizontalMove ? -_joystick.Horizontal : _joystick.Horizontal;
+            var ov = _joystick.Vertical;
+
+            var camAngle = _camera.transform.eulerAngles.z * Mathf.Deg2Rad;
+
+            var h = oh * Mathf.Cos(camAngle) - ov * Mathf.Sin(camAngle);
+            var v = oh * Mathf.Sin(camAngle) + ov * Mathf.Cos(camAngle);
 
             var speed = _baseCharStat.GetStat(CharStat.Speed).Total;
             speed = speed > 0 ? speed : 0;
@@ -632,6 +639,7 @@ namespace Network
             if (isDodge)
             {
                 var dodgeDir = lastMoveDir;
+                var dodgeForce = _baseCharStat.GetStat(CharStat.Rolling).Total;
 
                 dodgeDir.x *= dodgeForce;
                 dodgeDir.z *= dodgeForce;
@@ -698,17 +706,24 @@ namespace Network
 
         public void Dodge()
         {
-            if (!isDodge)
+            if (!isDodge && isDodgeReady)
             {
                 AnimationIdx = 8;
                 isDodge = true;
+                isDodgeReady = false;
                 DOTween.Sequence()
-                    .AppendInterval(0.15f)
-                    .OnComplete(() =>
+                    .AppendInterval(0.15f)  // 이동 시간
+                    .AppendCallback(() =>
                     {
                         isDodge = false;
                         isWalk = true;
+                        
+                    })
+                    .AppendInterval(0.5f)   // 대기 시간
+                    .OnComplete(() =>
+                    {
                         AnimationIdx = 1;
+                        isDodgeReady = true;
                     });
             }
         }
@@ -825,8 +840,14 @@ namespace Network
         public string IncreaseJump() { return (++jumpForce).ToString(); }
         public string DecreaseJump() { return (--jumpForce).ToString(); }
 
-        public string IncreaseDodge(){ return (++dodgeForce).ToString(); }
-        public string DecreaseDodge(){ return (--dodgeForce).ToString(); }
+        public string IncreaseDodge(){ 
+            _settingsStatlist.Add(new Stat<CharStat>(CharStat.Rolling, 1, 0).SetRatio(0));
+            return AdditionalWork(CharStat.Rolling);
+        }
+        public string DecreaseDodge(){
+            _settingsStatlist.Add(new Stat<CharStat>(CharStat.Rolling, -1, 0).SetRatio(0));
+            return AdditionalWork(CharStat.Rolling);
+        }
 
         public string IncreaseShakeSensitivity()
         {

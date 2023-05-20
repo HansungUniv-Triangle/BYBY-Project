@@ -1,6 +1,7 @@
 using UnityEngine;
 using Types;
 using NetworkPlayer = Network.NetworkPlayer;
+using TMPro;
 
 public class PlayerCamera : MonoBehaviour
 {
@@ -20,7 +21,38 @@ public class PlayerCamera : MonoBehaviour
 
     private RaycastHit _hit;
     private Ray _ray;
-    
+
+    #region UI Settings
+    public float zAngle;
+    private float zOffset = 0.10f;
+    private bool isGyroOn = true;
+
+    public void IncreaseZoffset(GameObject text) { text.GetComponent<TextMeshProUGUI>().text = (zOffset += 0.01f).ToString("F2"); }
+    public void DecreaseZoffset(GameObject text) { text.GetComponent<TextMeshProUGUI>().text = (zOffset -= 0.01f).ToString("F2"); }
+
+    public void ResetZangle() { zAngle = 0; }
+
+    public void ToggleGyro()
+    {
+        isGyroOn = !isGyroOn;
+        if (isGyroOn)
+            StartGyro();
+        else
+            StopGyro();
+    }
+
+    public void StartGyro() { Input.gyro.enabled = true; }
+    public void StopGyro() { 
+        Input.gyro.enabled = false;
+        ResetZangle();
+    }
+    #endregion
+
+    private void Awake()
+    {
+        StartGyro();
+    }
+
     public void AddPlayer(Transform player)
     {
         _player = player;
@@ -62,6 +94,7 @@ public class PlayerCamera : MonoBehaviour
         }
 
         CameraMovement();
+        CameraGyroRotate();
     }
 
     private void CameraMovement()
@@ -81,6 +114,13 @@ public class PlayerCamera : MonoBehaviour
             var targetRotation = Quaternion.LookRotation(relativePosition);
             transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * _rotationSpeed);
         }
+    }
+
+    private void CameraGyroRotate()
+    {
+        var gyroRotationRate = Input.gyro.rotationRateUnbiased;
+        zAngle = Mathf.Clamp(zAngle += gyroRotationRate.z * zOffset, -7.1f, 7.1f);
+        transform.Rotate(new Vector3(0, 0, zAngle));
     }
 
     public void ReverseCameraPos(bool isLeft)
