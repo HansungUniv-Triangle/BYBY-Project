@@ -37,6 +37,7 @@ namespace Network
             {
                 GameManager.Instance.NetworkManager.AddCharacterHitData(Object);
                 IsHit = true;
+                IsEnemyHit = true;
             }
         }
     }

@@ -251,8 +251,8 @@ PlayerSettings:
   AndroidTargetDevices: 0
   AndroidSplashScreenScale: 0
   androidSplashScreen: {fileID: 0}
-  AndroidKeystoreName: '{inproject}: user.keystore'
-  AndroidKeyaliasName: byby
+  AndroidKeystoreName: D:/files/Unity/BYBY/clone/user.keystore
+  AndroidKeyaliasName: bybykey
   AndroidBuildApkPerCpuArchitecture: 0
   AndroidTVCompatibility: 0
   AndroidIsGame: 1
@@ -800,6 +800,7 @@ PlayerSettings:
     Android: 1
   il2cppCompilerConfiguration: {}
   managedStrippingLevel:
+    Android: 1
     EmbeddedLinux: 1
     GameCoreScarlett: 1
     GameCoreXboxOne: 1

@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using DG.Tweening;
 using Fusion;
 using GameStatus;
 using Types;
 using UnityEngine;
 using UIHolder;
-using UnityEngine.UI;
 
 namespace Network
 {
@@ -308,10 +306,10 @@ namespace Network
         
         private void VibrateUlt()
         {
-            long[] pattern = 
+            long[] pattern =
                 { 0, 60, 20, 30, 20, 5};
-            int[] amplitudes = 
-                { 0, 2, 0, 1, 0, 1 };
+            int[] amplitudes =
+                { 0, 60, 0, 30, 0, 30};
 
             RDG.Vibration.Vibrate(pattern, amplitudes, -1, true);
         }
@@ -325,11 +323,10 @@ namespace Network
             }
             else
             {
-                long[] pattern = { 1000, 20, 1000, 20 };
+                long[] pattern = { 0, 3, 100, 3, 1000, 0 };
                 int[] amplitudes = { 0, 1 };
 
                 RDG.Vibration.Vibrate(pattern, amplitudes, 0);
-                isVibrateBeat = true;
             }
         }
     }
@@ -345,19 +342,28 @@ namespace Network
 
         public void ToggleShooting() { isShooting = !isShooting; }
 
-        private void Shoot(AttackType attackType, LineRenderer lineRenderer)    // 라인렌더러는 임시
+        private void ShootAllWeapons(AttackType attackType) {
+            var weapon = GetComponentsInChildren<NetworkProjectileHolder>();
+
+            foreach (var networkProjectileHolder in weapon)
+            {
+                Shoot(networkProjectileHolder, attackType);
+            }
+        }
+
+        private void Shoot(NetworkProjectileHolder nph, AttackType attackType)
         {
             if (!isShooting) return;
-            
+
             var aimRay = _camera.ScreenPointToRay(GetCrossHairPointInScreen());
             // 조준점으로 쏘는 레이의 원점이 플레이어 앞에서 시작되어야 한다.
             // 그렇지 않으면, 플레이어의 총알은 플레이어의 뒤에 있지만, 조준점에는 걸린 물체로 날아가게 된다. 한마디로 뒤로 쏘게 된다.
             var distCam = Vector3.Distance(_camera.transform.position, transform.position);
             var aimRayOrigin = aimRay.origin + aimRay.direction * distCam;
-            
+
             /* 총알이 날아갈 지점 구하기 */
-            _gunRay.origin = ShootPoint.position;
-            
+            _gunRay.origin = nph.ShootPointTransform.position;
+
             //Debug.DrawRay(aimRayOrigin, aimRay.direction * _shootDistance, Color.blue, 0.3f);
             if (Physics.Raycast(aimRayOrigin, aimRay.direction, out _hit, _shootDistance, shootRayMask))
             {
@@ -369,16 +375,14 @@ namespace Network
             }
             //Debug.DrawRay(_gunRay.origin, _gunRay.direction * _shootDistance, Color.magenta, 0.3f);
             targetPoint = _gunRay.origin + _gunRay.direction * _shootDistance;
-            
-            var weapon = GetComponentsInChildren<NetworkProjectileHolder>();
-            
-            foreach (var networkProjectileHolder in weapon)
+
+            if (Physics.Raycast(_gunRay, out _hit, _shootDistance, shootRayMask))
             {
-                networkProjectileHolder.SetTarget(targetPoint);
+                targetPoint = _hit.point;
             }
 
-            //LaserBeam(_gunRay, _shootDistance, attackType, lineRenderer);
-            RotateToTarget(GunPos, targetPoint, 8f, false);
+            RotateToTarget(nph.transform, targetPoint, 8f, false);
+            nph.SetTarget(targetPoint);
         }
 
         // private void LaserBeam(Ray gunRay, float aimDistance, AttackType attackType, LineRenderer lineRenderer)
@@ -486,14 +490,6 @@ namespace Network
         private GameUI _gameUI;
         private Camera _camera;
 
-        private void Start()
-        {
-            GunPos = transform.GetChild(2).transform;
-            moveDir = Vector3.zero;
-            _characterController = GetComponent<CharacterController>();
-            
-        }
-
         public override void Spawned()
         {
             _initPos = transform.position;
@@ -545,7 +541,6 @@ namespace Network
             
             moveDir = Vector3.zero;
             lastMoveDir = transform.forward;
-            GunPos = transform; // 총 위치로 수정해야함.
             ShootPoint = transform;
             ShotLine = Instantiate(ShotLine);
             UltLine = Instantiate(UltLine);
@@ -593,7 +588,8 @@ namespace Network
             // 임시 자동공격
             if (!isCameraFocused)
             {
-                Shoot(AttackType.Basic, ShotLine);
+                ShootAllWeapons(AttackType.Basic);
+                //Shoot(AttackType.Basic, ShotLine);
             }
             
             if (_joystick is not null)
@@ -789,7 +785,7 @@ namespace Network
 
         public void EndUlt()
         {
-            Shoot(AttackType.Ultimate, UltLine);
+            //Shoot(AttackType.Ultimate, UltLine);
             isCameraFocused = false;
             _canvasManager.SwitchUI(CanvasType.GameMoving);
         }
