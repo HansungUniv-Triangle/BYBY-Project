@@ -83,7 +83,7 @@ namespace Types
         UnCommon,
         Rare
     }
-    
+
     public enum BehaviourEvent
     {
         피격,
@@ -100,6 +100,10 @@ namespace Types
         None,
         Game,
         Winner,
+    }
+
+    public enum HitEffectType { 
+        Everything,
         Player
     }
 }

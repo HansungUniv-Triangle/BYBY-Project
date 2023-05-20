@@ -54,11 +54,11 @@ public class SynergyPage
         }
     }
 
-    public void FindSelectedSynergyInSynergies(string synergyName)
+    public void FindSelectedSynergyInSynergies(string synergyExplain)
     {
         for (int i = 0; i < synergies.Length; i++)
         {
-            if (synergyName == synergies[i].synergyName)
+            if (synergyExplain == synergies[i].synergyExplain)
             {
                 selectedSynergy = synergies[i];
             }

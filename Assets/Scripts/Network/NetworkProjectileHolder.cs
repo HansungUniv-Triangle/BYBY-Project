@@ -18,6 +18,7 @@ namespace Network
         private NetworkObject _projectileObject;
 
         protected Transform WeaponTransform;
+        public Transform ShootPointTransform { get; set; }
         protected Vector3 Target;
         protected bool IsDoneShootAction;
         protected int RemainBullet;
@@ -40,6 +41,14 @@ namespace Network
             _baseWeaponStat.AddStat(new Stat<WeaponStat>(WeaponStat.Reload, 10, 0));
             
             WeaponTransform = gameObject.transform;
+            
+            var shootPoint = transform.Find("ShootPoint");
+            if (shootPoint == null)
+            {
+                shootPoint = WeaponTransform;
+            }
+            ShootPointTransform = shootPoint;
+
             Target = gameObject.transform.forward;
             IsDoneShootAction = true;
         }

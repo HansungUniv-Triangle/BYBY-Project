@@ -37,7 +37,20 @@ namespace Network
         public float IndividualDamage;
 
         // 네트워크 관련
-        [Networked] protected NetworkBool IsHit { get; set; }
+        [Networked(OnChanged = nameof(HitEffect))] 
+        protected NetworkBool IsHit { get; set; }
+
+        private static void HitEffect(Changed<NetworkProjectileBase> changed)
+        {
+            changed.Behaviour.HitEffect();
+        }
+        private void HitEffect()
+        {
+            var hitType = IsEnemyHit ? HitEffectType.Player : HitEffectType.Everything;
+            EffectManager.Instance.PlayHitEffect(transform.position, -transform.forward, hitType);
+        }
+        [Networked] protected NetworkBool IsEnemyHit { get; set; }
+
         [Networked] public float Damage { get; set; }
         public float DamageSave;
 
@@ -67,6 +80,7 @@ namespace Network
         public override void Spawned()
         {
             GameManager.Instance.NetworkManager.AddNetworkObjectInList(Object);
+            EffectManager.Instance.PlayShootEffect(transform.position, transform.forward);
         }
 
         public override void Despawned(NetworkRunner runner, bool hasState)

@@ -13,8 +13,6 @@ GameObject:
   - component: {fileID: 8170153791668043271}
   - component: {fileID: 8170153791668043265}
   - component: {fileID: 1488259313}
-  - component: {fileID: 1488259314}
-  - component: {fileID: 1488259317}
   m_Layer: 5
   m_Name: Floating Joystick
   m_TagString: Untagged
@@ -113,32 +111,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canvasType: 1
---- !u!114 &1488259314
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8170153791668043269}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1ead6b2e3a8428b428d91b8aa196ee02, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isDoubleClicked: 0
-  button: {fileID: 0}
---- !u!114 &1488259317
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8170153791668043269}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d1559de75f45fbb4ab63801e8efdb70b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &8170153791961219457
 GameObject:
   m_ObjectHideFlags: 0

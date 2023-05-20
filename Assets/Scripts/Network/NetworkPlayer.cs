@@ -369,10 +369,10 @@ namespace Network
         
         private void VibrateUlt()
         {
-            long[] pattern = 
+            long[] pattern =
                 { 0, 60, 20, 30, 20, 5};
-            int[] amplitudes = 
-                { 0, 2, 0, 1, 0, 1 };
+            int[] amplitudes =
+                { 0, 60, 0, 30, 0, 30};
 
             RDG.Vibration.Vibrate(pattern, amplitudes, -1, true);
         }
@@ -386,11 +386,10 @@ namespace Network
             }
             else
             {
-                long[] pattern = { 1000, 20, 1000, 20 };
+                long[] pattern = { 0, 3, 100, 3, 1000, 0 };
                 int[] amplitudes = { 0, 1 };
 
                 RDG.Vibration.Vibrate(pattern, amplitudes, 0);
-                isVibrateBeat = true;
             }
         }
     }
@@ -409,19 +408,28 @@ namespace Network
             isShooting = !isShooting;
         }
 
-        private void Shoot(AttackType attackType)    // 라인렌더러는 임시
+        private void ShootAllWeapons(AttackType attackType) {
+            var weapon = GetComponentsInChildren<NetworkProjectileHolder>();
+
+            foreach (var networkProjectileHolder in weapon)
+            {
+                Shoot(networkProjectileHolder, attackType);
+            }
+        }
+
+        private void Shoot(NetworkProjectileHolder nph, AttackType attackType)
         {
             if (!isShooting) return;
-            
+
             var aimRay = _camera.ScreenPointToRay(GetCrossHairPointInScreen());
             // 조준점으로 쏘는 레이의 원점이 플레이어 앞에서 시작되어야 한다.
             // 그렇지 않으면, 플레이어의 총알은 플레이어의 뒤에 있지만, 조준점에는 걸린 물체로 날아가게 된다. 한마디로 뒤로 쏘게 된다.
             var distCam = Vector3.Distance(_camera.transform.position, transform.position);
             var aimRayOrigin = aimRay.origin + aimRay.direction * distCam;
-            
+
             /* 총알이 날아갈 지점 구하기 */
-            _gunRay.origin = _shootPoint.position;
-            
+            _gunRay.origin = nph.ShootPointTransform.position;
+
             //Debug.DrawRay(aimRayOrigin, aimRay.direction * _shootDistance, Color.blue, 0.3f);
             if (Physics.Raycast(aimRayOrigin, aimRay.direction, out _hit, _shootDistance, shootRayMask))
             {
@@ -432,17 +440,16 @@ namespace Network
                 _gunRay.direction = ((aimRayOrigin + aimRay.direction * _shootDistance) - _gunRay.origin).normalized;
             }
             //Debug.DrawRay(_gunRay.origin, _gunRay.direction * _shootDistance, Color.magenta, 0.3f);
-            _targetPoint = _gunRay.origin + _gunRay.direction * _shootDistance;
-            
-            var weapon = GetComponentsInChildren<NetworkProjectileHolder>();
-            
-            foreach (var networkProjectileHolder in weapon)
+
+            targetPoint = _gunRay.origin + _gunRay.direction * _shootDistance;
+
+            if (Physics.Raycast(_gunRay, out _hit, _shootDistance, shootRayMask))
             {
-                networkProjectileHolder.SetTarget(_targetPoint);
+                targetPoint = _hit.point;
             }
 
-            //LaserBeam(_gunRay, _shootDistance, attackType, lineRenderer);
-            RotateToTarget(_gunPos, _targetPoint, 8f, false);
+            RotateToTarget(nph.transform, targetPoint, 8f, false);
+            nph.SetTarget(targetPoint);
         }
 
         // private void LaserBeam(Ray gunRay, float aimDistance, AttackType attackType, LineRenderer lineRenderer)
@@ -584,7 +591,7 @@ namespace Network
             {
                 SetNetworkPlayer();
             }
-            
+
             if (HasStateAuthority)
             {
                 gameObject.layer = LayerMask.NameToLayer("Player");
@@ -654,7 +661,7 @@ namespace Network
             // 임시 자동공격
             if (!IsCameraFocused)
             {
-                Shoot(AttackType.Basic);
+                ShootAllWeapons(AttackType.Basic);
             }
 
             if (_joystick is not null && _target is not null)
@@ -873,8 +880,8 @@ namespace Network
 
         public void EndUlt()
         {
-            Shoot(AttackType.Ultimate);
-            IsCameraFocused = false;
+            //Shoot(AttackType.Ultimate, UltLine);
+            isCameraFocused = false;
             _canvasManager.SwitchUI(CanvasType.GameMoving);
         }
     }
