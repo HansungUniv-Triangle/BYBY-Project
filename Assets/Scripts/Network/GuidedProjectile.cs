@@ -57,7 +57,7 @@ namespace Network
             }
             else if (objectLayer.Equals(LayerMask.NameToLayer("Enemy")))
             {
-                GameManager.Instance.NetworkManager.AddCharacterHitData(Object, (int)Damage, _projectileHolder.isMainWeapon);
+                GameManager.Instance.NetworkManager.AddCharacterHitData(Object, (int)Damage, _projectileHolder.IsMainWeapon);
                 IsHit = true;
             }
         }

@@ -337,7 +337,7 @@ namespace Network
                     break;
                 case RoundState.RoundStart:
                     ViewRoundStart();
-                    SetTimerSec(10f);
+                    SetTimerSec(180f);
                     break;
                 case RoundState.RoundEnd:
                     OrganizeRound();
@@ -360,16 +360,6 @@ namespace Network
         
         private void FixedUpdate()
         {
-            if (!Object.IsValid)
-            {
-                Debug.Log("Is not Valid");
-            }
-            
-            if (Object.StateAuthority.IsNone)
-            {
-                Debug.Log("State None");
-            }
-            
             switch (GameRoundState)
             {
                 case RoundState.None:
@@ -655,15 +645,21 @@ namespace Network
             NetworkObject networkPlayerObject = Runner.Spawn(_playerPrefab, spawnPosition, Quaternion.identity, playerRef);
             PlayerCharacter = networkPlayerObject.GetComponent<NetworkPlayer>();
 
-            var mainWeapon = GameManager.Instance.SelectWeapon;
-            NetworkObject mainWeaponSpawn = Runner.Spawn(mainWeapon, spawnPosition + Vector3.right + Vector3.up, Quaternion.identity, playerRef);
-            mainWeaponSpawn.transform.SetParent(networkPlayerObject.transform);
+            var weaponData = GameManager.Instance.SelectWeapon;
+            SpawnWeapon(playerRef, weaponData, spawnPosition, networkPlayerObject.transform);
+        }
 
-            var subWeapon = GameManager.Instance.SelectSubWeapon;
-            NetworkObject subWeaponSpawn = Runner.Spawn(subWeapon, spawnPosition + Vector3.up * 2, Quaternion.identity, playerRef);
-            subWeaponSpawn.transform.SetParent(networkPlayerObject.transform);
-            
-            PlayerCharacter.SetGunPos(mainWeaponSpawn.transform);
+        // ReSharper disable Unity.PerformanceAnalysis
+        private void SpawnWeapon(PlayerRef playerRef, Weapon weaponData, Vector3 spawnPosition, Transform parent)
+        {
+            var weapon = Runner.Spawn(weaponData.weaponPrefabRef, spawnPosition + Vector3.right + Vector3.up, Quaternion.identity, playerRef);
+            weapon.GetComponent<NetworkProjectileHolder>().InitialHolder(weaponData.isMainWeapon, weaponData.bulletPrefabRef);
+            weapon.transform.SetParent(parent);
+
+            if (weaponData.isMainWeapon)
+            {
+                PlayerCharacter.SetGunPos(weapon.transform);
+            }
         }
         
         public void AddBlockHitData(Vector3 pos, int damage)

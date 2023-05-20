@@ -12,19 +12,18 @@ namespace Network
 {
     public abstract class NetworkProjectileHolder : NetworkBehaviour
     {
-        protected BaseStat<WeaponStat> _baseWeaponStat;
         private List<NetworkObject> _projectileList;
-        [SerializeField]
-        private NetworkObject _projectileObject;
-
+        private NetworkPrefabRef _projectileObject;
+        
+        protected BaseStat<WeaponStat> _baseWeaponStat;
         protected Transform WeaponTransform;
-        public Transform ShootPointTransform { get; set; }
+        protected Transform ShootPointTransform;
         protected Vector3 Target;
         protected bool IsDoneShootAction;
         protected int RemainBullet;
         protected TextMeshProUGUI BulletText;
-
-        public bool isMainWeapon = false;
+        
+        public bool IsMainWeapon { get; private set; }
         
         [Networked] protected TickTimer delay { get; set; }
 
@@ -47,6 +46,7 @@ namespace Network
             {
                 shootPoint = WeaponTransform;
             }
+            
             ShootPointTransform = shootPoint;
 
             Target = gameObject.transform.forward;
@@ -55,12 +55,7 @@ namespace Network
 
         private void Start()
         {
-            if(!_projectileObject.TryGetComponent<NetworkProjectileBase>(out _))
-            {
-                Debug.LogError("Holder 연결 에러");
-            }
-            
-            if (isMainWeapon)
+            if (IsMainWeapon)
             {
                 RemainBullet = (int)GetWeaponStat(WeaponStat.Bullet).Total;
             }
@@ -69,8 +64,6 @@ namespace Network
 
         public override void FixedUpdateNetwork()
         {
-            if (!HasInputAuthority) return;
-
             if (!HasInputAuthority || GameManager.Instance.NetworkManager.GameRoundState != RoundState.RoundStart)
             {
                 return;
@@ -81,6 +74,12 @@ namespace Network
             //BulletText.text = RemainBullet.ToString();
         }
 
+        public void InitialHolder(bool isMain, NetworkPrefabRef prefabRef)
+        {
+            IsMainWeapon = isMain;
+            _projectileObject = prefabRef;
+        }
+
         public void SetTarget(Vector3 target)
         {
             Target = target;
@@ -89,6 +88,11 @@ namespace Network
         public Vector3 GetTarget()
         {
             return Target;
+        }
+        
+        public Vector3 GetShootPointTransform()
+        {
+            return ShootPointTransform.position;
         }
         
         private void InitializeProjectile(NetworkRunner runner, NetworkObject obj)

@@ -101,7 +101,7 @@ namespace Network
             
             if (IsExpirationProjectile() &&NetworkActive)
             {
-                if (_projectileHolder.isMainWeapon && Distance > MaxRange)
+                if (_projectileHolder.IsMainWeapon && Distance > MaxRange)
                 {
                     GameManager.Instance.CheckBulletBetweenEnemyAndMe(transform.position);
                 }

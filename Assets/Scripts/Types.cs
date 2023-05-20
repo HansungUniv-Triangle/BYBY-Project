@@ -99,6 +99,7 @@ namespace Types
     {
         None,
         Game,
+        Player,
         Winner,
     }
 

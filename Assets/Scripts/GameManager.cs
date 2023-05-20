@@ -32,16 +32,11 @@ public class GameManager : Singleton<GameManager>
 
     public NetworkManager NetworkManager { get; private set; }
     public SynergyPageManager SynergyPageManager { get; private set; }
+    public List<Synergy> SynergyList;
+    public List<Weapon> WeaponList;
     
-    public List<Synergy> SynergyList { get; private set; }
-
-    public NetworkPrefabRef[] mainWeaponArray = new NetworkPrefabRef[4];
     public int selectWeaponNum = 0;
-    public NetworkPrefabRef SelectWeapon => mainWeaponArray[selectWeaponNum];
-    
-    public List<NetworkPrefabRef> subWeaponList;
-    public int selectSubWeaponNum;
-    public NetworkPrefabRef SelectSubWeapon => subWeaponList[selectSubWeaponNum];
+    public Weapon SelectWeapon => WeaponList[selectWeaponNum];
 
     public PlayerBehaviorAnalyzer PlayerBehaviorAnalyzer;
 
@@ -52,6 +47,7 @@ public class GameManager : Singleton<GameManager>
     protected override void Initiate()
     {
         SynergyList = Resources.LoadAll<Synergy>(Path.Synergy).ToList();
+        WeaponList = Resources.LoadAll<Weapon>(Path.Weapon).ToList();
         _uiLoadingPrefab = Resources.Load(Path.Loading) as GameObject;
         _uiDisconnectPrefab = Resources.Load(Path.Disconnect) as GameObject;
     }
@@ -208,7 +204,7 @@ public class GameManager : Singleton<GameManager>
         }
         else
         {
-            AddLoadingUI();
+            AddDisconnectUI();
             _uiDisconnect.SetActive(false);
         }
     }

@@ -114,7 +114,7 @@ public class PuppetMove : MonoBehaviour
 
         h = inputH;
         v = inputV;
-        v = (global::Move.targetDistance < 2f && v > 0) ? 0 : v;
+        //v = (global::Move.targetDistance < 2f && v > 0) ? 0 : v;
 
         var speed = Speed;
 

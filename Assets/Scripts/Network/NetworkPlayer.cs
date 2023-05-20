@@ -428,7 +428,7 @@ namespace Network
             var aimRayOrigin = aimRay.origin + aimRay.direction * distCam;
 
             /* 총알이 날아갈 지점 구하기 */
-            _gunRay.origin = nph.ShootPointTransform.position;
+            _gunRay.origin = nph.GetShootPointTransform();
 
             //Debug.DrawRay(aimRayOrigin, aimRay.direction * _shootDistance, Color.blue, 0.3f);
             if (Physics.Raycast(aimRayOrigin, aimRay.direction, out _hit, _shootDistance, shootRayMask))
@@ -439,9 +439,9 @@ namespace Network
             {
                 _gunRay.direction = ((aimRayOrigin + aimRay.direction * _shootDistance) - _gunRay.origin).normalized;
             }
-            //Debug.DrawRay(_gunRay.origin, _gunRay.direction * _shootDistance, Color.magenta, 0.3f);
 
-            targetPoint = _gunRay.origin + _gunRay.direction * _shootDistance;
+            //Debug.DrawRay(_gunRay.origin, _gunRay.direction * _shootDistance, Color.magenta, 0.3f);
+            var targetPoint = _gunRay.origin + _gunRay.direction * _shootDistance;
 
             if (Physics.Raycast(_gunRay, out _hit, _shootDistance, shootRayMask))
             {
@@ -881,7 +881,7 @@ namespace Network
         public void EndUlt()
         {
             //Shoot(AttackType.Ultimate, UltLine);
-            isCameraFocused = false;
+            IsCameraFocused = false;
             _canvasManager.SwitchUI(CanvasType.GameMoving);
         }
     }
@@ -889,17 +889,17 @@ namespace Network
     // 설정 UI
     public partial class NetworkPlayer
     {
-        private List<Stat<CharStat>> _settingsStatlist = new();
+        private List<Stat<CharStat>> _settingsStatList = new();
         
         public string IncreaseSpeed()
         {
-            _settingsStatlist.Add(new Stat<CharStat>(CharStat.Speed, 1, 0).SetRatio(0));
+            _settingsStatList.Add(new Stat<CharStat>(CharStat.Speed, 1, 0));
             return AdditionalWork(CharStat.Speed);
         }
         
         public string DecreaseSpeed()
         {
-            _settingsStatlist.Add(new Stat<CharStat>(CharStat.Speed, -1, 0).SetRatio(0));
+            _settingsStatList.Add(new Stat<CharStat>(CharStat.Speed, -1, 0));
             return AdditionalWork(CharStat.Speed);
         }
         
@@ -907,7 +907,7 @@ namespace Network
         {
             InitialStatus();
 
-            foreach (var s in _settingsStatlist)
+            foreach (var s in _settingsStatList)
             {
                 _baseCharStat.AddStat(s);
             }
