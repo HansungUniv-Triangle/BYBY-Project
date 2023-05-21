@@ -58,6 +58,8 @@ public class TouchRotateCamera : MonoBehaviour, IBeginDragHandler, IDragHandler,
         if (!isReady) return;
         
         beginPos = eventData.position;
+        beginPos = PlayerCamera.GetRotatedCoordinates(beginPos.x, beginPos.y);
+
         xAngleTemp = xAngle;
         yAngleTemp = yAngle;
     }
@@ -67,6 +69,7 @@ public class TouchRotateCamera : MonoBehaviour, IBeginDragHandler, IDragHandler,
         if (!isReady) return;
         
         draggingPos = eventData.position;
+        draggingPos = PlayerCamera.GetRotatedCoordinates(draggingPos.x, draggingPos.y);
 
         yAngle = yAngleTemp + (draggingPos.x - beginPos.x) * rotationSpeed * 2 / Screen.width;
         xAngle = xAngleTemp - (draggingPos.y - beginPos.y) * rotationSpeed * 2 / Screen.height;

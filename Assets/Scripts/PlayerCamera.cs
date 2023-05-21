@@ -23,7 +23,7 @@ public class PlayerCamera : MonoBehaviour
     private Ray _ray;
 
     #region UI Settings
-    public float zAngle;
+    private float zAngle;
     private float zOffset = 0.10f;
     private bool isGyroOn = true;
 
@@ -45,6 +45,7 @@ public class PlayerCamera : MonoBehaviour
     public void StopGyro() { 
         Input.gyro.enabled = false;
         ResetZangle();
+        transform.Rotate(new Vector3(0, 0, 0));
     }
     #endregion
 
@@ -118,6 +119,8 @@ public class PlayerCamera : MonoBehaviour
 
     private void CameraGyroRotate()
     {
+        if (!isGyroOn) { return; }
+
         var gyroRotationRate = Input.gyro.rotationRateUnbiased;
         zAngle = Mathf.Clamp(zAngle += gyroRotationRate.z * zOffset, -7.1f, 7.1f);
         transform.Rotate(new Vector3(0, 0, zAngle));
@@ -147,5 +150,11 @@ public class PlayerCamera : MonoBehaviour
                 _originalCameraFocusPos = new Vector3(_originalCameraFocusPos.x * -1, _originalCameraFocusPos.y, _originalCameraFocusPos.z);
             }
         }
+    }
+
+    public static Vector2 GetRotatedCoordinates(float x, float y)
+    {
+        var camAngle = Camera.main.transform.eulerAngles.z * Mathf.Deg2Rad;
+        return new Vector2(x * Mathf.Cos(camAngle) - y * Mathf.Sin(camAngle), x * Mathf.Sin(camAngle) + y * Mathf.Cos(camAngle));
     }
 }

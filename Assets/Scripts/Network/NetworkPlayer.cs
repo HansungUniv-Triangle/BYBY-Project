@@ -628,10 +628,9 @@ namespace Network
             var oh = ReverseHorizontalMove ? -_joystick.Horizontal : _joystick.Horizontal;
             var ov = _joystick.Vertical;
 
-            var camAngle = _camera.transform.eulerAngles.z * Mathf.Deg2Rad;
-
-            var h = oh * Mathf.Cos(camAngle) - ov * Mathf.Sin(camAngle);
-            var v = oh * Mathf.Sin(camAngle) + ov * Mathf.Cos(camAngle);
+            var rotatedInput = PlayerCamera.GetRotatedCoordinates(oh, ov);
+            var h = rotatedInput.x;
+            var v = rotatedInput.y;
 
             var speed = _baseCharStat.GetStat(CharStat.Speed).Total;
             speed = speed > 0 ? speed : 0;
