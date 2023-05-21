@@ -53,7 +53,7 @@ namespace Network
         protected override void UpdateProjectile()
         {
             gameObject.transform.Rotate(Vector3.up, TotalVelocity / 10);
-            gameObject.transform.position = GameManager.Instance.NetworkManager.LocalCharacter.transform.position;
+            gameObject.transform.position = GameManager.Instance.NetworkManager.PlayerCharacter.transform.position;
         }
 
         public void TouchChildShield(GameObject shield, NetworkObject bullet)

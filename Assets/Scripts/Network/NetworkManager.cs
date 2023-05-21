@@ -2,16 +2,127 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening;
 using Fusion;
 using Types;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Random = UnityEngine.Random;
 using UIHolder;
+using Random = UnityEngine.Random;
 
 namespace Network
 {
-    // 구조체
+    // 데이터
+    public partial class NetworkManager
+    {
+        public NetworkPlayer PlayerCharacter { get; private set; }
+
+        public NetworkPlayer EnemyCharacter;
+
+        private PlayerRef _enemyRef;
+        public PlayerRef EnemyRef
+        {
+            get
+            {
+                if (_enemyRef.IsNone)
+                {
+                    foreach (var runnerActivePlayer in Runner.ActivePlayers)
+                    {
+                        if (runnerActivePlayer != Runner.LocalPlayer)
+                        {
+                            _enemyRef = runnerActivePlayer;
+                        }
+                    }
+                }
+                
+                return _enemyRef;
+            }
+        }
+
+        [Networked] public int Seed { get; set; }
+        
+        private GameUI _gameUI;
+        private GameUI GameUIInstance
+        {
+            get
+            {
+                if (GameManager.Instance.UIHolder is not GameUI)
+                {
+                    return null;
+                }
+                
+                if (_gameUI is null)
+                {
+                    _gameUI = GameManager.Instance.UIHolder as GameUI;
+                }
+
+                return _gameUI;
+            }
+        }
+        
+        private RoomUI _roomUI;
+        private RoomUI RoomUIInstance
+        {
+            get
+            {
+                if (GameManager.Instance.UIHolder is not RoomUI)
+                {
+                    return null;
+                }
+                
+                if (_roomUI is null)
+                {
+                    _roomUI = GameManager.Instance.UIHolder as RoomUI;
+                }
+
+                return _roomUI;
+            }
+        }
+
+        // Player
+        [SerializeField] private NetworkPrefabRef _playerPrefab;
+
+        private readonly Color32 _ready = Color.green;
+        private readonly Color32 _notReady = Color.red;
+
+        private SynergyPageManager _synergyPageManager;
+        private SynergyPageManager SynergyPageManager
+        {
+            get
+            {
+                if (_synergyPageManager is null)
+                {
+                    _synergyPageManager = GameManager.Instance.SynergyPageManager;
+                }
+                return _synergyPageManager;
+            }
+        }
+        
+        public bool IsPlayerWin => Runner.LocalPlayer == BattleLogs[^1].Winner;
+        
+        // 카메라
+        private PlayerCamera _playerCamera;
+        private PlayerCamera PlayerCamera
+        {
+            get
+            {
+                if (_playerCamera is not null)
+                {
+                    return _playerCamera;
+                }
+                
+                if (Camera.main is not null)
+                {
+                    _playerCamera = Camera.main.GetComponent<PlayerCamera>();
+                    return _playerCamera;
+                }
+
+                throw new Exception("카메라가 없음");
+            }
+        }
+    }
+
+    // 룸 데이터 기반 UI 업데이트
     public partial class NetworkManager
     {
         private struct RoomPlayerData : INetworkStruct
@@ -20,14 +131,9 @@ namespace Network
             public NetworkBool IsReady;
             public NetworkBool IsDoneLoadScene;
             public Color PlayerColor;
+            public int Score;
         }
-
-        public NetworkPlayer LocalCharacter { get; private set; }
-    }
-
-    // 룸 데이터 기반 UI 업데이트
-    public partial class NetworkManager
-    {
+        
         [Networked(OnChanged = nameof(UpdateCanvasData)), Capacity(8)]
         private NetworkDictionary<PlayerRef, RoomPlayerData> RoomPlayerList { get; }
         
@@ -38,15 +144,15 @@ namespace Network
     
         private void UpdateCanvasData()
         {
-            if(_roomUI is null) return;
-        
+            if(RoomUIInstance is null) return;
+
             // 임시로 캔버스 지우는 동작
-            _roomUI.text1.text = "-";
-            _roomUI.text1.color = Color.black;
-            _roomUI.player1Ready.color = _notReady;
-            _roomUI.text2.text = "-";
-            _roomUI.text2.color = Color.black;
-            _roomUI.player2Ready.color = _notReady;
+            RoomUIInstance.text1.text = "-";
+            RoomUIInstance.text1.color = Color.black;
+            RoomUIInstance.player1Ready.color = _notReady;
+            RoomUIInstance.text2.text = "-";
+            RoomUIInstance.text2.color = Color.black;
+            RoomUIInstance.player2Ready.color = _notReady;
         
             var count = 0;
             foreach (var (_, playerData) in RoomPlayerList)
@@ -61,14 +167,14 @@ namespace Network
             switch (index)
             {
                 case 0:
-                    _roomUI.text1.text = nick;
-                    _roomUI.text1.color = color;
-                    _roomUI.player1Ready.color = ready ? _ready : _notReady;
+                    RoomUIInstance.text1.text = nick;
+                    RoomUIInstance.text1.color = color;
+                    RoomUIInstance.player1Ready.color = ready ? _ready : _notReady;
                     break;
                 case 1:
-                    _roomUI.text2.text = nick;
-                    _roomUI.text2.color = color;
-                    _roomUI.player2Ready.color = ready ? _ready : _notReady;
+                    RoomUIInstance.text2.text = nick;
+                    RoomUIInstance.text2.color = color;
+                    RoomUIInstance.player2Ready.color = ready ? _ready : _notReady;
                     break;
             }
         }
@@ -102,82 +208,124 @@ namespace Network
         }
     }
 
+    // 게임 승리 관리
+    public partial class NetworkManager
+    {
+        private const int MaxRound = 3;
+        private const int WinRound = MaxRound / 2 + 1;
+
+        private struct BattleLog : INetworkStruct
+        {
+            public int Round;
+            public int Winner;
+            public int Defeater;
+            public NetworkBool IsDraw;
+        }
+        
+        [Networked(OnChanged = nameof(UpdateBattleLog)), Capacity(10)]
+        private NetworkLinkedList<BattleLog> BattleLogs { get; }
+        
+        public static void UpdateBattleLog(Changed<NetworkManager> changed)
+        {
+            changed.Behaviour.UpdateBattleLog();
+        }
+
+        private void UpdateBattleLog()
+        {
+            if (BattleLogs.Count > 0)
+            {
+                ViewRoundResult();
+            }
+        }
+    }
+    
     // 라운드 조작 관련
     public partial class NetworkManager
     {
         [Networked] private TickTimer RoundChangeTimer { get; set; }
         
-        private GameUI _gameUI;
+        // 상태 관련
+        public RoundState GameRoundState => (RoundState)NetworkRoundState;
+        
+        [Networked(OnChanged = nameof(UpdateRoundState))] 
+        private int NetworkRoundState { get; set; }
 
-        private GameUI GameUI
+        public static void UpdateRoundState(Changed<NetworkManager> changed)
         {
-            get
-            {
-                if (_gameUI is null)
-                {
-                    _gameUI = GameManager.Instance.UIHolder as GameUI;
-                }
-
-                return _gameUI;
-            }
+            changed.Behaviour.UpdateRoundState();
         }
 
-        private SynergyPageManager _synergyPageManager;
-
-        private SynergyPageManager SynergyPageManager
+        private void UpdateRoundState()
         {
-            get
-            {
-                if (_synergyPageManager is null)
-                {
-                    _synergyPageManager = GameManager.Instance.SynergyPageManager;
-                }
-                return _synergyPageManager;
-            }
+            InitialRound((RoundState)NetworkRoundState);
         }
-        
-        private PlayerRef _defeatRef;
-        private RoundState _round = RoundState.None;
-        public RoundState GameRoundState => _round;
-        private int roundNum = 0;
-        
-        private void ChangeRound(RoundState roundState)
+
+        private void ChangeRound()
         {
-            switch (roundState)
+            if (!HasStateAuthority) return;
+            
+            RoundState roundState;
+            
+            switch (GameRoundState)
             {
                 case RoundState.None:
-                    _round = RoundState.GameStart;
+                    roundState = RoundState.GameStart;
                     break;
                 case RoundState.GameStart:
-                    _round = RoundState.SynergySelect;
+                    roundState = RoundState.SynergySelect;
                     break;
                 case RoundState.SynergySelect:
-                    _round = RoundState.WaitToStart;
+                    roundState = RoundState.WaitToStart;
                     break;
                 case RoundState.WaitToStart:
-                    _round = RoundState.RoundStart;
+                    roundState = RoundState.RoundStart;
                     break;
                 case RoundState.RoundStart:
-                    _round = RoundState.RoundEnd;
+                    roundState = RoundState.RoundEnd;
                     break;
                 case RoundState.RoundEnd:
-                    _round = RoundState.SynergySelect;
+                    roundState = RoundState.RoundResult;
+                    break;
+                case RoundState.RoundResult:
+                    roundState = RoundState.RoundAnalysis;
+                    break;
+                case RoundState.RoundAnalysis:
+                    var playerWin = BattleLogs.Count(log => !log.IsDraw && log.Winner == Runner.LocalPlayer);
+                    var enemyWin = BattleLogs.Count(log => !log.IsDraw && log.Winner == Runner.LocalPlayer);
+
+                    if (playerWin == WinRound)
+                    {
+                        RPCEndGame(Runner.LocalPlayer);
+                        roundState = RoundState.GameEnd;
+                        break;
+                    }
+
+                    if (enemyWin == WinRound)
+                    {
+                        RPCEndGame(EnemyRef);
+                        roundState = RoundState.GameEnd;
+                        break;
+                    }
+
+                    roundState = RoundState.SynergySelect;
                     break;
                 case RoundState.GameEnd:
-                    // 게임 방 나가는 코드를 넣으쇼
+                    roundState = RoundState.None;
+                    DisconnectingServer();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            StartRound();
+            
+            NetworkRoundState = (int)roundState;
         }
         
-        private void StartRound()
+        private void InitialRound(RoundState roundState)
         {
-            switch (_round)
+            switch (roundState)
             {
                 case RoundState.GameStart:
-                    SetTimerSec(5f);
+                    SetTimerSec(10f);
                     break;
                 case RoundState.SynergySelect:
                     ViewSynergySelect();
@@ -188,53 +336,54 @@ namespace Network
                     SetTimerSec(5f);
                     break;
                 case RoundState.RoundStart:
-                    IncreaseRound();
-                    SetTimerSec(10f);
+                    ViewRoundStart();
+                    SetTimerSec(180f);
                     break;
                 case RoundState.RoundEnd:
-                    ViewRoundWinner();
+                    OrganizeRound();
+                    SetTimerSec(2f);
+                    break;
+                case RoundState.RoundResult:
                     SetTimerSec(5f);
                     break;
-                case RoundState.GameEnd: // 게임 나가는 코드 넣어야해
+                case RoundState.RoundAnalysis:
+                    ViewRoundAnalysis();
+                    SetTimerSec(10f);
+                    break;
+                case RoundState.GameEnd:
+                    SetTimerSec(30f);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
-
+        
         private void FixedUpdate()
         {
-            switch (_round)
+            switch (GameRoundState)
             {
                 case RoundState.None:
                     break;
                 case RoundState.GameStart:
+                case RoundState.WaitToStart:
+                case RoundState.RoundStart:
+                case RoundState.RoundEnd:
+                case RoundState.RoundResult:
+                case RoundState.RoundAnalysis:
+                case RoundState.GameEnd:
                     UpdateTimerInGame();
                     break;
                 case RoundState.SynergySelect:
                     UpdateSynergySelect();
                     break;
-                case RoundState.WaitToStart:
-                    UpdateTimerInGame();
-                    break;
-                case RoundState.RoundStart:
-                    UpdateTimerInGame();
-                    break;
-                case RoundState.RoundEnd:
-                    UpdateTimerInGame();
-                    break;
-                case RoundState.GameEnd:
-                    UpdateTimerInGame();
-                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            
-            if(!HasStateAuthority) return;
-            
-            if (RoundChangeTimer.Expired(Runner))
+
+            if (RoundChangeTimer.Expired(Runner) && HasStateAuthority)
             {
                 RoundChangeTimer = TickTimer.None;
-                RPCChangeRound(_round);
+                ChangeRound();
             }
         }
 
@@ -243,7 +392,7 @@ namespace Network
             var time = RoundChangeTimer.RemainingTime(Runner) ?? 00;
             var min = time / 60f;
             var sec = time % 60f;
-            GameUI.timeText.text = $"{min:00}:{sec:00}";
+            GameUIInstance.timeText.text = $"{min:00}:{sec:00}";
         }
 
         private void UpdateSynergySelect()
@@ -257,76 +406,168 @@ namespace Network
             
             RoundChangeTimer = TickTimer.CreateFromSeconds(Runner, sec);
         }
+        
+        public void OrganizeRound()
+        {
+            PlayerCharacter.ConversionBehaviorData();
+            
+            if(!HasStateAuthority) return;
+            
+            PlayerRef winnerRef;
+            PlayerRef defeaterRef;
+            bool IsDrawTemp;
+            
+            if (PlayerCharacter is null || EnemyCharacter is null)
+            {
+                winnerRef = Runner.LocalPlayer;
+                defeaterRef = Runner.LocalPlayer;
+                IsDrawTemp = false;
+            }
+            else
+            {
+                winnerRef = 
+                    PlayerCharacter.GetNowHp() > EnemyCharacter.GetNowHp()
+                    ? PlayerCharacter.Object.StateAuthority
+                    : EnemyCharacter.Object.StateAuthority;
+                defeaterRef =
+                    PlayerCharacter.GetNowHp() < EnemyCharacter.GetNowHp()
+                        ? PlayerCharacter.Object.StateAuthority
+                        : EnemyCharacter.Object.StateAuthority;
+                IsDrawTemp = (int)PlayerCharacter.GetNowHp() == (int)EnemyCharacter.GetNowHp();
+            }
+            
+            BattleLogs.Add(new BattleLog
+            {
+                Round = BattleLogs.Count + 1,
+                Winner = winnerRef,
+                Defeater = defeaterRef,
+                IsDraw = IsDrawTemp,
+            });
+        }
+        
+        public void EndedRound()
+        {
+            if(!HasStateAuthority) return;
+            ChangeRound();
+        }
 
+        /// <summary>
+        /// 시너지 선택 할 때 화면
+        /// </summary>
         private void ViewSynergySelect()
         {
-            _gameUI.gameUIGroup.SetActive(false);
+            PlayerCamera.ChangeCameraMode(CameraMode.None);
+            GameUIInstance.gameUIGroup.SetActive(false);
             SynergyPageManager.SetActiveSynergyPanel(true);
-            
             SynergyPageManager.MakeSynergyPage();
         }
 
+        /// <summary>
+        /// 시너시 선택 후 게임 시작 전 잠시 대기
+        /// </summary>
         private void ViewWait()
         {
-            _gameUI.gameUIGroup.SetActive(true);
+            PlayerCamera.ChangeCameraMode(CameraMode.Game);
+            GameUIInstance.gameUIGroup.SetActive(true);
             SynergyPageManager.SetActiveSynergyPanel(false);
-
-            GameUI.roundText.text = $"시너지 선택 완료! 기다리세요";
+            PlayerCharacter.InitialStatus();
+            GameUIInstance.roundText.text = $"시너지 선택 완료! 기다리세요";
         }
         
-        private void IncreaseRound()
+        private void ViewRoundStart()
         {
-            roundNum++;
-            GameUI.roundText.text = $"ROUND {roundNum}";
+            GameUIInstance.roundText.text = $"ROUND {BattleLogs.Count + 1}";
         }
 
-        private void ViewRoundWinner()
+        private void ViewRoundResult()
         {
-            _defeatRef = Runner.LocalPlayer;
-            foreach (var (key, value) in RoomPlayerList)
+            PlayerCamera.ChangeCameraMode(CameraMode.Winner);
+            var currentData = BattleLogs[^1];
+
+            if (currentData.IsDraw)
             {
-                // 임시로 플레이어 이름 나오게 해놨음
-                if (key == _defeatRef)
+                GameUIInstance.roundText.text = $"비겼습니다!";
+            }
+            else
+            {
+                var nickName = RoomPlayerList.Get(currentData.Winner).NickName;
+                GameUIInstance.roundText.text = $"{nickName}님이 승리하셨습니다!";
+            }
+
+            int playerScore = 0;
+            int enemyScore = 0;
+            foreach (var battleLog in BattleLogs)
+            {
+                if (battleLog.IsDraw) continue;
+                
+                if (battleLog.Winner == Runner.LocalPlayer)
                 {
-                    GameUI.roundText.text = $"{value.NickName}님이 승리하셨습니다!";
-                    return;
+                    playerScore++;
+                }
+                else
+                {
+                    enemyScore++;
                 }
             }
+            
+            GameUIInstance.playerScoreText.text = playerScore.ToString();
+            GameUIInstance.enemyScoreText.text = enemyScore.ToString();
+        }
+
+        private void ViewRoundAnalysis()
+        {
+            PlayerCamera.ChangeCameraMode(CameraMode.Player);
+            PlayerCharacter.Healing(999f);
+            
+            if (EnemyCharacter is null)
+            {
+                GameManager.Instance.ResetBehaviourEventCount();
+                return;
+            }
+            
+            var message = "";
+            var playerData = PlayerCharacter.CharacterBehaviorData;
+            var enemyData = EnemyCharacter.CharacterBehaviorData;
+            
+            message += $"피격 : {playerData.HitRate} vs {enemyData.HitRate} : 피격\n";
+            message += $"회피 : {playerData.DodgeRate} vs {enemyData.DodgeRate} : 회피\n";
+            message += $"명중 : {playerData.Accuracy} vs {enemyData.Accuracy} : 명중\n";
+            message += $"피해 : {playerData.Damage} vs {enemyData.Damage} : 피해\n";
+            message += $"특화 : {playerData.Special} vs {enemyData.Special} : 특화\n";
+            message += $"파괴 : {playerData.DestroyBullet} vs {enemyData.DestroyBullet} : 파괴\n";
+            message += $"장전 : {playerData.Reload} vs {enemyData.Reload} : 장전\n";
+
+            GameUIInstance.roundText.text = message;
+            GameManager.Instance.ResetBehaviourEventCount();
         }
         
-        private void ViewGameWinner()
+        private void ViewGameWinner(PlayerRef winnerRef)
         {
-            _defeatRef = Runner.LocalPlayer;
-            foreach (var (key, value) in RoomPlayerList)
+            PlayerCamera.ChangeCameraMode(CameraMode.Player);
+            
+            if (RoomPlayerList.TryGet(winnerRef, out var data))
             {
-                if (key != _defeatRef)
-                {
-                    GameUI.roundText.text = $"{value.NickName}님이 최종 승리하셨습니다!";
-                    return;
-                }
+                GameUIInstance.roundText.text = $"{data.NickName}님이 최종 승리하셨습니다!";
             }
         }
     }
     
     public partial class NetworkManager : NetworkBehaviour
     {
-        private RoomUI _roomUI;
-
-        // Player
-        [SerializeField] private NetworkPrefabRef _playerPrefab;
-
-        private readonly Color32 _ready = Color.green;
-        private readonly Color32 _notReady = Color.red;
-        
         public override void Spawned()
         {
             DontDestroyOnLoad(this);
             GameManager.Instance.SetNetworkManager(this);
             GameManager.Instance.DeActiveLoadingUI();
-            _roomUI = GameManager.Instance.UIHolder as RoomUI;
             _networkObjectList = new List<NetworkObject>();
-
+            Seed = Random.Range(0, 10000);
             RPCAddPlayer(Runner.LocalPlayer, $"Nick{Random.Range(1,100)}", Random.ColorHSV());
+        }
+
+        public override void Despawned(NetworkRunner runner, bool hasState)
+        {
+            base.Despawned(runner, hasState);
+            DisconnectedGame();
         }
 
         // Mono에서는 Runner를 가져올 수 없어서 만든 Adapter 역할
@@ -340,11 +581,33 @@ namespace Network
             if (RoomPlayerList.ContainsKey(playerRef))
             {
                 RoomPlayerList.Remove(playerRef);
+                if (PlayerCharacter is not null && EnemyCharacter is not null)
+                {
+                    DisconnectedGame();
+                }
             }
             else
             {
-                throw new Exception("플레이어 준비, 해당 플레이어 리스트에 없음");
+                throw new Exception("플레이어 퇴장, 해당 플레이어 리스트에 없음");
             }
+        }
+
+        private void DisconnectedGame()
+        {
+            DOTween.Sequence()
+                .SetAutoKill(false)
+                .OnStart(() =>
+                {
+                    GameManager.Instance.ActiveDisconnectUI();
+                })
+                .AppendInterval(5f)
+                .OnComplete(() =>
+                {
+                    GameManager.Instance.DeActiveDisconnectUI();
+                    FindObjectOfType<NetworkRunner>().Shutdown();
+                    SceneManager.LoadSceneAsync(0);
+                })
+                .Play();
         }
 
         private bool IsAllPlayerReady()
@@ -380,39 +643,47 @@ namespace Network
         {
             Vector3 spawnPosition = new Vector3((playerRef.RawEncoded % Runner.Config.Simulation.DefaultPlayers) + 20, 30, 10);
             NetworkObject networkPlayerObject = Runner.Spawn(_playerPrefab, spawnPosition, Quaternion.identity, playerRef);
-            LocalCharacter = networkPlayerObject.GetComponent<NetworkPlayer>();
+            PlayerCharacter = networkPlayerObject.GetComponent<NetworkPlayer>();
 
-            var mainWeapon = GameManager.Instance.SelectWeapon;
-            NetworkObject mainWeaponSpawn = Runner.Spawn(mainWeapon, spawnPosition + Vector3.right + Vector3.up, Quaternion.identity, playerRef);
-            mainWeaponSpawn.transform.SetParent(networkPlayerObject.transform);
+            var weaponData = GameManager.Instance.SelectWeapon;
+            SpawnWeapon(playerRef, weaponData, spawnPosition, networkPlayerObject.transform);
+        }
 
-            var subWeapon = GameManager.Instance.SelectSubWeapon;
-            NetworkObject subWeaponSpawn = Runner.Spawn(subWeapon, spawnPosition + Vector3.up * 2, Quaternion.identity, playerRef);
-            subWeaponSpawn.transform.SetParent(networkPlayerObject.transform);
-            
-            LocalCharacter.SetGunPos(mainWeaponSpawn.transform);
+        // ReSharper disable Unity.PerformanceAnalysis
+        private void SpawnWeapon(PlayerRef playerRef, Weapon weaponData, Vector3 spawnPosition, Transform parent)
+        {
+            var weapon = Runner.Spawn(weaponData.weaponPrefabRef, spawnPosition + Vector3.right + Vector3.up, Quaternion.identity, playerRef);
+            weapon.GetComponent<NetworkProjectileHolder>().InitialHolder(weaponData.isMainWeapon, weaponData.bulletPrefabRef);
+            weapon.transform.SetParent(parent);
+
+            if (weaponData.isMainWeapon)
+            {
+                PlayerCharacter.SetGunPos(weapon.transform);
+            }
         }
         
         public void AddBlockHitData(Vector3 pos, int damage)
         {
-            LocalCharacter.AddBlockHitData(pos, 0, damage);
+            PlayerCharacter.AddBlockHitData(pos, 0, damage);
         }
         
         public void AddBlockHitData(Vector3 pos, int radius, int damage)
         {
-            LocalCharacter.AddBlockHitData(pos, radius, damage);
+            PlayerCharacter.AddBlockHitData(pos, radius, damage);
         }
         
-        public void AddCharacterHitData(NetworkObject networkObject)
+        public void AddCharacterHitData(NetworkObject networkObject, int damage, bool isMainWeapon)
         {
-            LocalCharacter.AddCharacterHitData(networkObject);
+            PlayerCharacter.AddCharacterHitData(networkObject, damage, isMainWeapon);
         }
 
         private void InitialGame()
         {
-            WorldManager.Instance.GeneratorMap();
+            NetworkRoundState = 0;
+            GameManager.Instance.ResetBehaviourEventCount();
+            WorldManager.Instance.GeneratorMap(Seed);
             SpawnPlayerCharacter(Runner.LocalPlayer);
-            RPCChangeRound(RoundState.None);
+            ChangeRound();
         }
 
         private IEnumerator LoadAsyncScene(int sceneNum)
@@ -424,9 +695,19 @@ namespace Network
             {
                 yield return null;
             }
+
+            if (!Runner.IsShutdown)
+            {
+                RPCLoadSceneCheck(Runner.LocalPlayer);
+            }
             
-            RPCLoadSceneCheck(Runner.LocalPlayer);
             GameManager.Instance.DeActiveLoadingUI();
+        }
+        
+        public void DisconnectingServer()
+        {
+            Runner.Shutdown();
+            SceneManager.LoadSceneAsync(0);
         }
     }
 
@@ -445,7 +726,8 @@ namespace Network
                 NickName = nick,
                 IsReady = false,
                 IsDoneLoadScene = false,
-                PlayerColor = color
+                PlayerColor = color,
+                Score = 0
             });
         }
 
@@ -486,6 +768,12 @@ namespace Network
                 throw new Exception("플레이어 준비, 해당 플레이어 리스트에 없음");
             }
         }
+        
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        private void RPCEndGame(PlayerRef playerRef)
+        {
+            ViewGameWinner(playerRef);
+        }
 
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
         private void RPCLoadScene()
@@ -498,18 +786,6 @@ namespace Network
         private void RPCStartGame()
         {
             InitialGame();
-        }
-        
-        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        private void RPCSendDefeat(PlayerRef playerRef)
-        {
-            _defeatRef = playerRef;
-        }
-        
-        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-        private void RPCChangeRound(RoundState roundState)
-        {
-            ChangeRound(roundState);
         }
     }
 }

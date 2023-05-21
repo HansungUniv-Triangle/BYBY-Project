@@ -39,8 +39,6 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
     {
         rerollBtn = synergySelectPanel.GetComponentsInChildren<Button>()[0];
         rerollBtn.onClick.AddListener(() => synergyPageManager.RerollSynergy());
-        finishBtn = synergySelectPanel.GetComponentsInChildren<Button>()[2];
-        finishBtn.onClick.AddListener(() => synergyPageManager.ApplySelectedSynergyToCharacter());
     }
 
     public void SetSynergyPageManager(SynergyPageManager synergyPageManager)
@@ -105,9 +103,7 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
             GameObject child = synergyPage.synergyObj.transform.GetChild(i).gameObject;
             if (i == 0)
             {
-
-                child.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = synergyPage.synergyRarity.ToString();      
-
+                child.GetComponent<TextMeshProUGUI>().text = synergyPage.synergyRarity.ToString();
             }
             else
             {
@@ -124,9 +120,8 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
     {
         for (int i = 0; i < 7; i++)
         {
-            Image temp = synergySelectPanel.transform.GetChild(1).GetChild(i).GetComponent<Image>();
+            Image temp = synergySelectPanel.transform.GetChild(2).GetChild(i).GetComponent<Image>();
             if (i == synergyPageManager.CurrentPage)
-
             {
                 temp.sprite = spriteCurrent;
             }

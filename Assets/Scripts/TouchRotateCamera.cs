@@ -44,9 +44,9 @@ public class TouchRotateCamera : MonoBehaviour, IBeginDragHandler, IDragHandler,
     {
         if (camPivot == null)
         {
-            if (GameManager.Instance.NetworkManager.LocalCharacter)
+            if (GameManager.Instance.NetworkManager.PlayerCharacter)
             {
-                camPivot = GameManager.Instance.NetworkManager.LocalCharacter.transform;
+                camPivot = GameManager.Instance.NetworkManager.PlayerCharacter.transform;
                 isReady = true;
                 OnEnable();
             }
@@ -89,6 +89,6 @@ public class TouchRotateCamera : MonoBehaviour, IBeginDragHandler, IDragHandler,
     
     public void OnPointerUp(PointerEventData eventData)
     {
-        GameManager.Instance.NetworkManager.LocalCharacter.EndUlt();
+        GameManager.Instance.NetworkManager.PlayerCharacter.EndUlt();
     }
 }

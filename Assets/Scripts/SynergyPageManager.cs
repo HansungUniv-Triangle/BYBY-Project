@@ -22,6 +22,7 @@ public class SynergyPageManager : MonoBehaviour
     private RectTransform[] _spawnPoint;
 
     private RectTransform _thisRectTransform;
+    private float _canvasHeight;
 
     private void Awake() 
     {
@@ -32,6 +33,8 @@ public class SynergyPageManager : MonoBehaviour
 
         _spawnPoint = _spawnPointOrigin.GetComponentsInChildren<RectTransform>();
         _thisRectTransform = gameObject.GetComponent<RectTransform>();
+        _canvasHeight = _thisRectTransform.rect.height;
+        _thisRectTransform.DOAnchorPosY(_canvasHeight, 0);
     }
 
     private void Start()
@@ -50,8 +53,19 @@ public class SynergyPageManager : MonoBehaviour
         else
         {
             DOTween.Sequence()
-                .Append(_thisRectTransform.DOAnchorPosY(1920, 1f))
-                .OnComplete(() => synergyPanel.SetActive(false));
+                .OnStart(ApplySelectedSynergyToCharacter)
+                .OnStart(() =>
+                {
+                    foreach (var synergyPage in _synergyPages)
+                    {
+                        synergyPage.synergyObj.transform.DOKill();
+                    }
+                })
+                .Append(_thisRectTransform.DOAnchorPosY(_canvasHeight, 1f))
+                .OnComplete(() =>
+                {
+                    synergyPanel.SetActive(false);
+                });
         }
     }
 
@@ -93,7 +107,22 @@ public class SynergyPageManager : MonoBehaviour
 
     public void ApplySelectedSynergyToCharacter()
     {
-        
+        foreach (var synergyPage in _synergyPages)
+        {
+            var selectedSynergyName = synergyPage.selectedSynergy.synergyName;
+            var index = GameManager.Instance.SynergyList.FindIndex(synergy => synergy.synergyName == selectedSynergyName);
+
+            Debug.Log($"{selectedSynergyName} {index}");
+            
+            if (index != -1)
+            {
+                GameManager.Instance.NetworkManager.PlayerCharacter.AddSynergy(index);
+            }
+            else
+            {
+                throw new Exception("선택된 시너지 찾기 실패");
+            }
+        }
     }
 
     public void MoveSynergyPageRight()

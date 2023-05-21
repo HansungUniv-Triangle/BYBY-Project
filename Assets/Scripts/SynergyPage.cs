@@ -44,7 +44,6 @@ public class SynergyPage
         synergies[1] = null;
         synergies[2] = null;
         IsNumInSynergyList.Clear();
-        // �ʱ�ȭ �۾�...
     }
 
     public void RerollCountClear()
@@ -62,12 +61,10 @@ public class SynergyPage
             if (synergyExplain == synergies[i].synergyExplain)
             {
                 selectedSynergy = synergies[i];
-                Debug.Log(selectedSynergy);
             }
         }
     }
-
-    // �ó��� ����Ʈ�� �ߺ��� ���� �ִ��� Ȯ��
+    
     public bool CheckIsNumInSynergyList(Synergy randomSynergy)
     {
         if (IsNumInSynergyList.Contains(randomSynergy))

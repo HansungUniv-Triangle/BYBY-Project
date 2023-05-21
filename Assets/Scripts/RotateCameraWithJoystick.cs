@@ -69,9 +69,9 @@ public class RotateCameraWithJoystick : MonoBehaviour, IPointerUpHandler
     {
         if (camPivot == null)
         {
-            if (GameManager.Instance.NetworkManager.LocalCharacter)
+            if (GameManager.Instance.NetworkManager.PlayerCharacter)
             {
-                camPivot = GameManager.Instance.NetworkManager.LocalCharacter.transform;
+                camPivot = GameManager.Instance.NetworkManager.PlayerCharacter.transform;
                 joystickImage = joystick.transform.GetChild(0);
                 _camera = Camera.main.transform;
                 isReady = true;
@@ -82,6 +82,6 @@ public class RotateCameraWithJoystick : MonoBehaviour, IPointerUpHandler
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        GameManager.Instance.NetworkManager.LocalCharacter.EndUlt();
+        GameManager.Instance.NetworkManager.PlayerCharacter.EndUlt();
     }
 }

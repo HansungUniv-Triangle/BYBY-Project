@@ -70,10 +70,10 @@ public class WorldManager : Singleton<WorldManager>
         return _world;
     }
 
-    public void GeneratorMap()
+    public void GeneratorMap(int seed)
     {
-        _noiseMap = Noise.GeneratePerlinNoise(MapWidth, MapHeight, Seed, NoiseScale, Octaves, Persistance, Lacunarity, Offset);
-        Seed = 230412;
+        _noiseMap = Noise.GeneratePerlinNoise(MapWidth, MapHeight, seed, NoiseScale, Octaves, Persistance, Lacunarity, Offset);
+        Seed = seed;
         
         if (Application.isPlaying)
         {

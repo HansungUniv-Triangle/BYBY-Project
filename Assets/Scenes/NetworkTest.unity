@@ -950,19 +950,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _uiHolder: {fileID: 0}
-  mainWeaponArray:
-  - RawGuidValue: 613db97d09b872848b8e308bae6c0147
-  - RawGuidValue: 7f4e05c005528794984ac0c2d1b8d793
-  - RawGuidValue: 90cb8f3dbab3e774aba3c9e03092e851
-  - RawGuidValue: cefd7b73e95f9894f85373bead767207
+  SynergyList: []
+  WeaponList:
+  - {fileID: 11400000, guid: 9d5bb33d5c0da4641b856dfdf529db86, type: 2}
   selectWeaponNum: 0
-  subWeaponList:
-  - RawGuidValue: ac1885e99a15a7e4eb3260e8bad9007c
-  - RawGuidValue: e8ded74e0f008ac4aafad5adfc0a2e41
-  - RawGuidValue: ff2429f452998344496ee1f3047af527
-  - RawGuidValue: 1551d93755355834387741eb44046ccd
-  - RawGuidValue: 723f5f3e32b663e4da87e0bbb0de1330
-  selectSubWeaponNum: 0
+  shootCount: 0
+  hitCount: 0
 --- !u!4 &923374320
 Transform:
   m_ObjectHideFlags: 0

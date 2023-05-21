@@ -1,6 +1,5 @@
 ﻿using System;
 using DG.Tweening;
-using Fusion;
 using Types;
 using UnityEngine;
 
@@ -36,7 +35,7 @@ namespace Network
             {
                 if (Object.HasStateAuthority)
                 {
-                    GameManager.Instance.NetworkManager.AddCharacterHitData(Object);
+                    GameManager.Instance.NetworkManager.AddCharacterHitData(Object, (int)Damage, _projectileHolder.IsMainWeapon);
                     IsHit = true;
                 }
             }

@@ -1,6 +1,5 @@
 ﻿using DG.Tweening;
 using Types;
-using UnityEngine;
 
 namespace Network
 {
@@ -11,6 +10,8 @@ namespace Network
             if (CanAttack())
             {
                 var speedValue = GetCharStat(CharStat.Speed).Total; 
+                
+                GameManager.Instance.shootCount += 1;
                 
                 DOTween.Sequence()
                     .OnStart(() => RemainBullet--)
