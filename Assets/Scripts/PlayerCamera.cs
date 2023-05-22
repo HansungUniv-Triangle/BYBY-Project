@@ -4,6 +4,7 @@ using Fusion;
 using UnityEngine;
 using Types;
 using NetworkPlayer = Network.NetworkPlayer;
+using TMPro;
 using Random = UnityEngine.Random;
 
 public class PlayerCamera : MonoBehaviour
@@ -25,13 +26,45 @@ public class PlayerCamera : MonoBehaviour
     private RaycastHit _hit;
     private Ray _ray;
 
+    #region UI Settings
+    public float zAngle;
+    private float zOffset = 0.10f;
+    private bool isGyroOn = true;
+
+    public void IncreaseZoffset(GameObject text) { text.GetComponent<TextMeshProUGUI>().text = (zOffset += 0.01f).ToString("F2"); }
+    public void DecreaseZoffset(GameObject text) { text.GetComponent<TextMeshProUGUI>().text = (zOffset -= 0.01f).ToString("F2"); }
+
+    public void ResetZangle() { zAngle = 0; }
+
+    public void ToggleGyro()
+    {
+        isGyroOn = !isGyroOn;
+        if (isGyroOn)
+            StartGyro();
+        else
+            StopGyro();
+    }
+
+    public void StartGyro() { Input.gyro.enabled = true; }
+    public void StopGyro() { 
+        Input.gyro.enabled = false;
+        ResetZangle();
+        transform.Rotate(new Vector3(0, 0, 0));
+    }
+    #endregion
+
     public float distance = 10.0f; // 카메라와 캐릭터 사이의 거리
     public float height = 5.0f; // 카메라의 높이
     public float smoothSpeed = 0.25f; // 카메라 이동 속도
     public float horizontalSpeed = 0.1f; // 카메라 수평 이동 속도
     private float _timer;
     public Transform _worldViewPos;
-    
+
+    private void Awake()
+    {
+        StartGyro();
+    }
+
     private void Start()
     {
         _cameraMode = CameraMode.None;
@@ -78,6 +111,7 @@ public class PlayerCamera : MonoBehaviour
                 break;
             case CameraMode.Game:
                 GameView();
+                CameraGyroRotate();
                 break;
             case CameraMode.Winner:
                 RotateCamera(GameManager.Instance.NetworkManager.IsPlayerWin ? _player : _target);
@@ -150,6 +184,15 @@ public class PlayerCamera : MonoBehaviour
         }
     }
 
+    private void CameraGyroRotate()
+    {
+        if (!isGyroOn) { return; }
+
+        var gyroRotationRate = Input.gyro.rotationRateUnbiased;
+        zAngle = Mathf.Clamp(zAngle += gyroRotationRate.z * zOffset, -7.1f, 7.1f);
+        transform.Rotate(new Vector3(0, 0, zAngle));
+    }
+
     public void ReverseCameraPos(bool isLeft)
     {
         if (isLeft)
@@ -174,5 +217,11 @@ public class PlayerCamera : MonoBehaviour
                 _originalCameraFocusPos = new Vector3(_originalCameraFocusPos.x * -1, _originalCameraFocusPos.y, _originalCameraFocusPos.z);
             }
         }
+    }
+
+    public static Vector2 GetRotatedCoordinates(float x, float y)
+    {
+        var camAngle = Camera.main.transform.eulerAngles.z * Mathf.Deg2Rad;
+        return new Vector2(x * Mathf.Cos(camAngle) - y * Mathf.Sin(camAngle), x * Mathf.Sin(camAngle) + y * Mathf.Cos(camAngle));
     }
 }

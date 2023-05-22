@@ -48,6 +48,7 @@ namespace Network
         {
             var hitType = IsEnemyHit ? HitEffectType.Player : HitEffectType.Everything;
             EffectManager.Instance.PlayHitEffect(transform.position, -transform.forward, hitType);
+            SoundManager.Instance.Play3DSound("hit", Sound.Effect, transform.position);
         }
         [Networked] protected NetworkBool IsEnemyHit { get; set; }
 
@@ -81,6 +82,7 @@ namespace Network
         {
             GameManager.Instance.NetworkManager.AddNetworkObjectInList(Object);
             EffectManager.Instance.PlayShootEffect(transform.position, transform.forward);
+            SoundManager.Instance.Play3DSound("rifle_shoot", Sound.Effect, transform.position);
         }
 
         public override void Despawned(NetworkRunner runner, bool hasState)

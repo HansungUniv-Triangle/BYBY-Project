@@ -17,7 +17,7 @@ public class EffectManager : Singleton<EffectManager>
 
     public void PlayShootEffect(Vector3 pos, Vector3 normal)
     {
-        PlayEffect(BulletShoot, pos, normal);
+        PlayEffect(BulletShoot, pos, -normal);
     }
 
     public void PlayHitEffect(Vector3 pos, Vector3 normal, HitEffectType effectType)
