@@ -72,6 +72,8 @@ namespace Types
         WaitToStart,
         RoundStart,
         RoundEnd,
+        RoundResult,
+        RoundAnalysis,
         GameEnd,
     }
     
@@ -80,6 +82,30 @@ namespace Types
         Common,
         UnCommon,
         Rare
+    }
+
+    public enum BehaviourEvent
+    {
+        피격,
+        회피,
+        명중,
+        피해,
+        특화,
+        파괴,
+        장전
+    }
+
+    public enum CameraMode
+    {
+        None,
+        Game,
+        Player,
+        Winner,
+    }
+
+    public enum HitEffectType { 
+        Everything,
+        Player
     }
 }
 

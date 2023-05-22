@@ -31,7 +31,7 @@ namespace Network
             DamageSave /= 2;
         }
         
-        public static float GetAngle (Vector3 vStart, Vector3 vEnd)
+        public static float GetAngle(Vector3 vStart, Vector3 vEnd)
         {
             Vector3 v = vEnd - vStart;
             return Mathf.Atan2(v.y, v.x) * Mathf.Rad2Deg;
@@ -57,7 +57,7 @@ namespace Network
             }
             else if (objectLayer.Equals(LayerMask.NameToLayer("Enemy")))
             {
-                GameManager.Instance.NetworkManager.AddCharacterHitData(Object);
+                GameManager.Instance.NetworkManager.AddCharacterHitData(Object, (int)Damage, _projectileHolder.IsMainWeapon);
                 IsHit = true;
             }
         }

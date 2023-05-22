@@ -17,6 +17,8 @@ namespace Network
                 var projectile = SpawnProjectile(WeaponTransform);
                 RemainBullet--;
                 
+                GameManager.Instance.shootCount += 1;
+                
                 if (isSnipingMode)
                 {
                     projectile.GetComponent<NetworkProjectileBase>().IndividualDamage += GetWeaponStat(WeaponStat.Damage).Total;

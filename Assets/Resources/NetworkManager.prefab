@@ -48,7 +48,7 @@ MonoBehaviour:
   ObjectInterest: 1
   DefaultInterestGroups: []
   DestroyWhenStateAuthorityLeaves: 1
-  AllowStateAuthorityOverride: 1
+  AllowStateAuthorityOverride: 0
   AoiPositionSource: {fileID: 0}
   Flags: 2305
   NetworkGuid:
@@ -70,7 +70,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interpolationDataSource: 0
+  EnemyCharacter: {fileID: 0}
+  _Seed: 0
   _playerPrefab:
     RawGuidValue: e1433cb2b6135a94e92c3f1283df80b1
-  _handGun:
-    RawGuidValue: 613db97d09b872848b8e308bae6c0147

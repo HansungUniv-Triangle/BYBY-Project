@@ -22,7 +22,7 @@ public class ChangeJoystickBasedButtonsPos : MonoBehaviour, IPointerDownHandler
         if (Screen.width * 0.5f > eventData.position.x)     
         {
             buttonPanel.anchorMin = buttonPanel.anchorMax = new Vector2(1f, 0);
-            pos = new Vector2(-75, 0);
+            pos = new Vector2(-90, 0);
 
             playerCamera.ReverseCameraPos(false);
             ChangePlayerGun(true);
@@ -31,7 +31,7 @@ public class ChangeJoystickBasedButtonsPos : MonoBehaviour, IPointerDownHandler
         else
         {
             buttonPanel.anchorMin = buttonPanel.anchorMax = new Vector2(0f, 0);; 
-            pos = new Vector2(75, 0);
+            pos = new Vector2(90, 0);
 
             playerCamera.ReverseCameraPos(true);
             ChangePlayerGun(false);
@@ -44,7 +44,7 @@ public class ChangeJoystickBasedButtonsPos : MonoBehaviour, IPointerDownHandler
     private void ChangePlayerGun(bool isLeft)
     {
         if (networkPlayer is null)
-            networkPlayer = GameManager.Instance.NetworkManager.LocalCharacter.GetComponent<Network.NetworkPlayer>();
+            networkPlayer = GameManager.Instance.NetworkManager.PlayerCharacter.GetComponent<Network.NetworkPlayer>();
 
         networkPlayer.ChangeGunPos(isLeft);
     }

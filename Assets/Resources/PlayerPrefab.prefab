@@ -111,7 +111,6 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: -4384871101208360548}
   - {fileID: 3146828219027978989}
-  - {fileID: 8257305846867869706}
   SimulationBehaviours: []
 --- !u!114 &-4384871101208360548
 MonoBehaviour:
@@ -129,14 +128,7 @@ MonoBehaviour:
   _NetworkSynergyList: 
   synergyList:
   - {fileID: 11400000, guid: 4dd813c273201e3499f90b7ed0bdda15, type: 2}
-  GunPos: {fileID: 0}
-  ShootPoint: {fileID: 0}
-  ShotLine: {fileID: 619845798768815705, guid: 4cb0cccc0e5c3ee4ea6eac51e71ebfb7, type: 3}
-  UltLine: {fileID: 8321005384874206421, guid: d3c13645ed15bf54f9f9d163e3cda645, type: 3}
-  _crossHairOrigin: {fileID: 0}
-  targetPoint: {x: 0, y: 0, z: 0}
-  ReverseHorizontalMove: 0
-  _gameUI: {fileID: 0}
+  _catController: {fileID: 0}
 --- !u!114 &3146828219027978989
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -205,7 +197,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4030830638888975769}
-  - component: {fileID: 8257305846867869706}
+  - component: {fileID: 8297501232480919430}
   m_Layer: 7
   m_Name: Cat
   m_TagString: Untagged
@@ -229,7 +221,7 @@ Transform:
   m_Father: {fileID: 3038427902770430635}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8257305846867869706
+--- !u!114 &8297501232480919430
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -238,25 +230,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 7510504067231474727}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Script: {fileID: 11500000, guid: 53efe435d546b5045a189f8bd3d30072, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
-  InterpolationSpace: 0
-  InterpolationTarget: {fileID: 6257193720318471331}
-  InterpolateErrorCorrection: 1
-  InterpolatedErrorCorrectionSettings:
-    MinRate: 3.3
-    MaxRate: 10
-    PosBlendStart: 0.25
-    PosBlendEnd: 1
-    PosMinCorrection: 0.025
-    PosTeleportDistance: 2
-    RotBlendStart: 0.1
-    RotBlendEnd: 0.5
-    RotTeleportRadians: 1.5
-  UseLegacySharedModeInterpolation: 0
-  TargetInterpolationDelay: 0.03
+  animator: {fileID: 6310122378078074195}
 --- !u!1001 &6252918920177657081
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -290,7 +267,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4732477241362522, guid: f8033fd2a3830384a85381061c2e16df, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.9
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4732477241362522, guid: f8033fd2a3830384a85381061c2e16df, type: 3}
       propertyPath: m_LocalPosition.z
@@ -343,6 +320,12 @@ PrefabInstance:
 --- !u!4 &6257193720318471331 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4732477241362522, guid: f8033fd2a3830384a85381061c2e16df,
+    type: 3}
+  m_PrefabInstance: {fileID: 6252918920177657081}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &6310122378078074195 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 95941727656087978, guid: f8033fd2a3830384a85381061c2e16df,
     type: 3}
   m_PrefabInstance: {fileID: 6252918920177657081}
   m_PrefabAsset: {fileID: 0}

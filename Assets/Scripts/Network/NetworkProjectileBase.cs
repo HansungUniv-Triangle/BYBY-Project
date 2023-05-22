@@ -37,10 +37,23 @@ namespace Network
         public float IndividualDamage;
 
         // 네트워크 관련
-        [Networked] protected NetworkBool IsHit { get; set; }
+        [Networked(OnChanged = nameof(HitEffect))] 
+        protected NetworkBool IsHit { get; set; }
+
+        private static void HitEffect(Changed<NetworkProjectileBase> changed)
+        {
+            changed.Behaviour.HitEffect();
+        }
+        private void HitEffect()
+        {
+            var hitType = IsEnemyHit ? HitEffectType.Player : HitEffectType.Everything;
+            EffectManager.Instance.PlayHitEffect(transform.position, -transform.forward, hitType);
+        }
+        [Networked] protected NetworkBool IsEnemyHit { get; set; }
+
         [Networked] public float Damage { get; set; }
         public float DamageSave;
-         
+
         // 초기화
         public void Initialized(NetworkProjectileHolder holder)
         {
@@ -49,8 +62,12 @@ namespace Network
                 Debug.LogError("ProjectileBase가 2번 초기화 되었습니다.");
             }
             
+            if (!HasStateAuthority)
+            {
+                gameObject.layer = LayerMask.NameToLayer("Enemy");
+            }
+            
             _projectileHolder = holder;
-
             IndividualVelocity = 0;
             IndividualDamage = 0;
         }
@@ -63,6 +80,7 @@ namespace Network
         public override void Spawned()
         {
             GameManager.Instance.NetworkManager.AddNetworkObjectInList(Object);
+            EffectManager.Instance.PlayShootEffect(transform.position, transform.forward);
         }
 
         public override void Despawned(NetworkRunner runner, bool hasState)
@@ -81,8 +99,13 @@ namespace Network
             
             UpdateProjectile();
             
-            if (IsExpirationProjectile())
+            if (IsExpirationProjectile() &&NetworkActive)
             {
+                if (_projectileHolder.IsMainWeapon && Distance > MaxRange)
+                {
+                    GameManager.Instance.CheckBulletBetweenEnemyAndMe(transform.position);
+                }
+                
                 DestroyProjectile();
             }
         }

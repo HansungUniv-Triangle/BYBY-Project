@@ -23,7 +23,7 @@ namespace Network
             }
             else if (objectLayer.Equals(LayerMask.NameToLayer("Enemy")))
             {
-                GameManager.Instance.NetworkManager.LocalCharacter.Healing(DamageSave);
+                GameManager.Instance.NetworkManager.PlayerCharacter.Healing(DamageSave);
                 IsHit = true;
             }
         }
