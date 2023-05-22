@@ -9,16 +9,16 @@ namespace Network
         {
             if (CanAttack())
             {
-                var speedValue = GetCharStat(CharStat.Speed).Total; 
-                
-                GameManager.Instance.shootCount += 1;
-                
+                var speedValue = GetCharStat(CharStat.Speed).Total;
+                var specialValue = GetWeaponStat(WeaponStat.Special).Total / 50;
+                var calcValue = speedValue * specialValue;
+
                 DOTween.Sequence()
                     .OnStart(() => RemainBullet--)
                     .AppendCallback(() => SpawnProjectile(ShootPointTransform))
-                    .AppendCallback(() => AddCharAdditionStat(CharStat.Speed, +speedValue))
+                    .AppendCallback(() => AddCharAdditionStat(CharStat.Speed, +calcValue))
                     .AppendInterval(0.1f)
-                    .AppendCallback(() => AddCharAdditionStat(CharStat.Speed, -speedValue));
+                    .AppendCallback(() => AddCharAdditionStat(CharStat.Speed, -calcValue));
             }
         }
     }

@@ -950,6 +950,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _uiHolder: {fileID: 0}
+  SynergyList: []
   WeaponList:
   - {fileID: 11400000, guid: 9d5bb33d5c0da4641b856dfdf529db86, type: 2}
   selectWeaponNum: 0

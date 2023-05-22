@@ -5,8 +5,8 @@ using Fusion;
 using GameStatus;
 using TMPro;
 using Types;
-using UIHolder;
 using UnityEngine;
+using Utils;
 
 namespace Network
 {
@@ -43,26 +43,12 @@ namespace Network
         {
             _baseWeaponStat = new BaseStat<WeaponStat>(1, 1);
             _projectileList = new List<NetworkObject>();
-
-            _baseWeaponStat.AddStat(new Stat<WeaponStat>(WeaponStat.Damage, 10, 0));
-            _baseWeaponStat.AddStat(new Stat<WeaponStat>(WeaponStat.Velocity, 20, 0));
-            _baseWeaponStat.AddStat(new Stat<WeaponStat>(WeaponStat.Range, 10, 0));
-            _baseWeaponStat.AddStat(new Stat<WeaponStat>(WeaponStat.Special, 6, 0));
-            _baseWeaponStat.AddStat(new Stat<WeaponStat>(WeaponStat.Bullet, 10, 0));
-            _baseWeaponStat.AddStat(new Stat<WeaponStat>(WeaponStat.Reload, 10, 0));
-            
             WeaponTransform = gameObject.transform;
-            
-            var shootPoint = transform.Find("ShootPoint");
-            if (shootPoint == null)
-            {
-                shootPoint = WeaponTransform;
-            }
-            
-            ShootPointTransform = shootPoint;
-
             Target = gameObject.transform.forward;
             IsDoneShootAction = true;
+            
+            var shootPoint = transform.Find("ShootPoint");
+            ShootPointTransform = shootPoint ? shootPoint : WeaponTransform;
         }
 
         private void Start()
@@ -76,7 +62,7 @@ namespace Network
 
         public override void FixedUpdateNetwork()
         {
-            if (!HasInputAuthority || GameManager.Instance.NetworkManager.GameRoundState != RoundState.RoundStart)
+            if (!HasInputAuthority || !GameManager.Instance.NetworkManager.CanControlCharacter)
             {
                 return;
             }
@@ -124,6 +110,12 @@ namespace Network
                 InitializeProjectile
             );
             _projectileList.Add(obj);
+            
+            if (_weaponData.isMainWeapon)
+            {
+                GameManager.Instance.shootCount++;
+            }
+            
             return obj;
         }
         
@@ -142,7 +134,8 @@ namespace Network
             
             if (delay.ExpiredOrNotRunning(Runner))
             {
-                delay = TickTimer.CreateFromSeconds(Runner, _baseWeaponStat.GetStat(WeaponStat.Interval).Total);
+                var delayValue = StatConverter.ConversionStatValue(_baseWeaponStat.GetStat(WeaponStat.Interval));
+                delay = TickTimer.CreateFromSeconds(Runner, delayValue);
                 return true;
             }
             
@@ -162,19 +155,19 @@ namespace Network
                 .OnStart(() =>
                 {
                     IsDoneShootAction = false;
-                    GameManager.Instance.ActiveLoadingUI();
+                    //GameManager.Instance.ActiveLoadingUI();
                 })
                 .OnComplete(() =>
                 {
                     IsDoneShootAction = true;
-                    GameManager.Instance.DeActiveLoadingUI();
+                    //GameManager.Instance.DeActiveLoadingUI();
                 });
 
             var max = GetWeaponStat(WeaponStat.Bullet).Total;
             var time = GetWeaponStat(WeaponStat.Reload).Total;
-            var separateTime = (50 + time) / (50 * max);
+            var separateTime = max / time;
             
-            GameManager.Instance.AddBehaviourEventCount(BehaviourEvent.장전, (int)(max * separateTime));
+            GameManager.Instance.AddBehaviourEventCount(BehaviourEvent.장전, (int)separateTime * 100);
             
             for (int i = 0; i < max; i++)
             {
@@ -187,7 +180,7 @@ namespace Network
         }
 
         protected abstract void Attack();
-
+        
         #region 스탯
 
         protected void AddWeaponAdditionStat(WeaponStat weaponStat, float add)
@@ -221,6 +214,11 @@ namespace Network
             return _baseWeaponStat.GetStat(stat);
         }
         
+        public BaseStat<WeaponStat> GetWeaponBaseStat()
+        {
+            return _baseWeaponStat;
+        }
+        
         public float GetWeaponStatTotal(WeaponStat stat)
         {
             return _baseWeaponStat.GetStat(stat).Total;
@@ -229,6 +227,10 @@ namespace Network
         public void ClearWeaponStat()
         {
             _baseWeaponStat.ClearStatList();
+            foreach (var stat in _weaponData.basicWeaponStat)
+            {
+                _baseWeaponStat.AddStat(stat);
+            }
         }
 
         #endregion

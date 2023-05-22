@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Fusion;
+using GameStatus;
 using Network;
 using Types;
 using UnityEngine;
@@ -333,91 +334,161 @@ public class PlayerBehaviorAnalyzer
         { BehaviourEvent.파괴, new Enum[] { WeaponStat.Range} },
         { BehaviourEvent.장전, new Enum[] { WeaponStat.Bullet, WeaponStat.Reload } },
     };
-    
-    public Dictionary<BehaviourEvent, int> BehaviourEventCountPlayer = new() {
-        { BehaviourEvent.피격, 0 },
-        { BehaviourEvent.회피, 0 },
-        { BehaviourEvent.명중, 0 },
-        { BehaviourEvent.피해, 0 },
-        { BehaviourEvent.특화, 0 },
-        { BehaviourEvent.파괴, 0 },
-        { BehaviourEvent.장전, 0 },
-    };
 
-    public Dictionary<BehaviourEvent, int> BehaviourEventCountEnemy = new() {
-        { BehaviourEvent.피격, 0 },
-        { BehaviourEvent.회피, 0 },
-        { BehaviourEvent.명중, 0 },
-        { BehaviourEvent.피해, 0 },
-        { BehaviourEvent.특화, 0 },
-        { BehaviourEvent.파괴, 0 },
-        { BehaviourEvent.장전, 0 },
-    };
-    
-    public Dictionary<Enum, float> EventResult = new()
-    {
-        { CharStat.Health, 0 },
-        { CharStat.Speed, 0 },
-        { CharStat.Rolling, 0 },
-        { CharStat.Armor, 0 },
-        { CharStat.Calm, 0 },
-        { WeaponStat.Interval, 0 },
-        { WeaponStat.Special, 0 },
-        { WeaponStat.Damage, 0 },
-        { WeaponStat.Range, 0 },
-        { WeaponStat.Reload, 0 },
-        { WeaponStat.Bullet, 0 },
-        { WeaponStat.Velocity, 0 },
-    };
-    
-    public Dictionary<Enum, int> MyStat = new()
-    {
-        { CharStat.Health, 0 },
-        { CharStat.Speed, 0 },
-        { CharStat.Rolling, 0 },
-        { CharStat.Armor, 0 },
-        { CharStat.Calm, 0 },
-        { WeaponStat.Interval, 0 },
-        { WeaponStat.Special, 0 },
-        { WeaponStat.Damage, 0 },
-        { WeaponStat.Range, 0 },
-        { WeaponStat.Reload, 0 },
-        { WeaponStat.Bullet, 0 },
-        { WeaponStat.Velocity, 0 },
-    };
-    
-    public Dictionary<Enum, float> StatResult = new()
-    {
-        { CharStat.Health, 0 },
-        { CharStat.Speed, 0 },
-        { CharStat.Rolling, 0 },
-        { CharStat.Armor, 0 },
-        { CharStat.Calm, 0 },
-        { WeaponStat.Interval, 0 },
-        { WeaponStat.Special, 0 },
-        { WeaponStat.Damage, 0 },
-        { WeaponStat.Range, 0 },
-        { WeaponStat.Reload, 0 },
-        { WeaponStat.Bullet, 0 },
-        { WeaponStat.Velocity, 0 },
-    };
-    
-    public Dictionary<Enum, float> RecommendFinal = new()
-    {
-        { CharStat.Health, 0 },
-        { CharStat.Speed, 0 },
-        { CharStat.Rolling, 0 },
-        { CharStat.Armor, 0 },
-        { CharStat.Calm, 0 },
-        { WeaponStat.Interval, 0 },
-        { WeaponStat.Special, 0 },
-        { WeaponStat.Damage, 0 },
-        { WeaponStat.Range, 0 },
-        { WeaponStat.Reload, 0 },
-        { WeaponStat.Bullet, 0 },
-        { WeaponStat.Velocity, 0 },
-    };
+    public Dictionary<Enum, float> EventResult;
+    public Dictionary<Enum, int> MyStat;
+    public Dictionary<Enum, float> StatResult;
+    public Dictionary<Enum, float> Recommendation;
 
+    public void ClearStatCorrelation()
+    {
+        EventResult = new()
+        {
+            { CharStat.Health, 0 },
+            { CharStat.Speed, 0 },
+            { CharStat.Rolling, 0 },
+            { CharStat.Armor, 0 },
+            { CharStat.Calm, 0 },
+            { WeaponStat.Interval, 0 },
+            { WeaponStat.Special, 0 },
+            { WeaponStat.Damage, 0 },
+            { WeaponStat.Range, 0 },
+            { WeaponStat.Reload, 0 },
+            { WeaponStat.Bullet, 0 },
+            { WeaponStat.Velocity, 0 },
+        };
+        
+        MyStat = new()
+        {
+            { CharStat.Health, 0 },
+            { CharStat.Speed, 0 },
+            { CharStat.Rolling, 0 },
+            { CharStat.Armor, 0 },
+            { CharStat.Calm, 0 },
+            { WeaponStat.Interval, 0 },
+            { WeaponStat.Special, 0 },
+            { WeaponStat.Damage, 0 },
+            { WeaponStat.Range, 0 },
+            { WeaponStat.Reload, 0 },
+            { WeaponStat.Bullet, 0 },
+            { WeaponStat.Velocity, 0 },
+        };
+        
+        StatResult = new()
+        {
+            { CharStat.Health, 0 },
+            { CharStat.Speed, 0 },
+            { CharStat.Rolling, 0 },
+            { CharStat.Armor, 0 },
+            { CharStat.Calm, 0 },
+            { WeaponStat.Interval, 0 },
+            { WeaponStat.Special, 0 },
+            { WeaponStat.Damage, 0 },
+            { WeaponStat.Range, 0 },
+            { WeaponStat.Reload, 0 },
+            { WeaponStat.Bullet, 0 },
+            { WeaponStat.Velocity, 0 },
+        };
+        
+        Recommendation = new()
+        {
+            { CharStat.Health, 0 },
+            { CharStat.Speed, 0 },
+            { CharStat.Rolling, 0 },
+            { CharStat.Armor, 0 },
+            { CharStat.Calm, 0 },
+            { WeaponStat.Interval, 0 },
+            { WeaponStat.Special, 0 },
+            { WeaponStat.Damage, 0 },
+            { WeaponStat.Range, 0 },
+            { WeaponStat.Reload, 0 },
+            { WeaponStat.Bullet, 0 },
+            { WeaponStat.Velocity, 0 },
+        };
+    }
+
+    public void AddCharStatCorrelation(BaseStat<CharStat> baseStat)
+    {
+        var keys = new List<Enum>(MyStat.Keys);
+        foreach (CharStat charStatKey in Enum.GetValues(typeof(CharStat)))
+        {
+            MyStat[charStatKey] = (int)baseStat.GetStat(charStatKey).Total;
+        }
+    }
+    
+    public void AddWeaponStatCorrelation(BaseStat<WeaponStat> baseStat)
+    {
+        var keys = new List<Enum>(MyStat.Keys);
+        foreach (WeaponStat weaponStatKey in Enum.GetValues(typeof(WeaponStat)))
+        {
+            MyStat[weaponStatKey] = (int)baseStat.GetStat(weaponStatKey).Total;
+        }
+    }
+
+    public void AddBehaviourEventCount(BehaviourEvent behaviourEvent, float ratio)
+    {
+        if (float.IsNaN(ratio) || float.IsInfinity(ratio))
+        {
+            ratio = 0.5f;
+        }
+
+        switch (behaviourEvent)
+        {
+            // 높은 수치일 수록 해당 스탯이 필요하게 설정 됨 -> 피격, 파괴, 장전은 높을수록 안좋음 -> 정상 작동
+            case BehaviourEvent.피격:
+            case BehaviourEvent.파괴:
+            case BehaviourEvent.장전:
+            case BehaviourEvent.특화:
+                break;
+            // 높은 수치일 수록 해당 스탯이 필요하게 설정 됨 -> 회피, 명중, 피해 높을수록 좋음 -> 1에서 빼서 역으로 만들어서 작동
+            case BehaviourEvent.회피:
+            case BehaviourEvent.명중:
+            case BehaviourEvent.피해:
+                ratio = 1 - ratio;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(behaviourEvent), behaviourEvent, null);
+        }
+
+        foreach (var key in BehaviourEventStats[behaviourEvent])
+        {
+            EventResult[key] += ratio;
+        }
+    }
+    
+    public void CalculateStatCorrelation()
+    {
+        var keys = new List<Enum>(MyStat.Keys);
+        foreach (var key1 in keys)
+        {
+            foreach (var key2 in keys)
+            {
+                StatResult[key2] += MyStat[key1] * GetCorrelation(key1, key2);
+            }
+        }
+        
+        var minusToZeroAllSum = StatResult.Where(o=> o.Value > 0).Sum(o => o.Value);
+        foreach (var key1 in keys)
+        {
+            var statValue = Math.Abs(StatResult[key1]) / minusToZeroAllSum;
+            StatResult[key1] = StatResult[key1] > 0 ? statValue : -statValue;
+        }
+    }
+    
+    public void CalculateFinalCorrelation()
+    {
+        var keys = new List<Enum>(MyStat.Keys);
+        foreach (var key in keys)
+        {
+            Recommendation[key] = (1 + EventResult[key]) * (1 + StatResult[key]);
+        }
+    }
+    
+    public float GetRecommendation(Enum statType)
+    {
+        return Recommendation[statType];
+    }
+    
     public PlayerBehaviorAnalyzer()
     {
         CharStats = new StatCorrelationList<CharStat>();
@@ -475,79 +546,6 @@ public class PlayerBehaviorAnalyzer
 
         WeaponStats.SetCorrelationType(WeaponStat.Special)
             .AddCorrelationValue(WeaponStat.Special, 0.5f);
-        
-        
-        // 점유율을 랜덤으로 정합니다.
-        foreach (BehaviourEvent behaviourEvent in Enum.GetValues(typeof(BehaviourEvent)))
-        {
-            BehaviourEventCountPlayer[behaviourEvent] = Random.Range(0, 100);
-            BehaviourEventCountEnemy[behaviourEvent] = Random.Range(0, 100);
-        }
-        
-        Debug.Log("스탯 정하기");
-        
-        // 일단 스탯을 랜덤으로 정합니다.
-        var keys = new List<Enum>(MyStat.Keys);
-        foreach (var key in keys)
-        {
-            MyStat[key] = Random.Range(0, 100);
-            Debug.Log($"{key}: {MyStat[key]}");
-        }
-        
-        Debug.Log("유사도 정하기");
-        
-        // 무작위로 정한 값 * 유사도를 구해서 결과에 저장합니다.
-        foreach (var key1 in keys)
-        {
-            foreach (var key2 in keys)
-            {
-                StatResult[key2] += MyStat[key1] * GetCorrelation(key1, key2);
-            }
-        }
-        
-        var minusToZeroAllSum = StatResult.Where(o=> o.Value > 0).Sum(o => o.Value);
-        foreach (var key1 in keys)
-        {
-            var statValue = Math.Abs(StatResult[key1]) / minusToZeroAllSum;
-            Debug.Log($"{key1}: 값: {MyStat[key1]} 가중: {StatResult[key1]}, 비율: {statValue * 100}%");
-            StatResult[key1] = StatResult[key1] > 0 ? statValue : -statValue;
-        }
-        
-        // 점유율을 퍼센트로 나누어서 추천률로 변환합니다.
-        foreach (BehaviourEvent behaviourEvent in Enum.GetValues(typeof(BehaviourEvent)))
-        {
-            var all = BehaviourEventCountPlayer[behaviourEvent] + BehaviourEventCountEnemy[behaviourEvent];
-            // 낮을수록 해당 스탯을 높게 챙겨야하기 때문에 1에서 빼준다.
-            var percent = 1 - (BehaviourEventCountPlayer[behaviourEvent] / (float)all);
-            
-            foreach (var key in BehaviourEventStats[behaviourEvent])
-            {
-                if (key is BehaviourEvent.특화)
-                {
-                    EventResult[key] += 0.5f;
-                }
-                else
-                {
-                    EventResult[key] += percent;
-                }
-                Debug.Log($"{key} {EventResult[key]}");
-            }
-        }
-
-        // 서로 곱해서 결과를 봅시다.
-        Debug.Log($"결과는?");
-        foreach (var key in keys)
-        {
-            RecommendFinal[key] = (1 + EventResult[key]) * (1 + StatResult[key]);
-            Debug.Log($"{key}: 가중({1 + StatResult[key]}) 이벤트({1 + EventResult[key]}) 최종({RecommendFinal[key]})");
-        }
-
-        var count = 1;
-        var sortedDict = from entry in RecommendFinal orderby entry.Value descending select entry;
-        foreach (var keyValuePair in sortedDict)
-        {
-            Debug.Log($"{count++}순위: {keyValuePair.Key}, {keyValuePair.Value}");
-        }
     }
 
     private float GetCorrelation<T1, T2>(T1 stat1, T2 stat2)

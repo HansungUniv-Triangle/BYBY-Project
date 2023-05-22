@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using DG.Tweening;
 using TMPro;
@@ -93,15 +94,40 @@ public class SynergyPageManager : MonoBehaviour
             else
             {
                 CreateRandomSynergy(_synergyPages[i]);
+                
+                for (var count = 0; count < _synergyPages[i].synergies.Length; count++)
+                {
+                    var totalRecommendation = 0f;
+                    foreach (var stat in _synergyPages[i].synergies[count].charStatList)
+                    {
+                        // ratio로 실질적으로 증가하는 양
+                        var increaseRatio = stat.Ratio * GameManager.Instance.NetworkManager.PlayerCharacter.GetCharStat(stat.Type).Amount;
+                        var increaseFinalValue = stat.Amount + increaseRatio;
+                        totalRecommendation += increaseFinalValue * GameManager.Instance.PlayerBehaviorAnalyzer.GetRecommendation(stat.Type);
+                    }
+                
+                    foreach (var stat in _synergyPages[i].synergies[count].weaponStatList)
+                    {
+                        // ratio로 실질적으로 증가하는 양
+                        var increaseRatio = stat.Ratio * GameManager.Instance.NetworkManager.PlayerCharacter.GetWeaponStat(stat.Type).Amount;
+                        var increaseFinalValue = stat.Amount + increaseRatio;
+                        totalRecommendation += increaseFinalValue * GameManager.Instance.PlayerBehaviorAnalyzer.GetRecommendation(stat.Type);
+                    }
+                    _synergyPages[i].synergyRecommendationPercentage[count] = (int)(totalRecommendation * 100f);
+                }
+
+                var sum = _synergyPages[i].synergyRecommendationPercentage.Sum();
+                for (var index = 0; index < _synergyPages[i].synergyRecommendationPercentage.Length; index++)
+                {
+                    var percent = (int)(_synergyPages[i].synergyRecommendationPercentage[index] / (float)sum * 100f);
+                    _synergyPages[i].synergyRecommendationPercentage[index] = percent;
+                }
+            
+                _synergySelectPanel.DisplayRecommendation(_synergyPages[i], FindMaxRecommendation(_synergyPages[i]));
                 _synergySelectPanel.ApplySynergyToObj(_synergyPages[i]);
             }
         }
-        
         _synergySelectPanel.ChangeOrder();
-        GetRecommendationPercentage();
-        _synergySelectPanel.ApplySynergyToObj(_synergyPages[CurrentPage]);
-        int j = FindMaxRecommendation(_synergyPages[CurrentPage]);
-        _synergySelectPanel.DisplayRecommendation(_synergyPages[CurrentPage], j);
     }
 
     public void SelectSynergy()

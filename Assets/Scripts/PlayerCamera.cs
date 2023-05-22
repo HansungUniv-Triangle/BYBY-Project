@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using Fusion;
 using UnityEngine;
 using Types;
 using NetworkPlayer = Network.NetworkPlayer;
@@ -71,22 +69,29 @@ public class PlayerCamera : MonoBehaviour
 
     private void FixedUpdate()
     {
-        switch (_cameraMode)
+        if (GameManager.Instance.NetworkManager.SinglePlayMode)
         {
-            case CameraMode.None:
-                WorldView();
-                break;
-            case CameraMode.Game:
-                GameView();
-                break;
-            case CameraMode.Winner:
-                RotateCamera(GameManager.Instance.NetworkManager.IsPlayerWin ? _player : _target);
-                break;
-            case CameraMode.Player:
-                RotateCamera(_player);
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
+            GameView();
+        }
+        else
+        {
+            switch (_cameraMode)
+            {
+                case CameraMode.None:
+                    WorldView();
+                    break;
+                case CameraMode.Game:
+                    GameView();
+                    break;
+                case CameraMode.Winner:
+                    RotateCamera(GameManager.Instance.NetworkManager.IsPlayerWin ? _player : _target);
+                    break;
+                case CameraMode.Player:
+                    RotateCamera(_player);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
     }
 
@@ -116,6 +121,8 @@ public class PlayerCamera : MonoBehaviour
 
     private void GameView()
     {
+        if(!_player && !_target) return;
+
         var position = _player.position;
         _ray.origin = position;
         _ray.direction = (_cameraPos.position - position).normalized;

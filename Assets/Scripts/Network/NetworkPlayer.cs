@@ -7,6 +7,7 @@ using GameStatus;
 using Types;
 using UnityEngine;
 using UIHolder;
+using Utils;
 
 namespace Network
 {
@@ -206,21 +207,14 @@ namespace Network
         private void OnDamaged(NetworkObject projectile)
         {
             var damage = projectile.GetComponent<NetworkProjectileBase>().DamageSave;
-            var armor = _baseCharStat.GetStat(CharStat.Armor).Total;
-            var calcDamage = damage * (100 / (100 + armor));
+            var armor = StatConverter.ConversionStatValue(_baseCharStat.GetStat(CharStat.Armor));
+            var calcDamage = damage * armor;
             NowHp -= calcDamage;
 
             if (projectile.TryGetComponent<ICollisionCharacterEvent>(out var collisionEvent))
             {
                 collisionEvent.CollisionCharacterEvent(this);
             }
-        }
-        
-        public void OnHitDebugging(float damage)
-        {
-            var armor = _baseCharStat.GetStat(CharStat.Armor).Total;
-            var calcDamage = damage * (100 / (100 + armor));
-            NowHp -= calcDamage;
         }
     }
 
@@ -330,12 +324,13 @@ namespace Network
         private void InitialCharacterStatus()
         {
             _baseCharStat.ClearStatList();
+
             foreach (var synergy in synergyList)
             {
                 _baseCharStat.AddStatList(synergy.charStatList);
             }
             
-            MaxHp = NowHp = _baseCharStat.GetStat(CharStat.Health).Total * 100;
+            MaxHp = NowHp = StatConverter.ConversionStatValue(_baseCharStat.GetStat(CharStat.Health));
         }
 
         private void InitialWeaponStatus()
@@ -343,9 +338,10 @@ namespace Network
             var weaponList = GetComponentsInChildren<NetworkProjectileHolder>();
             foreach (var weapon in weaponList)
             {
+                weapon.ClearWeaponStat();
+
                 foreach (var synergy in synergyList)
-                {
-                    _baseCharStat.AddStatList(synergy.charStatList);
+                {    
                     weapon.AddWeaponStatList(synergy.weaponStatList);
                 }
             }
@@ -354,6 +350,22 @@ namespace Network
         public Stat<CharStat> GetCharStat(CharStat type)
         {
             return _baseCharStat.GetStat(type);
+        }
+
+        public BaseStat<CharStat> GetCharBaseStat()
+        {
+            return _baseCharStat;
+        }
+        
+        public Stat<WeaponStat> GetWeaponStat(WeaponStat type)
+        {
+            return GetWeaponBaseStat().GetStat(type);
+        }
+        
+        public BaseStat<WeaponStat> GetWeaponBaseStat()
+        {
+            var weaponList = GetComponentsInChildren<NetworkProjectileHolder>();
+            return (from networkProjectileHolder in weaponList where networkProjectileHolder.WeaponData.isMainWeapon select networkProjectileHolder.GetWeaponBaseStat()).FirstOrDefault();
         }
 
         public NetworkProjectileHolder[] GetProjectileHolderList()
@@ -596,7 +608,6 @@ namespace Network
             {
                 gameObject.layer = LayerMask.NameToLayer("Player");
                 _canvasManager.SwitchUI(CanvasType.GameMoving);
-                InitialStatus();
             }
             else
             {
@@ -650,7 +661,7 @@ namespace Network
         
         public override void FixedUpdateNetwork()
         {
-            if(!HasStateAuthority || GameManager.Instance.NetworkManager.GameRoundState != RoundState.RoundStart) return;
+            if(!HasStateAuthority || !GameManager.Instance.NetworkManager.CanControlCharacter) return;
 
             var shakeMagnitude = Input.acceleration.magnitude;
             if (shakeMagnitude > _shakeDodgeThreshold)    //if (Input.GetKeyDown(KeyCode.Space) && !isDodge)
@@ -683,15 +694,7 @@ namespace Network
                 }
             }
         }
-
-        /// <summary>
-        /// 라운드 시작 시 초기화해야 하는 데이터
-        /// </summary>
-        public void ResetRoundData()
-        {
-            _networkObjectCheckList.Clear();
-        }
-
+        
         private static void UpdatesAnimation(Changed<NetworkPlayer> changed)
         {
             changed.Behaviour.UpdatesAnimation();
@@ -699,7 +702,8 @@ namespace Network
         
         private void UpdatesAnimation()
         {
-            _catController.UpdateAnimation(AnimationIdx, _baseCharStat.GetStat(CharStat.Speed).Total * 0.5f);
+            var speed = StatConverter.ConversionStatValue(_baseCharStat.GetStat(CharStat.Speed));
+            _catController.UpdateAnimation(AnimationIdx, speed * 0.5f);
         }
 
         private static void UpdatesRotate(Changed<NetworkPlayer> changed)
@@ -719,9 +723,7 @@ namespace Network
         {
             var h = _reverseHorizontalMove ? -_joystick.Horizontal : _joystick.Horizontal;
             var v = _joystick.Vertical;
-
-            var speed = _baseCharStat.GetStat(CharStat.Speed).Total;
-            speed = speed > 0 ? speed : 0;
+            var speed = StatConverter.ConversionStatValue(_baseCharStat.GetStat(CharStat.Speed));
 
             if (_isDodge)
             {
@@ -766,6 +768,7 @@ namespace Network
 
                     _moveDir.x = _jumpDir.x;
                     _moveDir.z = _jumpDir.z;
+                    _moveDir.y -= _gravity * Runner.DeltaTime;
                 }
                 
                 if (_isJump)
@@ -775,8 +778,6 @@ namespace Network
                     _isJump = false;
                     _isWalk = true;
                 }
-
-                _moveDir.y -= _gravity * Runner.DeltaTime;
                 _characterController.Move(_moveDir * Runner.DeltaTime);
             }
 
@@ -876,6 +877,12 @@ namespace Network
             _joystick.OnPointerUp(null);    // joystick 입력값 초기화
             IsCameraFocused = !IsCameraFocused;
             _canvasManager.SwitchUI(CanvasType.GameAiming);
+
+            var weapon = FindObjectOfType<NetworkSniperRifle>();
+            if (weapon != null)
+            {
+                weapon.SnipingMode(true);
+            }
         }
 
         public void EndUlt()
@@ -883,6 +890,12 @@ namespace Network
             //Shoot(AttackType.Ultimate, UltLine);
             IsCameraFocused = false;
             _canvasManager.SwitchUI(CanvasType.GameMoving);
+            
+            var weapon = FindObjectOfType<NetworkSniperRifle>();
+            if (weapon != null)
+            {
+                weapon.SnipingMode(false);
+            }
         }
     }
 

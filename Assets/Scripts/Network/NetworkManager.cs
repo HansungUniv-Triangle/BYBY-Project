@@ -99,6 +99,7 @@ namespace Network
         }
         
         public bool IsPlayerWin => Runner.LocalPlayer == BattleLogs[^1].Winner;
+        public bool CanControlCharacter => SinglePlayMode || GameRoundState == RoundState.RoundStart;
         
         // 카메라
         private PlayerCamera _playerCamera;
@@ -120,6 +121,8 @@ namespace Network
                 throw new Exception("카메라가 없음");
             }
         }
+        
+        
     }
 
     // 룸 데이터 기반 UI 업데이트
@@ -250,6 +253,8 @@ namespace Network
         [Networked(OnChanged = nameof(UpdateRoundState))] 
         private int NetworkRoundState { get; set; }
 
+        public bool SinglePlayMode { get; private set; } = false;
+
         public static void UpdateRoundState(Changed<NetworkManager> changed)
         {
             changed.Behaviour.UpdateRoundState();
@@ -291,7 +296,7 @@ namespace Network
                     break;
                 case RoundState.RoundAnalysis:
                     var playerWin = BattleLogs.Count(log => !log.IsDraw && log.Winner == Runner.LocalPlayer);
-                    var enemyWin = BattleLogs.Count(log => !log.IsDraw && log.Winner == Runner.LocalPlayer);
+                    var enemyWin = BattleLogs.Count(log => !log.IsDraw && log.Winner != Runner.LocalPlayer);
 
                     if (playerWin == WinRound)
                     {
@@ -325,6 +330,29 @@ namespace Network
             switch (roundState)
             {
                 case RoundState.GameStart:
+                    var tempData1 = new NetworkPlayer.BehaviorData
+                    {
+                        HitRate = 1,
+                        DodgeRate = 1,
+                        Accuracy = 1,
+                        Damage = 1,
+                        Special = 1,
+                        DestroyBullet = 1,
+                        Reload = 1
+                    };
+                
+                    var tempData2 = new NetworkPlayer.BehaviorData
+                    {
+                        HitRate = 1,
+                        DodgeRate = 1,
+                        Accuracy = 1,
+                        Damage = 1,
+                        Special = 1,
+                        DestroyBullet = 1,
+                        Reload = 1
+                    };
+
+                    ActionBehaviourAnalysis(tempData1, tempData2);
                     SetTimerSec(10f);
                     break;
                 case RoundState.SynergySelect:
@@ -470,12 +498,12 @@ namespace Network
             PlayerCamera.ChangeCameraMode(CameraMode.Game);
             GameUIInstance.gameUIGroup.SetActive(true);
             SynergyPageManager.SetActiveSynergyPanel(false);
-            PlayerCharacter.InitialStatus();
             GameUIInstance.roundText.text = $"시너지 선택 완료! 기다리세요";
         }
         
         private void ViewRoundStart()
         {
+            PlayerCharacter.InitialStatus();
             GameUIInstance.roundText.text = $"ROUND {BattleLogs.Count + 1}";
         }
 
@@ -528,7 +556,7 @@ namespace Network
             var message = "";
             var playerData = PlayerCharacter.CharacterBehaviorData;
             var enemyData = EnemyCharacter.CharacterBehaviorData;
-            
+
             message += $"피격 : {playerData.HitRate} vs {enemyData.HitRate} : 피격\n";
             message += $"회피 : {playerData.DodgeRate} vs {enemyData.DodgeRate} : 회피\n";
             message += $"명중 : {playerData.Accuracy} vs {enemyData.Accuracy} : 명중\n";
@@ -539,6 +567,8 @@ namespace Network
 
             GameUIInstance.roundText.text = message;
             GameManager.Instance.ResetBehaviourEventCount();
+
+            ActionBehaviourAnalysis(playerData, enemyData);
         }
         
         private void ViewGameWinner(PlayerRef winnerRef)
@@ -550,6 +580,31 @@ namespace Network
                 GameUIInstance.roundText.text = $"{data.NickName}님이 최종 승리하셨습니다!";
             }
         }
+
+        private void ActionBehaviourAnalysis(NetworkPlayer.BehaviorData playerData, NetworkPlayer.BehaviorData enemyData)
+        {
+            var analyzer = GameManager.Instance.PlayerBehaviorAnalyzer;
+            
+            // 분석기 초기화
+            analyzer.ClearStatCorrelation();
+            
+            // 스탯 연관도 추가, 계산
+            analyzer.AddCharStatCorrelation(PlayerCharacter.GetCharBaseStat());
+            analyzer.AddWeaponStatCorrelation(PlayerCharacter.GetWeaponBaseStat());
+            analyzer.CalculateStatCorrelation();
+
+            // 행동 연관도 추가
+            analyzer.AddBehaviourEventCount(BehaviourEvent.피격, playerData.HitRate / (float)enemyData.HitRate);
+            analyzer.AddBehaviourEventCount(BehaviourEvent.회피, playerData.DodgeRate / (float)enemyData.DodgeRate);
+            analyzer.AddBehaviourEventCount(BehaviourEvent.명중, playerData.Accuracy / (float)enemyData.Accuracy);
+            analyzer.AddBehaviourEventCount(BehaviourEvent.피해, playerData.Damage / (float)enemyData.Damage);
+            analyzer.AddBehaviourEventCount(BehaviourEvent.특화, playerData.Special / (float)enemyData.Special);
+            analyzer.AddBehaviourEventCount(BehaviourEvent.파괴, playerData.DestroyBullet / (float)enemyData.DestroyBullet);
+            analyzer.AddBehaviourEventCount(BehaviourEvent.장전, playerData.Reload / (float)enemyData.Reload);
+
+            // 최종 계산
+            analyzer.CalculateFinalCorrelation();
+        }
     }
     
     public partial class NetworkManager : NetworkBehaviour
@@ -559,6 +614,7 @@ namespace Network
             DontDestroyOnLoad(this);
             GameManager.Instance.SetNetworkManager(this);
             GameManager.Instance.DeActiveLoadingUI();
+            SinglePlayMode = false;
             _networkObjectList = new List<NetworkObject>();
             Seed = Random.Range(0, 10000);
             RPCAddPlayer(Runner.LocalPlayer, $"Nick{Random.Range(1,100)}", Random.ColorHSV());
@@ -574,6 +630,10 @@ namespace Network
         public void OnReady()
         {
             RPCReady(Runner.LocalPlayer);
+            if (Runner.ActivePlayers.Count() == 1)
+            {
+                SinglePlayMode = true;
+            }
         }
 
         public void OnPlayerLeft(PlayerRef playerRef)
@@ -690,7 +750,15 @@ namespace Network
             GameManager.Instance.ResetBehaviourEventCount();
             WorldManager.Instance.GeneratorMap(Seed);
             SpawnPlayerCharacter(Runner.LocalPlayer);
-            ChangeRound();
+
+            if (SinglePlayMode)
+            {
+                ChangeRound();
+            }
+            else
+            {
+                PlayerCharacter.InitialStatus();
+            }
         }
 
         private IEnumerator LoadAsyncScene(int sceneNum)

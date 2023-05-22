@@ -2,6 +2,7 @@
 using UnityEngine;
 
 using Fusion;
+using GameStatus;
 using Types;
 using Utils;
 
@@ -43,14 +44,14 @@ namespace Network
         }
 
         // 기본 스탯
-        protected float _baseStat(WeaponStat weaponStat) => _projectileHolder.GetWeaponStatTotal(weaponStat);
-        protected float MaxRange => _baseStat(WeaponStat.Range);
+        protected Stat<WeaponStat> _baseStat(WeaponStat weaponStat) => _projectileHolder.GetWeaponStat(weaponStat);
+        protected float MaxRange => StatConverter.ConversionStatValue(_baseStat(WeaponStat.Range));
         protected float Distance;
         
         // 기본 + 변동 스탯
-        protected float TotalVelocity => _baseStat(WeaponStat.Velocity) + IndividualVelocity;
+        protected float TotalVelocity => StatConverter.ConversionStatValue(_baseStat(WeaponStat.Velocity)) + IndividualVelocity;
         public float IndividualVelocity;
-        protected float TotalDamage => _baseStat(WeaponStat.Damage) + IndividualDamage;
+        protected float TotalDamage => StatConverter.ConversionStatValue(_baseStat(WeaponStat.Damage)) + IndividualDamage;
         public float IndividualDamage;
 
         // 네트워크 관련
@@ -75,13 +76,9 @@ namespace Network
         // 초기화
         public void Initialized(NetworkProjectileHolder holder, int netWeaponData)
         {
-            if (!HasStateAuthority)
-            {
-                gameObject.layer = LayerMask.NameToLayer("Enemy");
-            }
-
-            NetWeaponData = netWeaponData;
             _projectileHolder = holder;
+            
+            NetWeaponData = netWeaponData;
             IndividualVelocity = 0;
             IndividualDamage = 0;
         }
