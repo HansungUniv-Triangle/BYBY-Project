@@ -535,7 +535,6 @@ namespace Network
 
         private float _gravity = 15.0f;
         private float _jumpForce = 7.0f;
-        private float _dodgeForce = 4.0f;
         private float _shakeDodgeThreshold = 2.0f;
 
         private bool _reverseHorizontalMove = false;
@@ -660,11 +659,7 @@ namespace Network
                 Dodge();
             }
         
-            // 임시 자동공격
-            if (!IsCameraFocused)
-            {
-                ShootAllWeapons(AttackType.Basic);
-            }
+            ShootAllWeapons(AttackType.Basic);
 
             if (_joystick is not null && _target is not null)
             {

@@ -14,7 +14,7 @@ namespace Network
         {
             if (CanAttack())
             {
-                var projectile = SpawnProjectile(WeaponTransform);
+                var projectile = SpawnProjectile(ShootPointTransform);
                 RemainBullet--;
                 
                 GameManager.Instance.shootCount += 1;

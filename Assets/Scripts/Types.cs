@@ -107,5 +107,11 @@ namespace Types
         Everything,
         Player
     }
+
+    public enum Sound {
+        BGM,
+        Effect,
+        MaxCount    // enum 총 개수
+    }
 }
 

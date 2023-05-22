@@ -27,6 +27,10 @@ public class CatController : MonoBehaviour
             case 8:
                 animator.Rebind();
                 animator.Update(0f);
+                SoundManager.Instance.Play3DSound("dash", Types.Sound.Effect, Position);
+                break;
+            case 9:
+                SoundManager.Instance.Play3DSound("jump", Types.Sound.Effect, Position);
                 break;
             case 18:
                 animator.SetFloat("walkSpeed", speed);

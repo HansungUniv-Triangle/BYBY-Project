@@ -13,5 +13,7 @@ public class Weapon : ScriptableObject
     public ParticleSystem bulletShoot;
     public ParticleSystem bulletHit;
     public ParticleSystem bulletHitToPlayer;
+    public string shootSoundPath;
+    public string hitSoundPath;
     public bool isMainWeapon;
 }
