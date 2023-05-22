@@ -37,6 +37,7 @@ public class SynergyPageManager : MonoBehaviour
     private void Start()
     {
         GameManager.Instance.SetSynergyPageManager(this);
+        MakeSynergyPage();
     }
 
     public void SetActiveSynergyPanel(bool value)

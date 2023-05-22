@@ -32,6 +32,7 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
 
     private Vector2 swipeStartPos;
     private float swipeStartTime;
+    private bool isSwiping = false;
 
     public SynergyPageManager synergyPageManager;
 
@@ -106,7 +107,7 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
             if (i == 0)
             {
 
-                child.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = synergyPage.synergyRarity.ToString();      
+                child.GetComponent<TextMeshProUGUI>().text = synergyPage.synergyRarity.ToString();      
 
             }
             else
@@ -151,13 +152,16 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
 
     public void OnDrag(PointerEventData eventData)
     {
-        // 스와이프 시작점 저장
-        if (eventData.delta.magnitude > 0)
+        if (!isSwiping)
         {
-            if (swipeStartPos == Vector2.zero)
+            // 스와이프 시작점 저장
+            if (eventData.delta.magnitude > 0)
             {
-                swipeStartPos = eventData.position;
-                swipeStartTime = Time.time;
+                if (swipeStartPos == Vector2.zero)
+                {
+                    swipeStartPos = eventData.position;
+                    swipeStartTime = Time.time;
+                }
             }
         }
     }
@@ -168,6 +172,7 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
         {
             Vector2 swipeDelta = eventData.position - swipeStartPos;
             float swipeDuration = Time.time - swipeStartTime;
+            isSwiping = true;
 
             // 스와이프 거리와 시간 계산
             if (swipeDelta.magnitude > swipeThreshold && swipeDuration < swipeDurationThreshold)
@@ -223,7 +228,16 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
             // 스와이프 초기화
             swipeStartPos = Vector2.zero;
             swipeStartTime = 0f;
+            StartCoroutine(ResetSwipeCoroutine());
         }
+    }
+
+    private IEnumerator ResetSwipeCoroutine()
+    {
+
+        yield return new WaitForSecondsRealtime(0.5f); // 1프레임 대기
+
+        isSwiping = false; // 스와이프 상태 초기화
     }
 
     public void ActiveStat()
