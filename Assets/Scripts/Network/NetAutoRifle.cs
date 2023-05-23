@@ -21,7 +21,7 @@ namespace Network
                     sequence
                         .AppendCallback(() =>
                         {
-                            SpawnProjectile(WeaponTransform);
+                            SpawnProjectile(ShootPointTransform);
                             RemainBullet--;
                         })
                         .AppendInterval(0.05f);

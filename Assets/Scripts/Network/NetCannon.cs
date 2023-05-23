@@ -21,7 +21,7 @@ namespace Network
                     {
                         IsDoneShootAction = true;
                     })
-                    .AppendCallback(() => SpawnProjectile(WeaponTransform))
+                    .AppendCallback(() => SpawnProjectile(ShootPointTransform))
                     .AppendCallback(() => AddCharAdditionStat(CharStat.Speed, -speed))
                     .AppendInterval(2.0f)
                     .AppendCallback(() => AddCharAdditionStat(CharStat.Speed, +speed))
