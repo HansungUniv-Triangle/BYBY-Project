@@ -18,7 +18,7 @@ MonoBehaviour:
   synergyExplain: "<color=green>\uD2B9\uC131+2<br>\uACF5\uACA9\uB825+1</color>"
   charStatList:
   - <Type>k__BackingField: 0
-    <Amount>k__BackingField: 0
+    <Amount>k__BackingField: 1
     <Ratio>k__BackingField: 0
     <Addition>k__BackingField: 0
   weaponStatList:

@@ -1,10 +1,8 @@
 using System;
-using System.Collections;
-using Fusion;
+using TMPro;
 using UnityEngine;
 using Types;
 using NetworkPlayer = Network.NetworkPlayer;
-using TMPro;
 using Random = UnityEngine.Random;
 
 public class PlayerCamera : MonoBehaviour
@@ -26,6 +24,13 @@ public class PlayerCamera : MonoBehaviour
     private RaycastHit _hit;
     private Ray _ray;
 
+    public float distance = 10.0f; // 카메라와 캐릭터 사이의 거리
+    public float height = 5.0f; // 카메라의 높이
+    public float smoothSpeed = 0.25f; // 카메라 이동 속도
+    public float horizontalSpeed = 0.1f; // 카메라 수평 이동 속도
+    private float _timer;
+    public Transform _worldViewPos;
+    
     #region UI Settings
     public float zAngle;
     private float zOffset = 0.10f;
@@ -52,13 +57,6 @@ public class PlayerCamera : MonoBehaviour
         transform.Rotate(new Vector3(0, 0, 0));
     }
     #endregion
-
-    public float distance = 10.0f; // 카메라와 캐릭터 사이의 거리
-    public float height = 5.0f; // 카메라의 높이
-    public float smoothSpeed = 0.25f; // 카메라 이동 속도
-    public float horizontalSpeed = 0.1f; // 카메라 수평 이동 속도
-    private float _timer;
-    public Transform _worldViewPos;
 
     private void Awake()
     {
@@ -104,23 +102,30 @@ public class PlayerCamera : MonoBehaviour
 
     private void FixedUpdate()
     {
-        switch (_cameraMode)
+        if (GameManager.Instance.NetworkManager.SinglePlayMode)
         {
-            case CameraMode.None:
-                WorldView();
-                break;
-            case CameraMode.Game:
-                GameView();
-                CameraGyroRotate();
-                break;
-            case CameraMode.Winner:
-                RotateCamera(GameManager.Instance.NetworkManager.IsPlayerWin ? _player : _target);
-                break;
-            case CameraMode.Player:
-                RotateCamera(_player);
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
+            GameView();
+        }
+        else
+        {
+            switch (_cameraMode)
+            {
+                case CameraMode.None:
+                    WorldView();
+                    break;
+                case CameraMode.Game:
+                    GameView();
+                    CameraGyroRotate();
+                    break;
+                case CameraMode.Winner:
+                    RotateCamera(GameManager.Instance.NetworkManager.IsPlayerWin ? _player : _target);
+                    break;
+                case CameraMode.Player:
+                    RotateCamera(_player);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
     }
 
@@ -147,9 +152,20 @@ public class PlayerCamera : MonoBehaviour
             _timer += Time.deltaTime;
         }
     }
+    
+    private void CameraGyroRotate()
+    {
+        if (!isGyroOn) { return; }
+
+        var gyroRotationRate = Input.gyro.rotationRateUnbiased;
+        zAngle = Mathf.Clamp(zAngle += gyroRotationRate.z * zOffset, -7.1f, 7.1f);
+        transform.Rotate(new Vector3(0, 0, zAngle));
+    }
 
     private void GameView()
     {
+        if(!_player && !_target) return;
+
         var position = _player.position;
         _ray.origin = position;
         _ray.direction = (_cameraPos.position - position).normalized;
@@ -184,15 +200,6 @@ public class PlayerCamera : MonoBehaviour
         }
     }
 
-    private void CameraGyroRotate()
-    {
-        if (!isGyroOn) { return; }
-
-        var gyroRotationRate = Input.gyro.rotationRateUnbiased;
-        zAngle = Mathf.Clamp(zAngle += gyroRotationRate.z * zOffset, -7.1f, 7.1f);
-        transform.Rotate(new Vector3(0, 0, zAngle));
-    }
-
     public void ReverseCameraPos(bool isLeft)
     {
         if (isLeft)
@@ -218,7 +225,7 @@ public class PlayerCamera : MonoBehaviour
             }
         }
     }
-
+    
     public static Vector2 GetRotatedCoordinates(float x, float y)
     {
         var camAngle = Camera.main.transform.eulerAngles.z * Mathf.Deg2Rad;

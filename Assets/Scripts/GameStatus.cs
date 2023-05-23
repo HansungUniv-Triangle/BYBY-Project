@@ -21,7 +21,7 @@ namespace GameStatus
         public float Addition { get; private set; }
         
         public float Total => Amount * Ratio + Addition;
-        
+
         public Stat(T type, float amount, float ratio)
         {
             Type = type;

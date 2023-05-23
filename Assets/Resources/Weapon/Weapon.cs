@@ -1,4 +1,6 @@
 ﻿using Fusion;
+using GameStatus;
+using Types;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Create Weapon", fileName = "Weapon", order = 0)]
@@ -16,4 +18,5 @@ public class Weapon : ScriptableObject
     public string shootSoundPath;
     public string hitSoundPath;
     public bool isMainWeapon;
+    public Stat<WeaponStat>[] basicWeaponStat;
 }

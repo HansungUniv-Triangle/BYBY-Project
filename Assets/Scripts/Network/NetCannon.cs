@@ -11,8 +11,6 @@ namespace Network
             {
                 var speed = GetCharStat(CharStat.Speed).Total * 0.8f;
 
-                GameManager.Instance.shootCount += 1;
-                
                 DOTween.Sequence()
                     .OnStart(() =>
                     {

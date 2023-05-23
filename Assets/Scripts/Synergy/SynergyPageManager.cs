@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using DG.Tweening;
 using TMPro;
@@ -54,9 +55,9 @@ public class SynergyPageManager : MonoBehaviour
         else
         {
             DOTween.Sequence()
-                .OnStart(ApplySelectedSynergyToCharacter)
                 .OnStart(() =>
                 {
+                    ApplySelectedSynergyToCharacter();
                     foreach (var synergyPage in _synergyPages)
                     {
                         synergyPage.synergyObj.transform.DOKill();
@@ -84,24 +85,56 @@ public class SynergyPageManager : MonoBehaviour
                 _ => _synergySelectPanel.SpawnSynergy(_spawnPoint[3])
             };
             _synergyPages[i].pageNumber = i;
-
             _synergyPages[i].Clear();
-            CreateRandomSynergy(_synergyPages[i]);
-            _synergySelectPanel.ApplySynergyToObj(_synergyPages[i]);
+            
+            if (i == 3)
+            {
+                CreateRandomWeapon(_synergyPages[i]);
+                _synergySelectPanel.ApplyWeaponToObj(_synergyPages[i]);
+            }
+            else
+            {
+                CreateRandomSynergy(_synergyPages[i]);
+                
+                for (var count = 0; count < _synergyPages[i].synergies.Length; count++)
+                {
+                    var totalRecommendation = 0f;
+                    foreach (var stat in _synergyPages[i].synergies[count].charStatList)
+                    {
+                        // ratio로 실질적으로 증가하는 양
+                        var increaseRatio = stat.Ratio * GameManager.Instance.NetworkManager.PlayerCharacter.GetCharStat(stat.Type).Amount;
+                        var increaseFinalValue = stat.Amount + increaseRatio;
+                        totalRecommendation += increaseFinalValue * GameManager.Instance.PlayerBehaviorAnalyzer.GetRecommendation(stat.Type);
+                    }
+                
+                    foreach (var stat in _synergyPages[i].synergies[count].weaponStatList)
+                    {
+                        // ratio로 실질적으로 증가하는 양
+                        var increaseRatio = stat.Ratio * GameManager.Instance.NetworkManager.PlayerCharacter.GetWeaponStat(stat.Type).Amount;
+                        var increaseFinalValue = stat.Amount + increaseRatio;
+                        totalRecommendation += increaseFinalValue * GameManager.Instance.PlayerBehaviorAnalyzer.GetRecommendation(stat.Type);
+                    }
+                    _synergyPages[i].synergyRecommendationPercentage[count] = (int)(totalRecommendation * 100f);
+                }
+
+                var sum = _synergyPages[i].synergyRecommendationPercentage.Sum();
+                for (var index = 0; index < _synergyPages[i].synergyRecommendationPercentage.Length; index++)
+                {
+                    var percent = (int)(_synergyPages[i].synergyRecommendationPercentage[index] / (float)sum * 100f);
+                    _synergyPages[i].synergyRecommendationPercentage[index] = percent;
+                }
+            
+                _synergySelectPanel.DisplayRecommendation(_synergyPages[i], FindMaxRecommendation(_synergyPages[i]));
+                _synergySelectPanel.ApplySynergyToObj(_synergyPages[i]);
+            }
         }
-        
         _synergySelectPanel.ChangeOrder();
-        GetRecommendationPercentage();
-        _synergySelectPanel.ApplySynergyToObj(_synergyPages[CurrentPage]);
-        int j = FindMaxRecommendation(_synergyPages[CurrentPage]);
-        _synergySelectPanel.DisplayRecommendation(_synergyPages[CurrentPage], j);
     }
 
     public void SelectSynergy()
     {
         string synergyExplain = EventSystem.current.currentSelectedGameObject.GetComponentInChildren<TextMeshProUGUI>().text;
         GameObject selectedSynergy = EventSystem.current.currentSelectedGameObject;
-        Debug.Log(synergyExplain);
         _synergySelectPanel.DisplaySynergySelected(_synergyPages[CurrentPage], selectedSynergy);
         _synergyPages[CurrentPage].FindSelectedSynergyInSynergies(synergyExplain);
     }
@@ -113,8 +146,6 @@ public class SynergyPageManager : MonoBehaviour
             var selectedSynergyName = synergyPage.selectedSynergy.synergyName;
             var index = GameManager.Instance.SynergyList.FindIndex(synergy => synergy.synergyName == selectedSynergyName);
 
-            Debug.Log($"{selectedSynergyName} {index}");
-            
             if (index != -1)
             {
                 GameManager.Instance.NetworkManager.PlayerCharacter.AddSynergy(index);
@@ -233,8 +264,7 @@ public class SynergyPageManager : MonoBehaviour
             _ => Rarity.Rare
         };
     }
-
-    // �ó����� �������� �����ϴ� �Լ�
+    
     public void CreateRandomSynergy(SynergyPage synergyPage)
     {
         var rarity = GetRandomRarity();
@@ -252,6 +282,26 @@ public class SynergyPageManager : MonoBehaviour
                     synergyPage.IsNumInSynergyList.Add(randomSynergy);
                     synergyPage.AddSynergy(randomSynergy);
                 }
+            }
+        }
+    }
+    
+    public void CreateRandomWeapon(SynergyPage synergyPage)
+    {
+        for (int i = 0; i < synergyPage.weapons.Length; i++)
+        {
+            while (synergyPage.weapons[2] == null)
+            {
+                var weaponGroup = GameManager.Instance.WeaponList;
+                var randomNumberWeaponGroup = Random.Range(0, weaponGroup.Count);
+                var randomWeapon = GameManager.Instance.WeaponList[randomNumberWeaponGroup];
+                synergyPage.AddWeapon(randomWeapon);
+                
+                // if (synergyPage.CheckIsNumInWeaponList(randomWeapon) == false)
+                // {
+                //     synergyPage.IsNumInWeaponList.Add(randomWeapon);
+                //     synergyPage.AddWeapon(randomWeapon);
+                // }
             }
         }
     }

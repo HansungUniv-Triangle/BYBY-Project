@@ -25,3 +25,28 @@ MonoBehaviour:
   shootSoundPath: pistol_shoot
   hitSoundPath: hit
   isMainWeapon: 1
+  basicWeaponStat:
+  - <Type>k__BackingField: 0
+    <Amount>k__BackingField: 0
+    <Ratio>k__BackingField: 0.1
+    <Addition>k__BackingField: 0
+  - <Type>k__BackingField: 1
+    <Amount>k__BackingField: 0
+    <Ratio>k__BackingField: 10
+    <Addition>k__BackingField: 0
+  - <Type>k__BackingField: 2
+    <Amount>k__BackingField: 4
+    <Ratio>k__BackingField: 0
+    <Addition>k__BackingField: 0
+  - <Type>k__BackingField: 4
+    <Amount>k__BackingField: 9
+    <Ratio>k__BackingField: 0
+    <Addition>k__BackingField: 0
+  - <Type>k__BackingField: 5
+    <Amount>k__BackingField: 6
+    <Ratio>k__BackingField: 0
+    <Addition>k__BackingField: 0
+  - <Type>k__BackingField: 6
+    <Amount>k__BackingField: 0
+    <Ratio>k__BackingField: 0.5
+    <Addition>k__BackingField: 0

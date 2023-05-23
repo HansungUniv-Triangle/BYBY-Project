@@ -4,7 +4,7 @@ using Types;
 
 namespace Network
 {
-    public class NetAutorifle : NetworkProjectileHolder
+    public class NetAutoRifle : NetworkProjectileHolder
     {
         protected override void Attack()
         {
@@ -16,8 +16,6 @@ namespace Network
                 
                 var shoot = Math.Min(GetWeaponStatTotal(WeaponStat.Special), RemainBullet);
 
-                GameManager.Instance.shootCount += (int)shoot;
-                
                 for (int i = 0; i < shoot; i++)
                 {
                     sequence

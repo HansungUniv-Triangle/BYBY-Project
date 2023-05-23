@@ -7683,9 +7683,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ceb2b7c786d96f4e9b8a83a0c034a2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BulletHit: {fileID: 19809874, guid: 51b115f247c922a47aa9a80144450be4, type: 3}
-  BulletHitToPlayer: {fileID: 19835194, guid: 16fb2cc8f64c08d46a5f2d055cc4f0c2, type: 3}
-  BulletShoot: {fileID: 19813786, guid: b0e7b6d77eafddf48a3ad293dc71a53e, type: 3}
 --- !u!1 &688429399
 GameObject:
   m_ObjectHideFlags: 0
@@ -16824,10 +16821,10 @@ RectTransform:
   m_Father: {fileID: 21449990}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 1920}
-  m_SizeDelta: {x: 1080, y: 1920}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1693923143
 MonoBehaviour:
