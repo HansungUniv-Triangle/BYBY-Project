@@ -11,27 +11,6 @@ public class EffectManager : Singleton<EffectManager>
         effect.Play();
     }
 
-    public void PlayShootEffect(Vector3 pos, Vector3 normal)
-    {
-        PlayEffect(BulletShoot, pos, -normal);
-    }
-
-    public void PlayHitEffect(Vector3 pos, Vector3 normal, HitEffectType effectType)
-    {
-        ParticleSystem particleSystem;
-
-        switch (effectType) {
-            case HitEffectType.Player:
-                particleSystem = BulletHitToPlayer;
-                break;
-            default:
-                particleSystem = BulletHit;
-                break;
-        }
-
-        PlayEffect(particleSystem, pos, normal);
-    }
-
     protected override void Initiate()
     {
     }

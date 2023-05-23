@@ -594,13 +594,13 @@ namespace Network
             analyzer.CalculateStatCorrelation();
 
             // 행동 연관도 추가
-            analyzer.AddBehaviourEventCount(BehaviourEvent.피격, playerData.HitRate / (float)enemyData.HitRate);
-            analyzer.AddBehaviourEventCount(BehaviourEvent.회피, playerData.DodgeRate / (float)enemyData.DodgeRate);
-            analyzer.AddBehaviourEventCount(BehaviourEvent.명중, playerData.Accuracy / (float)enemyData.Accuracy);
-            analyzer.AddBehaviourEventCount(BehaviourEvent.피해, playerData.Damage / (float)enemyData.Damage);
-            analyzer.AddBehaviourEventCount(BehaviourEvent.특화, playerData.Special / (float)enemyData.Special);
-            analyzer.AddBehaviourEventCount(BehaviourEvent.파괴, playerData.DestroyBullet / (float)enemyData.DestroyBullet);
-            analyzer.AddBehaviourEventCount(BehaviourEvent.장전, playerData.Reload / (float)enemyData.Reload);
+            analyzer.AddBehaviourEventCount(BehaviourEvent.피격, playerData.HitRate, enemyData.HitRate);
+            analyzer.AddBehaviourEventCount(BehaviourEvent.회피, playerData.DodgeRate, enemyData.DodgeRate);
+            analyzer.AddBehaviourEventCount(BehaviourEvent.명중, playerData.Accuracy, enemyData.Accuracy);
+            analyzer.AddBehaviourEventCount(BehaviourEvent.피해, playerData.Damage, enemyData.Damage);
+            analyzer.AddBehaviourEventCount(BehaviourEvent.특화, playerData.Special, enemyData.Special);
+            analyzer.AddBehaviourEventCount(BehaviourEvent.파괴, playerData.DestroyBullet, enemyData.DestroyBullet);
+            analyzer.AddBehaviourEventCount(BehaviourEvent.장전, playerData.Reload, enemyData.Reload);
 
             // 최종 계산
             analyzer.CalculateFinalCorrelation();
@@ -751,13 +751,13 @@ namespace Network
             WorldManager.Instance.GeneratorMap(Seed);
             SpawnPlayerCharacter(Runner.LocalPlayer);
 
-            if (SinglePlayMode)
+            if (!SinglePlayMode)
             {
-                ChangeRound();
+                PlayerCharacter.InitialStatus();
             }
             else
             {
-                PlayerCharacter.InitialStatus();
+                ChangeRound();
             }
         }
 

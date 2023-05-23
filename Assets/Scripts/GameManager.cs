@@ -425,8 +425,10 @@ public class PlayerBehaviorAnalyzer
         }
     }
 
-    public void AddBehaviourEventCount(BehaviourEvent behaviourEvent, float ratio)
+    public void AddBehaviourEventCount(BehaviourEvent behaviourEvent, float player, float enemy)
     {
+        var ratio = player / (player + enemy);
+        
         if (float.IsNaN(ratio) || float.IsInfinity(ratio))
         {
             ratio = 0.5f;
