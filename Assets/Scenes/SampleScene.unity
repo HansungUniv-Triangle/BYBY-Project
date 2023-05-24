@@ -4760,12 +4760,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be6c83d095a8a18449cb8f31f50df422, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  zAngle: 0
   distance: 10
   height: 5
   smoothSpeed: 0.25
   horizontalSpeed: 0.1
   _worldViewPos: {fileID: 1607352924}
+  zAngle: 0
 --- !u!1 &338351289
 GameObject:
   m_ObjectHideFlags: 0
@@ -18600,8 +18600,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1448533502}
   m_HandleRect: {fileID: 1448533501}
   m_Direction: 2
-  m_Value: 1.0000006
-  m_Size: 0.45500004
+  m_Value: 1.0000004
+  m_Size: 0.455
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -19903,6 +19903,8 @@ GameObject:
   - component: {fileID: 1972338505}
   - component: {fileID: 1972338507}
   - component: {fileID: 1972338506}
+  - component: {fileID: 1972338509}
+  - component: {fileID: 1972338508}
   m_Layer: 8
   m_Name: "\uD5C8\uC218\uC544\uBE44"
   m_TagString: Player
@@ -19962,6 +19964,43 @@ MonoBehaviour:
   dodgeForce: 4
   dodgeFrequency: 0.1
   isCameraFocused: 0
+--- !u!114 &1972338508
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1972338502}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObjectInterest: 1
+  DefaultInterestGroups: []
+  DestroyWhenStateAuthorityLeaves: 0
+  AllowStateAuthorityOverride: 1
+  AoiPositionSource: {fileID: 0}
+  Flags: 2561
+  NetworkGuid:
+    RawGuidValue: f8a6762a136747498f4b0d1a2306e90f
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 1972338509}
+  SimulationBehaviours: []
+--- !u!114 &1972338509
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1972338502}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 604c2d3b601242d0b2502a29a2279c00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _interpolationDataSource: 0
 --- !u!1 &1975676279
 GameObject:
   m_ObjectHideFlags: 0

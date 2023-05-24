@@ -204,6 +204,14 @@ namespace Network
         {
             _networkObjectList.Remove(networkObject);
         }
+
+        public void DeSpawnAllNetworkObject()
+        {
+            foreach (var networkObject in _networkObjectList.Where(networkObject => networkObject.HasStateAuthority))
+            {
+                Runner.Despawn(networkObject);
+            }
+        }
         
         public NetworkObject FindNetworkObject(NetworkId networkId)
         {
@@ -437,6 +445,8 @@ namespace Network
         
         public void OrganizeRound()
         {
+            DeSpawnAllNetworkObject();
+            
             PlayerCharacter.ConversionBehaviorData();
             
             if(!HasStateAuthority) return;
@@ -751,7 +761,7 @@ namespace Network
             WorldManager.Instance.GeneratorMap(Seed);
             SpawnPlayerCharacter(Runner.LocalPlayer);
 
-            if (!SinglePlayMode)
+            if (SinglePlayMode)
             {
                 PlayerCharacter.InitialStatus();
             }

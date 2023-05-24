@@ -1,16 +1,15 @@
 ﻿using Fusion;
+using UnityEngine;
 
 namespace Network
 {
-    public class NetTimerWeapon : NetworkProjectileHolder
+    public class SummonSword : NetworkProjectileHolder
     {
-        public float timer = 10.0f;
-        
         protected override void Attack()
         {
             if (CanAttack())
             {
-                SpawnProjectile(WeaponTransform.position);
+                SpawnProjectile(Target + new Vector3(0, 50, 0), basicRotate: true);
             }
         }
         
@@ -23,7 +22,7 @@ namespace Network
 
             if (delay.ExpiredOrNotRunning(Runner))
             {
-                delay = TickTimer.CreateFromSeconds(Runner, timer);
+                delay = TickTimer.CreateFromSeconds(Runner, 5f);
                 return true;
             }
 

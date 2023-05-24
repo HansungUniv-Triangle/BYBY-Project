@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Liquid_4
+  m_Name: Danger
   m_Shader: {fileID: 4800000, guid: df695d70c539c3d4c87b79de307ab7bb, type: 3}
   m_ValidKeywords:
   - _MK_ARTISTIC_ANIMATION_STUTTER
@@ -16,22 +16,20 @@ Material:
   - _MK_ENVIRONMENT_REFLECTIONS_ADVANCED
   - _MK_FRESNEL_HIGHLIGHTS
   - _MK_LIGHT_RAMP
-  - _MK_RECEIVE_SHADOWS
   - _MK_SPECULAR_ISOTROPIC
-  - _MK_WRAPPED_DIFFUSE
+  - _MK_SURFACE_TYPE_TRANSPARENT
   m_InvalidKeywords:
   - _ALPHAPREMULTIPLY_ON
   - _FRESNELHIGHLIGHTS_ON
-  - _RECEIVESHADOWS_ON
-  - _WRAPPEDLIGHTING_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 2000
+  m_CustomRenderQueue: 3000
   stringTagMap:
-    IGNOREPROJECTOR: False
-    RenderType: Opaque
-  disabledShaderPasses: []
+    IGNOREPROJECTOR: true
+    RenderType: Transparent
+  disabledShaderPasses:
+  - SHADOWCASTER
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -194,9 +192,9 @@ Material:
     - _ArtisticFrequency: 1
     - _ArtisticProjection: 1
     - _Blend: 0
-    - _BlendDst: 0
-    - _BlendDstAlpha: 0
-    - _BlendSrc: 1
+    - _BlendDst: 10
+    - _BlendDstAlpha: 10
+    - _BlendSrc: 5
     - _BlendSrcAlpha: 1
     - _Brightness: 1
     - _BumpScale: 1
@@ -254,7 +252,7 @@ Material:
     - _OutlineNoise: 0
     - _OutlineSize: 5
     - _Parallax: 0.02
-    - _ReceiveShadows: 1
+    - _ReceiveShadows: 0
     - _RenderFace: 2
     - _RenderPriority: 0
     - _Rim: 0
@@ -281,19 +279,19 @@ Material:
     - _StencilWriteMask: 255
     - _StencilZFail: 0
     - _StylizeTab: 1
-    - _Surface: 0
+    - _Surface: 1
     - _ThresholdMapScale: 1
     - _UVSec: 0
     - _VertexAnimation: 0
     - _VertexAnimationIntensity: 0.05
     - _VertexAnimationStutter: 0
     - _Workflow: 0
-    - _WrappedLighting: 1
+    - _WrappedLighting: 0
     - _ZTest: 4
-    - _ZWrite: 1
+    - _ZWrite: 0
     m_Colors:
-    - _AlbedoColor: {r: 1, g: 0.9890206, b: 0, a: 1}
-    - _Color: {r: 1, g: 0.9890205, b: 0, a: 1}
+    - _AlbedoColor: {r: 1, g: 0.00000002384186, b: 0, a: 0.39215687}
+    - _Color: {r: 1, g: 0.00000002384186, b: 0, a: 0.39215687}
     - _DetailColor: {r: 1, g: 1, b: 1, a: 1}
     - _DissolveBorderColor: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}

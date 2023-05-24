@@ -952,7 +952,9 @@ MonoBehaviour:
   _uiHolder: {fileID: 0}
   SynergyList: []
   WeaponList:
+  - {fileID: 11400000, guid: a7ee628a83f6b29459475d8acc9f656d, type: 2}
   - {fileID: 11400000, guid: 7cc87d73022557644b08cc8c4e97edf9, type: 2}
+  - {fileID: 11400000, guid: de95586931872d948b09a1d5b077b136, type: 2}
   - {fileID: 11400000, guid: 9d5bb33d5c0da4641b856dfdf529db86, type: 2}
   selectWeaponNum: 0
   shootCount: 0

@@ -84,8 +84,6 @@ public class DBManager : Singleton<DBManager>
             } 
             else
             {
-                Debug.Log("어째서?");
-                
                 dto = GetWinDto(1, 0, 100, 1, true, 1);
             }
             AddWinData(dto);

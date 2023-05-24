@@ -878,6 +878,14 @@ namespace Network
                 Jump();
             }
         }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            if (other.gameObject.TryGetComponent(out ICollisionObjectEvent collisionObject))
+            {
+                collisionObject.CollisionObjectEvent(Object);
+            }
+        }
     }
 
     public partial class NetworkPlayer

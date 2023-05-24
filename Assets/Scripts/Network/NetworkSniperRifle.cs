@@ -13,7 +13,7 @@ namespace Network
         {
             if (CanAttack())
             {
-                var projectile = SpawnProjectile(ShootPointTransform);
+                var projectile = SpawnProjectile(ShootPointTransform.position);
                 RemainBullet--;
 
                 if (_isSnipingMode)
