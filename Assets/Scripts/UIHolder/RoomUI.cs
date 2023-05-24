@@ -13,10 +13,15 @@ namespace UIHolder
 
         #region WeaponButton
 
-        public Button handgun;
-        public Button autorifle;
-        public Button cannon;
-        public Button sniper;
+        public Button Autorifle;
+        public Button Berserk;
+        public Button Cannon;
+        public Button GuidedGun;
+        public Button Handgun;
+        public Button Healgun;
+        public Button Shield;
+        public Button Slow;
+        public Button Sniper;
 
         #endregion
         
@@ -26,25 +31,50 @@ namespace UIHolder
             {
                 GameManager.Instance.OnReady();
             });
-            
-            handgun.onClick.AddListener(() =>
+
+            Autorifle.onClick.AddListener(() =>
             {
                 GameManager.Instance.selectWeaponNum = 0;
             });
-            
-            autorifle.onClick.AddListener(() =>
+
+            Berserk.onClick.AddListener(() =>
             {
                 GameManager.Instance.selectWeaponNum = 1;
             });
-            
-            cannon.onClick.AddListener(() =>
+
+            Cannon.onClick.AddListener(() =>
             {
                 GameManager.Instance.selectWeaponNum = 2;
             });
-            
-            sniper.onClick.AddListener(() =>
+
+            GuidedGun.onClick.AddListener(() =>
             {
                 GameManager.Instance.selectWeaponNum = 3;
+            });
+
+            Handgun.onClick.AddListener(() =>
+            {
+                GameManager.Instance.selectWeaponNum = 4;
+            });
+
+            Healgun.onClick.AddListener(() =>
+            {
+                GameManager.Instance.selectWeaponNum = 5;
+            });
+
+            Shield.onClick.AddListener(() =>
+            {
+                GameManager.Instance.selectWeaponNum = 6;
+            });
+
+            Slow.onClick.AddListener(() =>
+            {
+                GameManager.Instance.selectWeaponNum = 7;
+            });
+
+            Sniper.onClick.AddListener(() =>
+            {
+                GameManager.Instance.selectWeaponNum = 8;
             });
         }
     }

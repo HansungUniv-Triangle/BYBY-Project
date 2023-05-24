@@ -22,4 +22,7 @@ MonoBehaviour:
   bulletShoot: {fileID: 19813786, guid: b0e7b6d77eafddf48a3ad293dc71a53e, type: 3}
   bulletHit: {fileID: 19809874, guid: 51b115f247c922a47aa9a80144450be4, type: 3}
   bulletHitToPlayer: {fileID: 19835194, guid: 16fb2cc8f64c08d46a5f2d055cc4f0c2, type: 3}
+  shootSoundPath: pistol_shoot
+  hitSoundPath: hit
   isMainWeapon: 1
+  basicWeaponStat: []

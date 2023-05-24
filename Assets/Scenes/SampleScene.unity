@@ -4760,12 +4760,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be6c83d095a8a18449cb8f31f50df422, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  zAngle: 0
   distance: 10
   height: 5
   smoothSpeed: 0.25
   horizontalSpeed: 0.1
   _worldViewPos: {fileID: 1607352924}
+  zAngle: 0
 --- !u!1 &338351289
 GameObject:
   m_ObjectHideFlags: 0
@@ -9775,7 +9775,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e122425d0039244168b49950048a552b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxAimingRange: 120
   Speed: 15
   ReverseMove: 1
   OnlyHorizontal: 0
