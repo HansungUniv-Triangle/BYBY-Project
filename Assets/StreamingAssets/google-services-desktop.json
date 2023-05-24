@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "230651706469",
+    "project_id": "byby-6fa67",
+    "storage_bucket": "byby-6fa67.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:230651706469:android:810ad346423aef30fc1a8c",
+        "android_client_info": {
+          "package_name": "com.Triangle.BYBY"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "230651706469-05ssqdc7d7tis17g2ij8202l0hh7a879.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJGi6vMo5BHhUusulHX6X0QllbUAnEdQg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "230651706469-05ssqdc7d7tis17g2ij8202l0hh7a879.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

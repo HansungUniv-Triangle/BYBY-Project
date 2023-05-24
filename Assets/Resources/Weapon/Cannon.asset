@@ -24,3 +24,28 @@ MonoBehaviour:
   bulletHit: {fileID: 19809874, guid: 51b115f247c922a47aa9a80144450be4, type: 3}
   bulletHitToPlayer: {fileID: 19835194, guid: 16fb2cc8f64c08d46a5f2d055cc4f0c2, type: 3}
   isMainWeapon: 1
+  basicWeaponStat:
+  - <Type>k__BackingField: 0
+    <Amount>k__BackingField: 1
+    <Ratio>k__BackingField: 0
+    <Addition>k__BackingField: 0
+  - <Type>k__BackingField: 2
+    <Amount>k__BackingField: 1
+    <Ratio>k__BackingField: 0
+    <Addition>k__BackingField: 0
+  - <Type>k__BackingField: 3
+    <Amount>k__BackingField: 10
+    <Ratio>k__BackingField: 0
+    <Addition>k__BackingField: 0
+  - <Type>k__BackingField: 6
+    <Amount>k__BackingField: 10
+    <Ratio>k__BackingField: 0
+    <Addition>k__BackingField: 0
+  - <Type>k__BackingField: 5
+    <Amount>k__BackingField: 1
+    <Ratio>k__BackingField: 0
+    <Addition>k__BackingField: 0
+  - <Type>k__BackingField: 4
+    <Amount>k__BackingField: 1
+    <Ratio>k__BackingField: 0
+    <Addition>k__BackingField: 0
