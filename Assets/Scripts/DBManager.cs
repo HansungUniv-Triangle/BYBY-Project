@@ -11,6 +11,7 @@ public class DBManager : Singleton<DBManager>
     private string _uuid;
     private DocumentReference _userRef;
     private DocumentReference _winRef;
+    public string NickName { private set; get; }
 
     protected override void Initiate()
     {
@@ -19,20 +20,44 @@ public class DBManager : Singleton<DBManager>
         _userRef = _db.Collection("Users").Document(_uuid);
         _winRef = _db.Collection("Ranking").Document(_uuid);
     }
-    
-    public void ChangeNickname(string nick)
+
+    private void Start()
+    {
+        GetUserNickname().ContinueWithOnMainThread(task =>
+        {
+            NickName = task.Result;
+        });
+    }
+
+    public async Task ChangeNickname(string nick)
     {
         var data = GetNickDto(nick);
-        
         GameManager.Instance.ActiveLoadingUI();
-        _userRef.SetAsync(data).ContinueWithOnMainThread(_ => {
-            GameManager.Instance.DeActiveLoadingUI();
-        });
+        await _userRef.SetAsync(data);
+        NickName = nick;
+        GameManager.Instance.DeActiveLoadingUI();
     }
 
     public async Task<string> GetUserNickname()
     {
         return await GetNickname(_userRef);
+    }
+    
+    public async Task<(int, int)> GetUserWin()
+    {
+        DocumentSnapshot snapshot = await _winRef.GetSnapshotAsync();
+
+        if (snapshot.Exists)
+        {
+            var data = snapshot.ToDictionary();
+            var win = Convert.ToInt32(data["win"]);
+            var defeat = Convert.ToInt32(data["defeat"]);
+            return (win, defeat);
+        } 
+        else
+        {
+            return (0, 0);
+        }
     }
 
     private async Task<string> GetNickname(DocumentReference docRef)

@@ -31,6 +31,32 @@ namespace UIHolder
         
         public TextMeshProUGUI playerScoreText;
         public TextMeshProUGUI enemyScoreText;
+        
+        [Header("행동분석용")]
+        public GameObject behaviourObject;
+        public TextMeshProUGUI playerHitValueText;
+        public TextMeshProUGUI enemyHitValueText;
+        public Slider hitSlider;
+    
+        public TextMeshProUGUI playerDodgeValueText;
+        public TextMeshProUGUI enemyDodgeValueText;
+        public Slider dodgeSlider;
+    
+        public TextMeshProUGUI playerAccValueText;
+        public TextMeshProUGUI enemyAccValueText;
+        public Slider accSlider;
+    
+        public TextMeshProUGUI playerDamageValueText;
+        public TextMeshProUGUI enemyDamageValueText;
+        public Slider damageSlider;
+    
+        public TextMeshProUGUI playerDestroyValueText;
+        public TextMeshProUGUI enemyDestroyValueText;
+        public Slider destroySlider;
+    
+        public TextMeshProUGUI playerReloadValueText;
+        public TextMeshProUGUI enemyReloadValueText;
+        public Slider reloadSlider;
 
         [Serializable]
         public class Settings
@@ -165,6 +191,48 @@ namespace UIHolder
         public void OpenCloseMenu(GameObject menu) 
         {
             menu.SetActive(!menu.activeSelf);
+        }
+
+        public void SetHitAnalysis(int value1, int value2)
+        {
+            playerHitValueText.text = value1.ToString();
+            enemyHitValueText.text = value2.ToString();
+            hitSlider.value = value1 / (float)(value1 + value2);
+        }
+        
+        public void SetDodgeAnalysis(int value1, int value2)
+        {
+            playerDodgeValueText.text = value1.ToString();
+            enemyDodgeValueText.text = value2.ToString();
+            dodgeSlider.value = value1 / (float)(value1 + value2);
+        }
+
+        public void SetAccAnalysis(int value1, int value2)
+        {
+            playerAccValueText.text = value1.ToString();
+            enemyAccValueText.text = value2.ToString();
+            accSlider.value = value1 / (float)(value1 + value2);
+        }
+        
+        public void SetDamageAnalysis(int value1, int value2)
+        {
+            playerDamageValueText.text = value1.ToString();
+            enemyDamageValueText.text = value2.ToString();
+            damageSlider.value = value1 / (float)(value1 + value2);
+        }
+        
+        public void SetDestroyAnalysis(int value1, int value2)
+        {
+            playerDestroyValueText.text = value1.ToString();
+            enemyDestroyValueText.text = value2.ToString();
+            destroySlider.value = value1 / (float)(value1 + value2);
+        }
+        
+        public void SetReloadAnalysis(int value1, int value2)
+        {
+            playerReloadValueText.text = value1.ToString();
+            enemyReloadValueText.text = value2.ToString();
+            reloadSlider.value = value1 / (float)(value1 + value2);
         }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Firebase.Extensions;
 using Fusion;
 using Fusion.Sockets;
 using UnityEngine;
@@ -16,24 +17,23 @@ namespace Network
         [SerializeField]
         private NetworkPrefabRef NetworkManagerPrefab;
         private NetworkManager _networkManager;
-        
-        private void OnGUI()
-        {
-            if (_runner == null)
-            {
-                if (GUI.Button(new Rect(0,0,400,80), "싱글"))
-                {
-                    StartGame(GameMode.Single);
-                }
-                if (GUI.Button(new Rect(0,80,400,80), "벙글"))
-                {
-                    StartGame(GameMode.Shared);
-                }
-            }
-        }
 
         #region Fusion
-        public async void StartGame(GameMode mode)
+
+        public async void StartMultiGame()
+        {
+            _runner = gameObject.AddComponent<NetworkRunner>();
+            _runner.ProvideInput = true;
+
+            GameManager.Instance.ActiveLoadingUI();
+
+            await _runner.StartGame(new StartGameArgs()
+            {
+                GameMode = GameMode.Shared,
+            }).ContinueWithOnMainThread(_ => SceneManager.LoadSceneAsync("NetworkTest"));
+        }
+
+        public async void StartSingleGame()
         {
             _runner = gameObject.AddComponent<NetworkRunner>();
             _runner.ProvideInput = true;
@@ -42,11 +42,10 @@ namespace Network
 
             await _runner.StartGame(new StartGameArgs()
             {
-                GameMode = mode,
-                Scene = SceneManager.GetActiveScene().buildIndex,
-            });
+                GameMode = GameMode.Single,
+            }).ContinueWithOnMainThread(_ => SceneManager.LoadSceneAsync("NetworkTest"));
         }
-
+        
         public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
         {
             if (player.PlayerId == 0)

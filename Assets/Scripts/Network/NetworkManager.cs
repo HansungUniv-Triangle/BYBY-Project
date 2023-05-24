@@ -145,7 +145,7 @@ namespace Network
             changed.Behaviour.UpdateCanvasData();
         }
     
-        private void UpdateCanvasData()
+        public void UpdateCanvasData()
         {
             if(RoomUIInstance is null) return;
 
@@ -207,7 +207,8 @@ namespace Network
 
         public void DeSpawnAllNetworkObject()
         {
-            foreach (var networkObject in _networkObjectList.Where(networkObject => networkObject.HasStateAuthority))
+            var list = _networkObjectList.Where(networkObject => networkObject.HasStateAuthority).ToList();
+            foreach (var networkObject in list)
             {
                 Runner.Despawn(networkObject);
             }
@@ -494,8 +495,9 @@ namespace Network
         /// </summary>
         private void ViewSynergySelect()
         {
-            PlayerCamera.ChangeCameraMode(CameraMode.None);
+            GameUIInstance.behaviourObject.SetActive(false);
             GameUIInstance.gameUIGroup.SetActive(false);
+            PlayerCamera.ChangeCameraMode(CameraMode.None);
             SynergyPageManager.SetActiveSynergyPanel(true);
             SynergyPageManager.MakeSynergyPage();
         }
@@ -566,16 +568,15 @@ namespace Network
             var message = "";
             var playerData = PlayerCharacter.CharacterBehaviorData;
             var enemyData = EnemyCharacter.CharacterBehaviorData;
-
-            message += $"피격 : {playerData.HitRate} vs {enemyData.HitRate} : 피격\n";
-            message += $"회피 : {playerData.DodgeRate} vs {enemyData.DodgeRate} : 회피\n";
-            message += $"명중 : {playerData.Accuracy} vs {enemyData.Accuracy} : 명중\n";
-            message += $"피해 : {playerData.Damage} vs {enemyData.Damage} : 피해\n";
-            message += $"특화 : {playerData.Special} vs {enemyData.Special} : 특화\n";
-            message += $"파괴 : {playerData.DestroyBullet} vs {enemyData.DestroyBullet} : 파괴\n";
-            message += $"장전 : {playerData.Reload} vs {enemyData.Reload} : 장전\n";
-
-            GameUIInstance.roundText.text = message;
+            
+            GameUIInstance.SetHitAnalysis(playerData.HitRate, enemyData.HitRate);
+            GameUIInstance.SetDodgeAnalysis(playerData.DodgeRate, enemyData.DodgeRate);
+            GameUIInstance.SetAccAnalysis(playerData.Accuracy, enemyData.Accuracy);
+            GameUIInstance.SetDamageAnalysis(playerData.Damage, enemyData.Damage);
+            GameUIInstance.SetDestroyAnalysis(playerData.DestroyBullet, enemyData.DestroyBullet);
+            GameUIInstance.SetReloadAnalysis(playerData.Reload, enemyData.Reload);
+            GameUIInstance.behaviourObject.SetActive(true);
+            
             GameManager.Instance.ResetBehaviourEventCount();
 
             ActionBehaviourAnalysis(playerData, enemyData);
@@ -583,6 +584,7 @@ namespace Network
         
         private void ViewGameWinner(PlayerRef winnerRef)
         {
+            GameUIInstance.behaviourObject.SetActive(false);
             PlayerCamera.ChangeCameraMode(CameraMode.Player);
             
             if (RoomPlayerList.TryGet(winnerRef, out var data))
@@ -624,7 +626,7 @@ namespace Network
             DontDestroyOnLoad(this);
             GameManager.Instance.SetNetworkManager(this);
             GameManager.Instance.DeActiveLoadingUI();
-            SinglePlayMode = false;
+            SinglePlayMode = (Runner.GameMode == GameMode.Single);
             _networkObjectList = new List<NetworkObject>();
             Seed = Random.Range(0, 10000);
             RPCAddPlayer(Runner.LocalPlayer, $"Nick{Random.Range(1,100)}", Random.ColorHSV());
@@ -640,10 +642,6 @@ namespace Network
         public void OnReady()
         {
             RPCReady(Runner.LocalPlayer);
-            if (Runner.ActivePlayers.Count() == 1)
-            {
-                SinglePlayMode = true;
-            }
         }
 
         public void OnPlayerLeft(PlayerRef playerRef)
@@ -792,7 +790,7 @@ namespace Network
         public void DisconnectingServer()
         {
             Runner.Shutdown();
-            SceneManager.LoadSceneAsync(0);
+            SceneManager.LoadSceneAsync(1);
         }
     }
 
@@ -864,7 +862,7 @@ namespace Network
         private void RPCLoadScene()
         {
             Runner.SessionInfo.IsOpen = false;
-            StartCoroutine(LoadAsyncScene(1));
+            StartCoroutine(LoadAsyncScene(3));
         }
         
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]

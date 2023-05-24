@@ -55,9 +55,7 @@ public class GameManager : Singleton<GameManager>
     private void Start()
     {
         PlayerBehaviorAnalyzer = new PlayerBehaviorAnalyzer();
-
-        DBManager.Instance.IncreaseDefeatData();
-
+        
         DBManager.Instance.GetManyWinRanking().ContinueWithOnMainThread(task =>
         {
             var ranking = task.Result;
@@ -87,8 +85,6 @@ public class GameManager : Singleton<GameManager>
                 Debug.Log($"{nick}: {win}연승");
             }
         });
-        
-        
     }
 
     public void ResetBehaviourEventCount()

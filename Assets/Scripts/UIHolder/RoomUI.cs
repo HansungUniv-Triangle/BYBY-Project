@@ -76,6 +76,8 @@ namespace UIHolder
             {
                 GameManager.Instance.selectWeaponNum = 8;
             });
+            
+            GameManager.Instance.NetworkManager.UpdateCanvasData();
         }
     }
 }
