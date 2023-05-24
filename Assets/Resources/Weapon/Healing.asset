@@ -19,7 +19,9 @@ MonoBehaviour:
     RawGuidValue: e8ded74e0f008ac4aafad5adfc0a2e41
   bulletPrefabRef:
     RawGuidValue: 343bd0cc18b66b64aba44ef1ce4bd83e
-  bulletShoot: {fileID: 19813786, guid: b0e7b6d77eafddf48a3ad293dc71a53e, type: 3}
+  bulletShoot: {fileID: 19880072, guid: 63966c71c178e0248b2d23d3952fd46d, type: 3}
   bulletHit: {fileID: 19809874, guid: 51b115f247c922a47aa9a80144450be4, type: 3}
-  bulletHitToPlayer: {fileID: 19835194, guid: 16fb2cc8f64c08d46a5f2d055cc4f0c2, type: 3}
+  bulletHitToPlayer: {fileID: 19884996, guid: ff672eaca96d32c419d7a1f1b0346e8d, type: 3}
+  shootSoundPath: laser_shoot
+  hitSoundPath: healing
   isMainWeapon: 1

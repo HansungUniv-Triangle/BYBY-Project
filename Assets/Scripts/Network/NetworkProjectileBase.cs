@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
-
 using Fusion;
+using GameStatus;
 using Types;
 using Utils;
 
@@ -24,21 +24,40 @@ namespace Network
         
         protected NetworkProjectileHolder _projectileHolder;
         private Rigidbody _rigidbody;
+        
+        [Networked] private int NetWeaponData { get; set; } = -1;
+
+        private Weapon _weaponData;
+        public Weapon WeaponData
+        {
+            get
+            {
+                if (_weaponData is null && NetWeaponData != -1)
+                {
+                    _weaponData = GameManager.Instance.WeaponList[NetWeaponData];
+                }
+
+                return _weaponData;
+            }
+            private set => _weaponData = value;
+        }
 
         // 기본 스탯
-        protected float _baseStat(WeaponStat weaponStat) => _projectileHolder.GetWeaponStatTotal(weaponStat);
-        protected float MaxRange => _baseStat(WeaponStat.Range);
+        protected Stat<WeaponStat> _baseStat(WeaponStat weaponStat) => _projectileHolder.GetWeaponStat(weaponStat);
+        protected float MaxRange => StatConverter.ConversionStatValue(_baseStat(WeaponStat.Range));
         protected float Distance;
         
         // 기본 + 변동 스탯
-        protected float TotalVelocity => _baseStat(WeaponStat.Velocity) + IndividualVelocity;
+        protected float TotalVelocity => StatConverter.ConversionStatValue(_baseStat(WeaponStat.Velocity)) + IndividualVelocity;
         public float IndividualVelocity;
-        protected float TotalDamage => _baseStat(WeaponStat.Damage) + IndividualDamage;
+        protected float TotalDamage => StatConverter.ConversionStatValue(_baseStat(WeaponStat.Damage)) + IndividualDamage;
         public float IndividualDamage;
 
         // 네트워크 관련
         [Networked(OnChanged = nameof(HitEffect))] 
         protected NetworkBool IsHit { get; set; }
+        [Networked] 
+        protected NetworkBool IsEnemyHit { get; set; }
 
         private static void HitEffect(Changed<NetworkProjectileBase> changed)
         {
@@ -46,28 +65,20 @@ namespace Network
         }
         private void HitEffect()
         {
-            var hitType = IsEnemyHit ? HitEffectType.Player : HitEffectType.Everything;
-            EffectManager.Instance.PlayHitEffect(transform.position, -transform.forward, hitType);
+            var particle = IsEnemyHit ? WeaponData.bulletHitToPlayer : WeaponData.bulletHit;
+            EffectManager.Instance.PlayEffect(particle, transform.position, -transform.forward);
+            SoundManager.Instance.Play3DSound("hit", Sound.Effect, transform.position);
         }
-        [Networked] protected NetworkBool IsEnemyHit { get; set; }
-
+        
         [Networked] public float Damage { get; set; }
         public float DamageSave;
 
         // 초기화
-        public void Initialized(NetworkProjectileHolder holder)
+        public void Initialized(NetworkProjectileHolder holder, int netWeaponData)
         {
-            if (_projectileHolder is not null)
-            {
-                Debug.LogError("ProjectileBase가 2번 초기화 되었습니다.");
-            }
-            
-            if (!HasStateAuthority)
-            {
-                gameObject.layer = LayerMask.NameToLayer("Enemy");
-            }
-            
             _projectileHolder = holder;
+            
+            NetWeaponData = netWeaponData;
             IndividualVelocity = 0;
             IndividualDamage = 0;
         }
@@ -80,7 +91,8 @@ namespace Network
         public override void Spawned()
         {
             GameManager.Instance.NetworkManager.AddNetworkObjectInList(Object);
-            EffectManager.Instance.PlayShootEffect(transform.position, transform.forward);
+            EffectManager.Instance.PlayEffect(WeaponData.bulletShoot, transform.position, transform.forward);
+            SoundManager.Instance.Play3DSound("rifle_shoot", Sound.Effect, transform.position);
         }
 
         public override void Despawned(NetworkRunner runner, bool hasState)
@@ -99,9 +111,9 @@ namespace Network
             
             UpdateProjectile();
             
-            if (IsExpirationProjectile() &&NetworkActive)
+            if (IsExpirationProjectile())
             {
-                if (_projectileHolder.IsMainWeapon && Distance > MaxRange)
+                if (_projectileHolder.WeaponData.isMainWeapon && Distance > MaxRange)
                 {
                     GameManager.Instance.CheckBulletBetweenEnemyAndMe(transform.position);
                 }

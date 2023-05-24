@@ -7,23 +7,25 @@ namespace Network
 {
     public class NetworkSniperRifle : NetworkProjectileHolder
     {
-        [SerializeField]
-        private bool isSnipingMode = true;
+        private bool _isSnipingMode = true;
         
         protected override void Attack()
         {
             if (CanAttack())
             {
-                var projectile = SpawnProjectile(WeaponTransform);
+                var projectile = SpawnProjectile(ShootPointTransform);
                 RemainBullet--;
-                
-                GameManager.Instance.shootCount += 1;
-                
-                if (isSnipingMode)
+
+                if (_isSnipingMode)
                 {
                     projectile.GetComponent<NetworkProjectileBase>().IndividualDamage += GetWeaponStat(WeaponStat.Damage).Total;
                 }
             }
+        }
+
+        public void SnipingMode(bool value)
+        {
+            _isSnipingMode = value;
         }
     }
 }

@@ -23,19 +23,19 @@ namespace Network
             {
                 var hit = collision.contacts[0];
                 var point = hit.point - hit.normal * 0.01f;
-                var special = (int)_baseStat(WeaponStat.Special);
+                var special = (int)_baseStat(WeaponStat.Special).Total;
 
                 point.x = (float)Math.Round(point.x, 3);
                 point.y = (float)Math.Round(point.y, 3);
                 point.z = (float)Math.Round(point.z, 3);
 
-                WorldManager.Instance.GetWorld().ExplodeBlocks(point, special, 1);
-                GameManager.Instance.NetworkManager.AddBlockHitData(point, special, 1);
+                WorldManager.Instance.GetWorld().ExplodeBlocks(point, special, (int)TotalDamage);
+                GameManager.Instance.NetworkManager.AddBlockHitData(point, special, (int)TotalDamage);
                 
                 Collider[] hitColliders = Physics.OverlapSphere(gameObject.transform.position, special, (int)Layer.Enemy);
                 if (hitColliders.Length > 0)
                 {
-                    GameManager.Instance.NetworkManager.AddCharacterHitData(Object, (int)Damage, _projectileHolder.IsMainWeapon);
+                    GameManager.Instance.NetworkManager.AddCharacterHitData(Object, (int)Damage, _projectileHolder.WeaponData.isMainWeapon);
                 }
 
                 IsHit = true;

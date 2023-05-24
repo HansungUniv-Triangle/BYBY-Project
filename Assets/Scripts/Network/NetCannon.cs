@@ -11,8 +11,6 @@ namespace Network
             {
                 var speed = GetCharStat(CharStat.Speed).Total * 0.8f;
 
-                GameManager.Instance.shootCount += 1;
-                
                 DOTween.Sequence()
                     .OnStart(() =>
                     {
@@ -23,7 +21,7 @@ namespace Network
                     {
                         IsDoneShootAction = true;
                     })
-                    .AppendCallback(() => SpawnProjectile(WeaponTransform))
+                    .AppendCallback(() => SpawnProjectile(ShootPointTransform))
                     .AppendCallback(() => AddCharAdditionStat(CharStat.Speed, -speed))
                     .AppendInterval(2.0f)
                     .AppendCallback(() => AddCharAdditionStat(CharStat.Speed, +speed))

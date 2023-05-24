@@ -9,8 +9,10 @@ public class SynergyPage
     public int rerollCount = 1;
     public Rarity synergyRarity;
     public Synergy[] synergies = new Synergy[3];
+    public Weapon[] weapons = new Weapon[3];
     public GameObject synergyObj = null;
     public List<Synergy> IsNumInSynergyList = new List<Synergy>();
+    public List<Weapon> IsNumInWeaponList = new List<Weapon>();
     public int pageNumber;
     public Synergy selectedSynergy;
     public int[] synergyRecommendationPercentage = new int[3];
@@ -30,6 +32,29 @@ public class SynergyPage
         else if (synergies[2] == null)
         {
             synergies[2] = synergy;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
+    public bool AddWeapon(Weapon weapon)
+    {
+        if (weapons[0] == null)
+        {
+            weapons[0] = weapon;
+            return true;
+        }
+        else if (weapons[1] == null)
+        {
+            weapons[1] = weapon;
+            return true;
+        }
+        else if (weapons[2] == null)
+        {
+            weapons[2] = weapon;
             return true;
         }
         else
@@ -68,6 +93,18 @@ public class SynergyPage
     public bool CheckIsNumInSynergyList(Synergy randomSynergy)
     {
         if (IsNumInSynergyList.Contains(randomSynergy))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
+    public bool CheckIsNumInWeaponList(Weapon randomWeapon)
+    {
+        if (IsNumInWeaponList.Contains(randomWeapon))
         {
             return true;
         }
