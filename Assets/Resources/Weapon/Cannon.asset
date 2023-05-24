@@ -26,3 +26,4 @@ MonoBehaviour:
   shootSoundPath: rocket_shoot
   hitSoundPath: rocket_hit
   isMainWeapon: 1
+  basicWeaponStat: []
