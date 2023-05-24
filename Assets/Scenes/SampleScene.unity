@@ -9775,7 +9775,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e122425d0039244168b49950048a552b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxAimingRange: 120
   Speed: 15
   ReverseMove: 1
   OnlyHorizontal: 0

@@ -1,6 +1,10 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/GUI PRO Kit - Simple Casual/Sprite/Component/Icon_ItemIcons_(x2)/ItemIcons_(x2).unitypackage.meta
+guid: 1f2bcc719b6e6bd4ca5fa8093ddff1e7
+========
 guid: f59f7d5d04661264f82baf011ccb1010
 folderAsset: yes
+>>>>>>>> main:Assets/Resources/Sounds.meta
 DefaultImporter:
   externalObjects: {}
   userData: 

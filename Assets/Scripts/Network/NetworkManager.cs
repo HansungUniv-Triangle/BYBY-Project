@@ -261,7 +261,7 @@ namespace Network
         [Networked(OnChanged = nameof(UpdateRoundState))] 
         private int NetworkRoundState { get; set; }
 
-        public bool SinglePlayMode { get; private set; } = false;
+        public bool SinglePlayMode { get; set; } = false;
 
         public static void UpdateRoundState(Changed<NetworkManager> changed)
         {

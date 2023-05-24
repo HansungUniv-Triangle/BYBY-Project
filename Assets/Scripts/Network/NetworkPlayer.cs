@@ -599,6 +599,7 @@ namespace Network
                 _target = GameObject.Find("허수아비");
                 _camera.GetComponent<PlayerCamera>().AddPlayer(transform);
                 _camera.GetComponent<PlayerCamera>().AddEnemy(_target.transform);
+                _gameUI.crossHair.GetComponent<SubCrosshair>().SetNetworkPlayer(this);
             }
             else
             {
@@ -847,7 +848,7 @@ namespace Network
         {
             // 캐릭터를 이동 방향대로 회전
             var characterDir = new Vector3(h, 0, v);
-            var characterRotateSpeed = 8f;
+            var characterRotateSpeed = 18f;
             
             characterDir = transform.TransformDirection(characterDir);
             
@@ -859,7 +860,7 @@ namespace Network
 
             if (!_characterController.isGrounded)
             {
-                characterRotateSpeed = 3f;
+                //characterRotateSpeed = 3f;
             }
 
             _catController.RotateModel(characterDir, characterRotateSpeed);
@@ -933,7 +934,7 @@ namespace Network
             _settingsStatList.Add(new Stat<CharStat>(CharStat.Speed, -1, 0));
             return AdditionalWork(CharStat.Speed);
         }
-        
+
         private string AdditionalWork(CharStat type)
         {
             InitialStatus();
@@ -958,6 +959,18 @@ namespace Network
         public string DecreaseDodge(){
             _settingsStatList.Add(new Stat<CharStat>(CharStat.Rolling, -1, 0).SetRatio(0));
             return AdditionalWork(CharStat.Rolling);
+        }
+
+        public string IncreaseCalm()
+        {
+            _settingsStatList.Add(new Stat<CharStat>(CharStat.Calm, 1, 0).SetRatio(0));
+            return AdditionalWork(CharStat.Calm);
+        }
+
+        public string DecreaseCalm()
+        {
+            _settingsStatList.Add(new Stat<CharStat>(CharStat.Calm, -1, 0).SetRatio(0));
+            return AdditionalWork(CharStat.Calm);
         }
 
         public string IncreaseShakeSensitivity()

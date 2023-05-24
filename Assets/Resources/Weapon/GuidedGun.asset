@@ -25,3 +25,4 @@ MonoBehaviour:
   shootSoundPath: pistol_shoot
   hitSoundPath: hit
   isMainWeapon: 1
+  basicWeaponStat: []

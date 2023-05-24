@@ -1,6 +1,11 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/GUI PRO Kit - Simple Casual/Sprite/Component/Icon_PictoIcons_(x2)/PictoIcons_(x2).unitypackage.meta
+guid: 3195424b1a073ca45ab3c68443b212b1
+DefaultImporter:
+========
 guid: e6ae82a8ab5d5514cadb4510ac3ee859
 PrefabImporter:
+>>>>>>>> main:Assets/Legacy/Camera Rotator.prefab.meta
   externalObjects: {}
   userData: 
   assetBundleName: 

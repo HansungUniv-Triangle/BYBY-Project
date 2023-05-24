@@ -6,9 +6,7 @@ using DG.Tweening;
 
 public class Title : MonoBehaviour
 {
-    public GameObject nicknameSetPanel;
-    public GameObject settingsPanel;
-    public GameObject titleButtons;
+    public GameObject nameSetPopup;
     public RectTransform titleLogo;
     public RectTransform touchToStart;
     private Sequence titleLogoScaleSequence;
@@ -30,7 +28,6 @@ public class Title : MonoBehaviour
 
         titleLogoScaleSequence.Play();
         touchToStartScaleSequence.Play();
-        titleButtons = transform.GetChild(0).GetChild(7).gameObject;
     }
 
     private void Update()
@@ -39,26 +36,12 @@ public class Title : MonoBehaviour
         {
             touchToStartScaleSequence.Kill();
             touchToStart.gameObject.SetActive(false);
-            titleButtons.SetActive(true);
+            nameSetPopup.SetActive(true);
         }
-    }
+    }  
 
-    public void ShowSettingsPanel()
+    public void MoveToLobby()
     {
-        titleButtons.SetActive(false);
-        settingsPanel.SetActive(true);
-    }
-
-    public void ShowNickSetPanel()
-    {
-        titleButtons.SetActive(false);
-        nicknameSetPanel.SetActive(true);
-    }
-
-    public void BackToTitle()
-    {
-        settingsPanel.SetActive(false);
-        nicknameSetPanel.SetActive(false);
-        titleButtons.SetActive(true);
+        SceneManager.LoadScene("LobbyScene");
     }
 }

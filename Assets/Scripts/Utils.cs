@@ -30,7 +30,7 @@ namespace Utils
                 case CharStat.Armor:
                     return 100 / (100 + total);
                 case CharStat.Calm:
-                    return total;
+                    return 140 + total * 10;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
