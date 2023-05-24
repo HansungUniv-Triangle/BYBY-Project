@@ -34,8 +34,6 @@ namespace Utils
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-
-            return 0f;
         }
         
         public static float ConversionStatValue(Stat<WeaponStat> stat)
@@ -68,8 +66,6 @@ namespace Utils
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-
-            return 0f;
         }
     }
 }
