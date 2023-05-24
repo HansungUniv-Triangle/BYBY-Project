@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
+using TMPro;
 
 public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
 {
@@ -13,7 +15,15 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
 
     [SerializeField]
     private Transform _menuOrigin;
-    private RawImage[] _menu = new RawImage[4];
+    private Transform[] _menu = new Transform[4];
+
+    private GameObject _rankingPopup;
+    private GameObject _settingsPopup;
+
+
+    public GameObject _tab_NumberOfWin;
+    public GameObject _tab_Odds;
+    public GameObject _tab_WinningStreak;
 
     [SerializeField]
     private Transform _spawnPointOrigin;
@@ -31,9 +41,14 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
     private void Awake()
     {
         CurrentPage = 0;
-        _menu = _menuOrigin.GetComponentsInChildren<RawImage>();
+        for(int i = 0; i < _menuOrigin.childCount; i++)
+        {
+            _menu[i] = _menuOrigin.GetChild(i);
+        }
         _buttons = _buttonOrigin.GetComponentsInChildren<Button>();
         _spawnPoint = _spawnPointOrigin.GetComponentsInChildren<RectTransform>();
+        _rankingPopup = transform.GetChild(6).gameObject;
+        _settingsPopup = transform.GetChild(7).gameObject;
     }
 
     void Start()
@@ -41,7 +56,66 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
         ChangeButtons();
     }
 
-    public void BattleButtonClicked()
+    public void TabClicked()
+    {
+        string tabName = EventSystem.current.currentSelectedGameObject.GetComponentInChildren<TextMeshProUGUI>().text;
+        switch (tabName)
+        {
+            case "½Â¸® ¼ö":
+                {
+                    _tab_NumberOfWin.SetActive(true);
+                    _tab_Odds.SetActive(false);
+                    _tab_WinningStreak.SetActive(false);
+                    break;
+                }
+            case "½Â·ü":
+                {
+                    _tab_NumberOfWin.SetActive(false);
+                    _tab_Odds.SetActive(true);
+                    _tab_WinningStreak.SetActive(false);
+                    break;
+                }
+            case "¿¬½Â":
+                {
+                    _tab_NumberOfWin.SetActive(false);
+                    _tab_Odds.SetActive(false);
+                    _tab_WinningStreak.SetActive(true);
+                    break;
+                }
+        }
+    }
+
+    public void PlayButtonClicked_Battle()
+    {
+        SceneManager.LoadScene("RoomScene");
+    }
+
+    public void PlayButtonClicked_Practice()
+    {
+        GameManager.Instance.NetworkManager.SinglePlayMode = true;
+    }
+
+    public void PlayButtonClicked_Ranking()
+    {
+        _rankingPopup.SetActive(true);
+    }
+
+    public void PlayButtonClicked_Settings()
+    {
+        _settingsPopup.SetActive(true);
+    }
+
+    public void PopupClose_Ranking()
+    {
+        _rankingPopup.SetActive(false);
+    }
+
+    public void PopupClose_Settings()
+    {
+        _settingsPopup.SetActive(false);
+    }
+
+    public void UnderButtonClicked_Battle()
     {
         int destinationPage = 0;
         if (CurrentPage - destinationPage > 0)
@@ -60,7 +134,7 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
         }
     }
 
-    public void PracticeButtonClicked()
+    public void UnderButtonClicked_Practice()
     {
         int destinationPage = 1;
         if (CurrentPage - destinationPage > 0)
@@ -79,7 +153,7 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
         }
     }
 
-    public void SettingsButtonClicked()
+    public void UnderButtonClicked_Ranking()
     {
         int destinationPage = 2;
         if (CurrentPage - destinationPage > 0)
@@ -98,7 +172,7 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
         }
     }
 
-    public void ExitButtonClicked()
+    public void UnderButtonClicked_Settings()
     {
         int destinationPage = 3;
         if (CurrentPage - destinationPage > 0)

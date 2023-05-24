@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="24513e0c-1d4e-4fc7-ac6c-0509f3a0e7d2" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Assets/Legacy/Camera Rotator.prefab" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Legacy/Joystick Rotator.prefab" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Resources/Sounds/dash.wav" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Resources/Sounds/dash.wav.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Resources/Sounds/healing.wav" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Resources/Sounds/healing.wav.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Resources/Sounds/hit.wav" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Resources/Sounds/hit.wav.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Resources/Sounds/jump.wav" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Resources/Sounds/jump.wav.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Resources/Sounds/laser_shoot.wav" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Resources/Sounds/laser_shoot.wav.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Resources/Sounds/pistol_shoot.wav" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Resources/Sounds/pistol_shoot.wav.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Resources/Sounds/rifle_shoot.wav" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Resources/Sounds/rifle_shoot.wav.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Resources/Sounds/rocket_explosion.wav" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Resources/Sounds/rocket_explosion.wav.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Resources/Sounds/rocket_hit.wav" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Resources/Sounds/rocket_hit.wav.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Resources/Sounds/rocket_shoot.wav" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Resources/Sounds/rocket_shoot.wav.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Resources/Sounds/sniper_shoot.wav" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Resources/Sounds/sniper_shoot.wav.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Resources/Sprites/movetile.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Resources/Sprites/movetile.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Network/NetAutoRifle.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/RotateCameraWithJoystick.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/RotateCameraWithJoystick.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/SoundManager.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/SoundManager.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UIHolder/UIRotateBasedOnCamera.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scripts/UIHolder/UIRotateBasedOnCamera.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/UVMover.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/UVMover.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/CatController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/CatController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Bullet/BulletSmallGreen.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Bullet/BulletSmallGreen.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Bullet/BulletSmallPink.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Bullet/BulletSmallPink.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Energy/EnergyMissilePink.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Energy/EnergyMissilePink.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Energy/EnergyMissileRed.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Energy/EnergyMissileRed.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Energy/EnergyMissileYellow.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Energy/EnergyMissileYellow.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/FatBullet/BulletMeshFatFire.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/FatBullet/BulletMeshFatFire.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/FatBullet/BulletMeshFatPink.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/FatBullet/BulletMeshFatPink.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/FireballSoft/FireballSoftMissileBlue.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/FireballSoft/FireballSoftMissileBlue.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Flash/FlashMissileBlue.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Flash/FlashMissileBlue.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Flash/FlashMissileGreen.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Flash/FlashMissileGreen.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Flash/FlashMissilePink.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Flash/FlashMissilePink.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Frost/FrostMissile.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Frost/FrostMissile.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Grenade/GrenadeMissileBlue.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Grenade/GrenadeMissileBlue.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Grenade/GrenadeMissileFire.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Grenade/GrenadeMissileFire.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Laser/LaserMeshMissileFire.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Laser/LaserMeshMissileFire.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Laser/LaserMissileBlue.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Laser/LaserMissileBlue.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Laser/LaserMissileRed.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Laser/LaserMissileRed.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Lightning/LightningMissileGreen.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Lightning/LightningMissileGreen.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Lightning/LightningMissilePink.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Lightning/LightningMissilePink.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Lightning/LightningMissileYellow.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Lightning/LightningMissileYellow.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/LightningSoft/LightningSoftMissilePink.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/LightningSoft/LightningSoftMissilePink.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Liquid/LiquidMissileWater.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Liquid/LiquidMissileWater.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Magic/MagicMissileFire.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Magic/MagicMissileFire.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/MagicSoft/MagicMissileSoftPink.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/MagicSoft/MagicMissileSoftPink.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/NovaMissile/NovaMissileFire.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/NovaMissile/NovaMissileFire.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/NovaMissile/NovaMissileGreen.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/NovaMissile/NovaMissileGreen.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/NovaMissile/NovaMissilePink.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/NovaMissile/NovaMissilePink.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Nuke/NukeMissileGreen.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Nuke/NukeMissileGreen.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Nuke/NukeMissilePink.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Nuke/NukeMissilePink.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Rocket/RocketMeshMissileBlue.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Rocket/RocketMeshMissileBlue.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Rocket/RocketMissileFire.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Rocket/RocketMissileFire.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Rocket/RocketMissileGreen.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Rocket/RocketMissileGreen.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Rocket/RocketMissilePink.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Rocket/RocketMissilePink.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Shadow/ShadowMissile.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Shadow/ShadowMissile.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Sharp/SharpMissilePink.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Sharp/SharpMissilePink.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Soul/SoulMissileCrimson.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Soul/SoulMissileCrimson.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Sparkle/SparkleMissileBlue.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Sparkle/SparkleMissileBlue.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Storm/StormMissile.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Combat/Missiles/Storm/StormMissile.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Environment/Confetti/Shower/ConfettiShowerBlue.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Environment/Confetti/Shower/ConfettiShowerBlue.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Environment/Confetti/Shower/ConfettiShowerGreenYellow.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Environment/Confetti/Shower/ConfettiShowerGreenYellow.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Environment/Smoke/Dark/SmokeDarkSoftTrail.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Environment/Smoke/Dark/SmokeDarkSoftTrail.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Environment/Smoke/Dark/SmokeDarkSoftTrail2.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Environment/Smoke/Dark/SmokeDarkSoftTrail2.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Environment/Smoke/Dark/SmokeDarkTrail.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Environment/Smoke/Dark/SmokeDarkTrail.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Environment/Smoke/White/SmokeWhiteSoftTrail.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Environment/Smoke/White/SmokeWhiteSoftTrail.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Environment/Smoke/White/SmokeWhiteTrail.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Environment/Smoke/White/SmokeWhiteTrail.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Interactive/Sparkle/SparkleSolo/SparkleSoloGreen.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Interactive/Sparkle/SparkleSolo/SparkleSoloGreen.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Interactive/Trails/FireFloorTrail.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Interactive/Trails/FireFloorTrail.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Interactive/Trails/IceFloorTrail.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Interactive/Trails/IceFloorTrail.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Interactive/Trails/LightningFloorBlueTrail.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Interactive/Trails/LightningFloorBlueTrail.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Misc.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Hypercasual Action Props Pack/Misc.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Misc/AuraTest.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Hypercasual Action Props Pack/Misc/AuraTest.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Misc/AuraTest.prefab.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Hypercasual Action Props Pack/Misc/AuraTest.prefab.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Misc/ConstructBuilding01.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Hypercasual Action Props Pack/Misc/ConstructBuilding01.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Misc/ConstructBuilding01.prefab.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Hypercasual Action Props Pack/Misc/ConstructBuilding01.prefab.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Misc/CurvySmoke.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Hypercasual Action Props Pack/Misc/CurvySmoke.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Misc/CurvySmoke.prefab.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Hypercasual Action Props Pack/Misc/CurvySmoke.prefab.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Misc/MusicalNoteExplosion.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Hypercasual Action Props Pack/Misc/MusicalNoteExplosion.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Misc/MusicalNoteExplosion.prefab.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Hypercasual Action Props Pack/Misc/MusicalNoteExplosion.prefab.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Misc/MusicalNotes.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Hypercasual Action Props Pack/Misc/MusicalNotes.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Misc/MusicalNotes.prefab.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Hypercasual Action Props Pack/Misc/MusicalNotes.prefab.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Misc/MusicalNotesAggro.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Hypercasual Action Props Pack/Misc/MusicalNotesAggro.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Misc/MusicalNotesAggro.prefab.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Hypercasual Action Props Pack/Misc/MusicalNotesAggro.prefab.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Misc/MusicalNotesCalm.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Hypercasual Action Props Pack/Misc/MusicalNotesCalm.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Misc/MusicalNotesCalm.prefab.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Hypercasual Action Props Pack/Misc/MusicalNotesCalm.prefab.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Misc/Plexus.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Hypercasual Action Props Pack/Misc/Plexus.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Misc/Plexus.prefab.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Hypercasual Action Props Pack/Misc/Plexus.prefab.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Misc/PlexusExplosion.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Hypercasual Action Props Pack/Misc/PlexusExplosion.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Misc/PlexusExplosion.prefab.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Hypercasual Action Props Pack/Misc/PlexusExplosion.prefab.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Misc/SleepingZzZ.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Hypercasual Action Props Pack/Misc/SleepingZzZ.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Misc/SleepingZzZ.prefab.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Hypercasual Action Props Pack/Misc/SleepingZzZ.prefab.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Misc/TypingMessage.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Hypercasual Action Props Pack/Misc/TypingMessage.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Misc/TypingMessage.prefab.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Hypercasual Action Props Pack/Misc/TypingMessage.prefab.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Misc/TypingMessageLight.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Hypercasual Action Props Pack/Misc/TypingMessageLight.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Epic Toon FX/Prefabs/Misc/TypingMessageLight.prefab.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Hypercasual Action Props Pack/Misc/TypingMessageLight.prefab.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/GUI PRO Kit - Simple Casual/Sprite/Component/Icon_ItemIcons_(x2)/ItemIcons_(x2).unitypackage.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/GUI PRO Kit - Simple Casual/Sprite/Component/Icon_ItemIcons_(x2)/ItemIcons_(x2).unitypackage.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/GUI PRO Kit - Simple Casual/Sprite/Component/Icon_PictoIcons_(x2)/PictoIcons_(x2).unitypackage.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/GUI PRO Kit - Simple Casual/Sprite/Component/Icon_PictoIcons_(x2)/PictoIcons_(x2).unitypackage.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Legacy/Camera Rotator.prefab.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Legacy/Camera Rotator.prefab.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Legacy/Joystick Rotator.prefab.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Legacy/Joystick Rotator.prefab.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/PlayerPrefab.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/PlayerPrefab.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Sounds.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Sounds.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Sprites/BYBY_MainScene.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Sprites/BYBY_MainScene.png.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Sprites/BYBY_logo.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Sprites/BYBY_logo.png.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Sprites/background.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Sprites/background.png.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Sprites/char1 1.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Sprites/char1 1.png.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Sprites/char2.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Sprites/char2.png.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Sprites/ground.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Sprites/ground.png.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Sprites/touchscreen.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Sprites/touchscreen.png.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Sprites/tree1.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Sprites/tree1.png.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Sprites/tree2.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Sprites/tree2.png.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Synergy/Synergy 11.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Synergy/Synergy 11.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Synergy/Synergy 12.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Synergy/Synergy 12.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Synergy/Synergy 13.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Synergy/Synergy 13.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Synergy/Synergy 14.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Synergy/Synergy 14.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Synergy/Synergy 15.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Synergy/Synergy 15.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Synergy/Synergy 16.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Synergy/Synergy 16.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Synergy/Synergy 17.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Synergy/Synergy 17.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Synergy/Synergy 18.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Synergy/Synergy 18.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Synergy/Synergy 3.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Synergy/Synergy 3.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Synergy/Synergy 5.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Synergy/Synergy 5.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Synergy/Synergy 7.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Synergy/Synergy 7.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Synergy/Synergy 8.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Synergy/Synergy 8.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Weapon/AutoRifle.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Weapon/AutoRifle.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Weapon/Autorifle/Autorifle.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Weapon/Autorifle/Autorifle.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Weapon/BuffMachine/BuffMachine.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Weapon/BuffMachine/BuffMachine.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Weapon/Cannon.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Weapon/Cannon.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Weapon/Cannon/Cannon.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Weapon/Cannon/Cannon.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Weapon/Cannon/Cannon_Projectile.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Weapon/Cannon/Cannon_Projectile.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Weapon/GuidedGun.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Weapon/GuidedGun.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Weapon/GuidedGun/GuidedGun.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Weapon/GuidedGun/GuidedGun.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Weapon/GuidedGun/GuidedProjectile.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Weapon/GuidedGun/GuidedProjectile.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Weapon/Hangun.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Weapon/Hangun.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Weapon/Healing.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Weapon/Healing.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Weapon/HealingShot/HealingProjectile.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Weapon/HealingShot/HealingProjectile.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Weapon/HealingShot/HealingShot.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Weapon/HealingShot/HealingShot.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Weapon/SlowGun/SlowGun.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Weapon/SlowGun/SlowGun.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Weapon/Sniper/SniperRifle.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Weapon/Sniper/SniperRifle.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Weapon/SniperRifle.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Weapon/SniperRifle.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Weapon/Weapon.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Weapon/Weapon.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/LobbyScene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/LobbyScene.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/NetworkTest.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/NetworkTest.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/SampleScene.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/TitleScene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/TitleScene.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/EffectManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/EffectManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/GameManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/GameManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/GameStatus.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/GameStatus.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Network/GuidedProjectile.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Network/GuidedProjectile.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Network/NetAutorifle.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Network/NetAutoRifle.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Network/NetAutorifle.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Network/NetBasicProjectile.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Network/NetBasicProjectile.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Network/NetCannon.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Network/NetCannon.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Network/NetCannonProjectile.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Network/NetCannonProjectile.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Network/NetHandGun.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Network/NetHandGun.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Network/NetworkManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Network/NetworkManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Network/NetworkPlayer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Network/NetworkPlayer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Network/NetworkProjectileBase.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Network/NetworkProjectileBase.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Network/NetworkProjectileHolder.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Network/NetworkProjectileHolder.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Network/NetworkSniperRifle.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Network/NetworkSniperRifle.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Network/SlowProjectile.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Network/SlowProjectile.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/PlayerCamera.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/PlayerCamera.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Synergy/SynergyPage.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Synergy/SynergyPage.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Synergy/SynergyPageManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Synergy/SynergyPageManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Synergy/SynergySelectPanel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Synergy/SynergySelectPanel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/TouchRotateCamera.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/TouchRotateCamera.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Types.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Types.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Utils.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Utils.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_MK/MKToon/ExamplesBuiltin.unitypackage.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_MK/MKToon/ExamplesBuiltin.unitypackage.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/_MK/MKToon/ExamplesInc.unitypackage.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/_MK/MKToon/ExamplesInc.unitypackage.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2QEQLABOgk0Dhy1iAM8KXMXsARl" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="RunOnceActivity.cidr.known.project.marker" value="true" />
+    <property name="cidr.known.project.marker" value="true" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="24513e0c-1d4e-4fc7-ac6c-0509f3a0e7d2" name="Changes" comment="" />
+      <created>1684916207383</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1684916207383</updated>
+    </task>
+    <servers />
+  </component>
+</project>
