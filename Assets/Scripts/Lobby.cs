@@ -1,10 +1,10 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using Firebase.Extensions;
+using Network;
 using UnityEngine.EventSystems;
-using UnityEngine.SceneManagement;
 using TMPro;
 
 public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
@@ -19,7 +19,6 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
 
     private GameObject _rankingPopup;
     private GameObject _settingsPopup;
-
 
     public GameObject _tab_NumberOfWin;
     public GameObject _tab_Odds;
@@ -38,6 +37,11 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
     private float swipeStartTime;
     private bool isSwiping = false;
 
+    public TextMeshProUGUI nickName;
+    public TextMeshProUGUI win;
+    public BasicSpawner spawner;
+    public TextMeshProUGUI rankingTemp;
+    
     private void Awake()
     {
         CurrentPage = 0;
@@ -53,6 +57,13 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
 
     void Start()
     {
+        nickName.text = DBManager.Instance.NickName;
+
+        DBManager.Instance.GetUserWin().ContinueWithOnMainThread(task =>
+        {
+            win.text = $"{task.Result.Item1.ToString()}Ω¬ | {task.Result.Item2.ToString()}∆–";
+        });
+        
         ChangeButtons();
     }
 
@@ -66,6 +77,18 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
                     _tab_NumberOfWin.SetActive(true);
                     _tab_Odds.SetActive(false);
                     _tab_WinningStreak.SetActive(false);
+                    DBManager.Instance.GetManyWinRanking().ContinueWithOnMainThread(task =>
+                    {
+                        var list = task.Result;
+                        string listToString = "";
+
+                        foreach (var (item1, item2) in list)
+                        {
+                            listToString += $"¿Ã∏ß: {item1}, Ω¬∏Æ ºˆ: {item2}";
+                        }
+
+                        rankingTemp.text = listToString;
+                    });
                     break;
                 }
             case "Ω¬∑¸":
@@ -73,6 +96,18 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
                     _tab_NumberOfWin.SetActive(false);
                     _tab_Odds.SetActive(true);
                     _tab_WinningStreak.SetActive(false);
+                    DBManager.Instance.GetWinRatingRanking().ContinueWithOnMainThread(task =>
+                    {
+                        var list = task.Result;
+                        string listToString = "";
+
+                        foreach (var (item1, item2) in list)
+                        {
+                            listToString += $"¿Ã∏ß: {item1}, Ω¬∏Æ∑¸: {item2}%";
+                        }
+
+                        rankingTemp.text = listToString;
+                    });
                     break;
                 }
             case "ø¨Ω¬":
@@ -80,6 +115,18 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
                     _tab_NumberOfWin.SetActive(false);
                     _tab_Odds.SetActive(false);
                     _tab_WinningStreak.SetActive(true);
+                    DBManager.Instance.GetWinStraightRanking().ContinueWithOnMainThread(task =>
+                    {
+                        var list = task.Result;
+                        string listToString = "";
+
+                        foreach (var (item1, item2) in list)
+                        {
+                            listToString += $"¿Ã∏ß: {item1}, √÷¥Î ø¨Ω¬: {item2}";
+                        }
+
+                        rankingTemp.text = listToString;
+                    });
                     break;
                 }
         }
@@ -87,12 +134,12 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
 
     public void PlayButtonClicked_Battle()
     {
-        SceneManager.LoadScene("RoomScene");
+        spawner.StartMultiGame();
     }
 
     public void PlayButtonClicked_Practice()
     {
-        GameManager.Instance.NetworkManager.SinglePlayMode = true;
+        spawner.StartSingleGame();
     }
 
     public void PlayButtonClicked_Ranking()
@@ -321,9 +368,7 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
 
     private IEnumerator ResetSwipeCoroutine()
     {
-
         yield return new WaitForSecondsRealtime(0.5f); // 1«¡∑π¿” ¥Î±‚
-
         isSwiping = false; // Ω∫øÕ¿Ã«¡ ªÛ≈¬ √ ±‚»≠
     }
 }

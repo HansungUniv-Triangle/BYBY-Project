@@ -10,7 +10,7 @@ namespace Network
         {
             if (CanAttack())
             {
-                SpawnProjectile(WeaponTransform);
+                SpawnProjectile(WeaponTransform.position);
             }
         }
         

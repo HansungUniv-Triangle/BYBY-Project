@@ -23,7 +23,7 @@ namespace Network
         }
         
         protected NetworkProjectileHolder _projectileHolder;
-        private Rigidbody _rigidbody;
+        protected Rigidbody _rigidbody;
         
         [Networked] private int NetWeaponData { get; set; } = -1;
 
@@ -127,7 +127,7 @@ namespace Network
             NetworkActive = false;
         }
         
-        private void OnTriggerEnter(Collider other)
+        protected virtual void OnTriggerEnter(Collider other)
         {
             if(IsHit || !HasStateAuthority) return;
             

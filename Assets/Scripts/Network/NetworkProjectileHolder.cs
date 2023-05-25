@@ -99,13 +99,12 @@ namespace Network
             objInit.Initialized(this, NetWeaponData);
         }
 
-        protected NetworkObject SpawnProjectile(Transform transform)
+        protected NetworkObject SpawnProjectile(Vector3 position, bool basicRotate = false)
         {
-            var position = transform.position;
             var obj = Runner.Spawn(
                 WeaponData.bulletPrefabRef, 
                 position, //+ position.TransformDirection(Vector3.forward), 
-                Quaternion.LookRotation(Target - position), 
+                basicRotate ? null : Quaternion.LookRotation(Target - position), 
                 Runner.LocalPlayer,
                 InitializeProjectile
             );
@@ -118,7 +117,7 @@ namespace Network
             
             return obj;
         }
-        
+
         protected virtual bool CanAttack()
         {
             if (!IsDoneShootAction)

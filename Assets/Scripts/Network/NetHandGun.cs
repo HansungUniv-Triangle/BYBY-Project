@@ -15,7 +15,7 @@ namespace Network
 
                 DOTween.Sequence()
                     .OnStart(() => RemainBullet--)
-                    .AppendCallback(() => SpawnProjectile(ShootPointTransform))
+                    .AppendCallback(() => SpawnProjectile(ShootPointTransform.position))
                     .AppendCallback(() => AddCharAdditionStat(CharStat.Speed, +calcValue))
                     .AppendInterval(0.1f)
                     .AppendCallback(() => AddCharAdditionStat(CharStat.Speed, -calcValue));

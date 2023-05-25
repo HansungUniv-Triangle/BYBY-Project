@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using DG.Tweening;
+using TMPro;
+using UnityEngine.UI;
 
 public class Title : MonoBehaviour
 {
     public GameObject nameSetPopup;
     public RectTransform titleLogo;
     public RectTransform touchToStart;
+    public Button nickChangeButton;
+    public TextMeshProUGUI nickField;
     private Sequence titleLogoScaleSequence;
     private Sequence touchToStartScaleSequence;
 
@@ -28,6 +32,17 @@ public class Title : MonoBehaviour
 
         titleLogoScaleSequence.Play();
         touchToStartScaleSequence.Play();
+        
+        nickChangeButton.onClick.AddListener(()=>
+        {
+            var nick = nickField.text;
+            if (nick.Length > 10)
+            {
+                nick = nick.Substring(0, 10);
+            }
+            
+            ChangeNickname(nick);
+        });
     }
 
     private void Update()
@@ -36,9 +51,23 @@ public class Title : MonoBehaviour
         {
             touchToStartScaleSequence.Kill();
             touchToStart.gameObject.SetActive(false);
-            nameSetPopup.SetActive(true);
+            
+            if (DBManager.Instance.NickName is "null")
+            {
+                nameSetPopup.SetActive(true);
+            }
+            else
+            {
+                MoveToLobby();
+            }
         }
-    }  
+    }
+
+    public async void ChangeNickname(string nick)
+    {
+        await DBManager.Instance.ChangeNickname(nick);
+        MoveToLobby();
+    }
 
     public void MoveToLobby()
     {

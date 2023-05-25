@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16dae06ff98f4f57b8499b1ebbcb3123, type: 3}
+  m_Name: SummonSword
+  m_EditorClassIdentifier: 
+  sprite: {fileID: 0}
+  weaponName: "\uD558\uB298\uC5D0\uC11C \uCE7C\uC774"
+  weaponExplain: "\uD558\uB298\uC5D0\uC11C \uCE7C\uC774 \uB5A8\uC5B4\uC9C4\uB2E4."
+  weaponPrefabRef:
+    RawGuidValue: 44aaa9620947c7b44be3576760ff3ec2
+  bulletPrefabRef:
+    RawGuidValue: 6d4aeb5a350a9c04ca3075a0358bc422
+  bulletShoot: {fileID: 19813786, guid: b0e7b6d77eafddf48a3ad293dc71a53e, type: 3}
+  bulletHit: {fileID: 19835194, guid: 16fb2cc8f64c08d46a5f2d055cc4f0c2, type: 3}
+  bulletHitToPlayer: {fileID: 19809874, guid: 51b115f247c922a47aa9a80144450be4, type: 3}
+  shootSoundPath: 
+  hitSoundPath: 
+  isMainWeapon: 0
+  basicWeaponStat: []
