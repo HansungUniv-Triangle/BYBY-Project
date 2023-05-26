@@ -20,9 +20,10 @@ MonoBehaviour:
   bulletPrefabRef:
     RawGuidValue: 6d4aeb5a350a9c04ca3075a0358bc422
   bulletShoot: {fileID: 19813786, guid: b0e7b6d77eafddf48a3ad293dc71a53e, type: 3}
-  bulletHit: {fileID: 19835194, guid: 16fb2cc8f64c08d46a5f2d055cc4f0c2, type: 3}
-  bulletHitToPlayer: {fileID: 19809874, guid: 51b115f247c922a47aa9a80144450be4, type: 3}
-  shootSoundPath: 
-  hitSoundPath: 
+  bulletHit: {fileID: 198125528418200750, guid: 28b85049aab5fae4c8d76b8b8dc8888a,
+    type: 3}
+  bulletHitToPlayer: {fileID: 0}
+  shootSoundPath: charge
+  hitSoundPath: explosion
   isMainWeapon: 0
   basicWeaponStat: []

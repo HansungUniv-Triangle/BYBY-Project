@@ -18,6 +18,7 @@ namespace Network
         protected Transform ShootPointTransform;
         protected Vector3 Target;
         protected bool IsDoneShootAction;
+        protected bool IsAttacking;
         protected int RemainBullet;
         protected TextMeshProUGUI BulletText;
         protected TickTimer delay;
@@ -120,6 +121,11 @@ namespace Network
 
         protected virtual bool CanAttack()
         {
+            if (!IsAttacking)
+            {
+                return false;
+            }
+
             if (!IsDoneShootAction)
             {
                 return false;
@@ -144,6 +150,11 @@ namespace Network
         public void ChangeIsDone(bool value)
         {
             IsDoneShootAction = value;
+        }
+
+        public void ChangeIsAttacking(bool value)
+        {
+            IsAttacking = value;
         }
 
         protected void ReloadBullet()

@@ -19,7 +19,7 @@ MonoBehaviour:
     RawGuidValue: 723f5f3e32b663e4da87e0bbb0de1330
   bulletPrefabRef:
     RawGuidValue: 00000000000000000000000000000000
-  bulletShoot: {fileID: 19825070, guid: 7b117ab47ae99e74fbb811d488c1eb17, type: 3}
+  bulletShoot: {fileID: 19888532, guid: 329926602f678fa42a3265787be13674, type: 3}
   bulletHit: {fileID: 0}
   bulletHitToPlayer: {fileID: 0}
   shootSoundPath: buff
