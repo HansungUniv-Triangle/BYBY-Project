@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: Synergy 17
   m_EditorClassIdentifier: 
   rarity: 2
-  sprite: {fileID: 21300000, guid: aee8b472f34804516843ccda1e9a7233, type: 3}
+  sprite: {fileID: 21300000, guid: 0203f0597bbef413fb3d36eb93c39466, type: 3}
   synergyName: "\uB808\uC5B4 \uC2DC\uB108\uC9C05"
-  synergyExplain: "<color=green>\uC2E4\uB4DC+5</color>"
+  synergyExplain: "<color=green>\uD68C\uD53C+5<br>\uC7AC\uC7A5\uC804+3</color>"
   charStatList:
-  - <Type>k__BackingField: 0
-    <Amount>k__BackingField: 1
+  - <Type>k__BackingField: 2
+    <Amount>k__BackingField: 5
     <Ratio>k__BackingField: 0
     <Addition>k__BackingField: 0
   weaponStatList:
-  - <Type>k__BackingField: 0
-    <Amount>k__BackingField: 1
+  - <Type>k__BackingField: 3
+    <Amount>k__BackingField: 3
     <Ratio>k__BackingField: 0
     <Addition>k__BackingField: 0

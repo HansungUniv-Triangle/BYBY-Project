@@ -17,12 +17,12 @@ MonoBehaviour:
   synergyName: "\uC5B8\uCEE4\uBA3C \uC2DC\uB108\uC9C02"
   synergyExplain: "<color=green>\uBC29\uC5B4\uB825+1<br>\uC774\uB3D9\uC18D\uB3C4+1</color>"
   charStatList:
-  - <Type>k__BackingField: 0
-    <Amount>k__BackingField: 10
+  - <Type>k__BackingField: 3
+    <Amount>k__BackingField: 1
     <Ratio>k__BackingField: 0
     <Addition>k__BackingField: 0
-  weaponStatList:
-  - <Type>k__BackingField: 2
-    <Amount>k__BackingField: 0.5
+  - <Type>k__BackingField: 1
+    <Amount>k__BackingField: 1
     <Ratio>k__BackingField: 0
     <Addition>k__BackingField: 0
+  weaponStatList: []

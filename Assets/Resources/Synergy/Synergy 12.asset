@@ -15,7 +15,7 @@ MonoBehaviour:
   rarity: 1
   sprite: {fileID: 21300000, guid: 766f930161a4945c1be8857bb3ecc87f, type: 3}
   synergyName: "\uC5B8\uCEE4\uBA3C \uC2DC\uB108\uC9C06"
-  synergyExplain: "<color=green>\uD2B9\uC131+2<br>\uACF5\uACA9\uB825+1</color>"
+  synergyExplain: "<color=green>\uD2B9\uD654+2<br>\uACF5\uACA9\uB825+1</color>"
   charStatList:
   - <Type>k__BackingField: 0
     <Amount>k__BackingField: 1

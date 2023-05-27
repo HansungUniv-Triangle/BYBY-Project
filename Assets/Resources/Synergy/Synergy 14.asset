@@ -16,13 +16,13 @@ MonoBehaviour:
   sprite: {fileID: 21300000, guid: 5590eb1cbe7d84c8f89d7fdc9f036a87, type: 3}
   synergyName: "\uB808\uC5B4 \uC2DC\uB108\uC9C02"
   synergyExplain: "<color=green>\uACF5\uACA9\uB825+5<br></color><color=red>\uC0AC\uAC70\uB9AC-3</color>"
-  charStatList:
-  - <Type>k__BackingField: 0
-    <Amount>k__BackingField: 1
+  charStatList: []
+  weaponStatList:
+  - <Type>k__BackingField: 2
+    <Amount>k__BackingField: 5
     <Ratio>k__BackingField: 0
     <Addition>k__BackingField: 0
-  weaponStatList:
-  - <Type>k__BackingField: 0
-    <Amount>k__BackingField: 2
+  - <Type>k__BackingField: 3
+    <Amount>k__BackingField: -3
     <Ratio>k__BackingField: 0
     <Addition>k__BackingField: 0

@@ -1,5 +1,7 @@
 ﻿using TMPro;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
+using UnityEngine;
 
 namespace UIHolder
 {
@@ -7,9 +9,12 @@ namespace UIHolder
     {
         public TMP_Text text1;
         public TMP_Text text2;
-        public RawImage player1Ready;
-        public RawImage player2Ready;
+        public Image player1Ready;
+        public Image player2Ready;
         public Button readyButton;
+        public Image tabFocused;
+        public TMP_Text weaponName;
+        public TMP_Text weaponExplain;
 
         #region WeaponButton
 
@@ -34,30 +39,57 @@ namespace UIHolder
 
             Autorifle.onClick.AddListener(() =>
             {
+                GameObject selectedButton = EventSystem.current.currentSelectedGameObject;
+                Vector3 buttonPosition = selectedButton.transform.position;
+                Vector3 tabPosition = tabFocused.transform.position;
+                tabPosition.x = buttonPosition.x;
+                tabPosition.y = buttonPosition.y - selectedButton.GetComponent<RectTransform>().sizeDelta.y / 2;
+                tabFocused.transform.position = tabPosition;
+
                 GameManager.Instance.selectWeaponNum = 0;
+                weaponName.text = GameManager.Instance.WeaponList[0].weaponName;
+                weaponExplain.text = GameManager.Instance.WeaponList[0].weaponExplain;
             });
 
-            Berserk.onClick.AddListener(() =>
+            /*Berserk.onClick.AddListener(() =>
             {
                 GameManager.Instance.selectWeaponNum = 1;
-            });
+            });*/
 
             Cannon.onClick.AddListener(() =>
             {
+                GameObject selectedButton = EventSystem.current.currentSelectedGameObject;
+                Vector3 buttonPosition = selectedButton.transform.position;
+                Vector3 tabPosition = tabFocused.transform.position;
+                tabPosition.x = buttonPosition.x;
+                tabPosition.y = buttonPosition.y - selectedButton.GetComponent<RectTransform>().sizeDelta.y / 2;
+                tabFocused.transform.position = tabPosition;
+
                 GameManager.Instance.selectWeaponNum = 2;
+                weaponName.text = GameManager.Instance.WeaponList[2].weaponName;
+                weaponExplain.text = GameManager.Instance.WeaponList[2].weaponExplain;
             });
 
-            GuidedGun.onClick.AddListener(() =>
+            /*GuidedGun.onClick.AddListener(() =>
             {
                 GameManager.Instance.selectWeaponNum = 3;
-            });
+            });*/
 
             Handgun.onClick.AddListener(() =>
             {
+                GameObject selectedButton = EventSystem.current.currentSelectedGameObject;
+                Vector3 buttonPosition = selectedButton.transform.position;
+                Vector3 tabPosition = tabFocused.transform.position;
+                tabPosition.x = buttonPosition.x;
+                tabPosition.y = buttonPosition.y - selectedButton.GetComponent<RectTransform>().sizeDelta.y / 2;
+                tabFocused.transform.position = tabPosition;
+
                 GameManager.Instance.selectWeaponNum = 4;
+                weaponName.text = GameManager.Instance.WeaponList[4].weaponName;
+                weaponExplain.text = GameManager.Instance.WeaponList[4].weaponExplain;
             });
 
-            Healgun.onClick.AddListener(() =>
+            /*Healgun.onClick.AddListener(() =>
             {
                 GameManager.Instance.selectWeaponNum = 5;
             });
@@ -70,11 +102,20 @@ namespace UIHolder
             Slow.onClick.AddListener(() =>
             {
                 GameManager.Instance.selectWeaponNum = 7;
-            });
+            });*/
 
             Sniper.onClick.AddListener(() =>
             {
+                GameObject selectedButton = EventSystem.current.currentSelectedGameObject;
+                Vector3 buttonPosition = selectedButton.transform.position;
+                Vector3 tabPosition = tabFocused.transform.position;
+                tabPosition.x = buttonPosition.x;
+                tabPosition.y = buttonPosition.y - selectedButton.GetComponent<RectTransform>().sizeDelta.y / 2;
+                tabFocused.transform.position = tabPosition;
+
                 GameManager.Instance.selectWeaponNum = 8;
+                weaponName.text = GameManager.Instance.WeaponList[8].weaponName;
+                weaponExplain.text = GameManager.Instance.WeaponList[8].weaponExplain;
             });
             
             GameManager.Instance.NetworkManager.UpdateCanvasData();
