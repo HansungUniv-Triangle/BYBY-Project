@@ -11,6 +11,7 @@ namespace Utils
         public const string Weapon = "Weapon";
         public const string Loading = "Loading";
         public const string Disconnect = "Disconnect";
+        public const string Reload = "Reloading";
     }
 
     public static class StatConverter

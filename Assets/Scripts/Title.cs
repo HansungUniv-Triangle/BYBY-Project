@@ -56,7 +56,7 @@ public class Title : MonoBehaviour
             {
                 nameSetPopup.SetActive(true);
             }
-            else
+            else if (DBManager.Instance.NickName is not null)
             {
                 MoveToLobby();
             }

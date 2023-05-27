@@ -344,6 +344,8 @@ namespace Network
                 {    
                     weapon.AddWeaponStatList(synergy.weaponStatList);
                 }
+
+                weapon.SetBullet();
             }
         }
 

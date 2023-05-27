@@ -18,6 +18,8 @@ namespace Network
         private NetworkPrefabRef NetworkManagerPrefab;
         private NetworkManager _networkManager;
 
+        public int roomNumber = 5123;
+
         #region Fusion
 
         public async void StartMultiGame()
@@ -29,7 +31,9 @@ namespace Network
 
             await _runner.StartGame(new StartGameArgs()
             {
+                SessionName = roomNumber.ToString(),
                 GameMode = GameMode.Shared,
+                SceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>()
             }).ContinueWithOnMainThread(_ => SceneManager.LoadSceneAsync("NetworkTest"));
         }
 
@@ -43,6 +47,7 @@ namespace Network
             await _runner.StartGame(new StartGameArgs()
             {
                 GameMode = GameMode.Single,
+                SceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>()
             }).ContinueWithOnMainThread(_ => SceneManager.LoadSceneAsync("NetworkTest"));
         }
         
@@ -57,6 +62,7 @@ namespace Network
 
         public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
         {
+            _networkManager ??= FindObjectOfType<NetworkManager>();
             _networkManager.OnPlayerLeft(player);
         }
         

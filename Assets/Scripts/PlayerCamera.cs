@@ -164,7 +164,7 @@ public class PlayerCamera : MonoBehaviour
 
     private void GameView()
     {
-        if(!_player && !_target) return;
+        if(!_player || !_target) return;
 
         var position = _player.position;
         _ray.origin = position;

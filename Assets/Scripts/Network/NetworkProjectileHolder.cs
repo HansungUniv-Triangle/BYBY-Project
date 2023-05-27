@@ -18,8 +18,22 @@ namespace Network
         protected Transform ShootPointTransform;
         protected Vector3 Target;
         protected bool IsDoneShootAction;
-        protected int RemainBullet;
-        protected TextMeshProUGUI BulletText;
+        
+        private int _maxBullet;
+        private int _remainBullet;
+        protected int RemainBullet
+        {
+            get
+            {
+                if (WeaponData.isMainWeapon)
+                {
+                    GameManager.Instance.NetworkManager.UpdateBullet(_remainBullet, _maxBullet);
+                }
+                return _remainBullet;
+            }
+            set => _remainBullet = value;
+        }
+
         protected TickTimer delay;
 
         [Networked] private int NetWeaponData { get; set; } = -1;
@@ -50,14 +64,14 @@ namespace Network
             var shootPoint = transform.Find("ShootPoint");
             ShootPointTransform = shootPoint ? shootPoint : WeaponTransform;
         }
-
-        private void Start()
+        
+        public void SetBullet()
         {
             if (WeaponData.isMainWeapon)
             {
                 RemainBullet = (int)GetWeaponStat(WeaponStat.Bullet).Total;
+                _maxBullet = (int)GetWeaponStat(WeaponStat.Bullet).Total;
             }
-            //BulletText = (GameManager.Instance.UIHolder as GameUI).bulletText;
         }
 
         public override void FixedUpdateNetwork()
@@ -68,8 +82,6 @@ namespace Network
             }
             
             Attack();
-
-            //BulletText.text = RemainBullet.ToString();
         }
 
         public void InitialHolder(Weapon weaponData)
@@ -125,7 +137,7 @@ namespace Network
                 return false;
             }
             
-            if (RemainBullet == 0)
+            if (RemainBullet == 0 && _weaponData.isMainWeapon)
             {
                 ReloadBullet();
                 return false;
@@ -154,12 +166,10 @@ namespace Network
                 .OnStart(() =>
                 {
                     IsDoneShootAction = false;
-                    //GameManager.Instance.ActiveLoadingUI();
                 })
                 .OnComplete(() =>
                 {
                     IsDoneShootAction = true;
-                    //GameManager.Instance.DeActiveLoadingUI();
                 });
 
             var max = GetWeaponStat(WeaponStat.Bullet).Total;
@@ -171,7 +181,10 @@ namespace Network
             for (int i = 0; i < max; i++)
             {
                 reloadSequence
-                    .AppendCallback(() => RemainBullet++)
+                    .AppendCallback(() =>
+                    {
+                        RemainBullet++;
+                    })
                     .AppendInterval(separateTime);
             }
 

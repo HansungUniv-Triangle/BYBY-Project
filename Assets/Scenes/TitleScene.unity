@@ -1048,7 +1048,7 @@ MonoBehaviour:
   _uiHolder: {fileID: 0}
   SynergyList: []
   WeaponList: []
-  selectWeaponNum: 4
+  selectWeaponNum: 0
   shootCount: 0
   hitCount: 0
 --- !u!4 &1765604498

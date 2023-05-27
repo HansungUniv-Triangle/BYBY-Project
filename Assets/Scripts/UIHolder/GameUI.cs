@@ -1,4 +1,5 @@
 ﻿using System;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -31,9 +32,25 @@ namespace UIHolder
         
         public TextMeshProUGUI playerScoreText;
         public TextMeshProUGUI enemyScoreText;
+        public TextMeshProUGUI playerNickText;
+        public TextMeshProUGUI enemyNickText;
+
+        public Image bulletLine;
+        public TextMeshProUGUI bulletText;
+
+        public GameEndUI gameWin;
+        public GameEndUI gameDefeat;
         
         [Header("행동분석용")]
         public GameObject behaviourObject;
+
+        public TextMeshProUGUI playerNickResultText;
+        public TextMeshProUGUI enemyNickResultText;
+        public TextMeshProUGUI playerScoreResultText;
+        public TextMeshProUGUI enemyScoreResultText;
+        public GameObject playerResultWin;
+        public GameObject enemyResultWin;
+        
         public TextMeshProUGUI playerHitValueText;
         public TextMeshProUGUI enemyHitValueText;
         public Slider hitSlider;
@@ -187,10 +204,56 @@ namespace UIHolder
                 GameManager.Instance.NetworkManager.PlayerCharacter.ToggleReverseHorizontalMove(state);
             });
         }
+
+        public void ActiveGameWin(string playerNick, string enemyNick, int playerScore, int enemyScore)
+        {
+            gameWin.player.text = playerNick;
+            gameWin.enemy.text = enemyNick;
+            gameWin.playerScore.text = playerScore.ToString();
+            gameWin.enemyScore.text = enemyScore.ToString();
+            gameWin.endButton.onClick.AddListener(() =>
+            {
+                GameManager.Instance.NetworkManager.DisconnectingServer();
+            });
+            gameWin.gameObject.SetActive(true);
+        }
+        
+        public void ActiveGameDefeat(string playerNick, string enemyNick, int playerScore, int enemyScore)
+        {
+            gameDefeat.player.text = playerNick;
+            gameDefeat.enemy.text = enemyNick;
+            gameDefeat.playerScore.text = playerScore.ToString();
+            gameDefeat.enemyScore.text = enemyScore.ToString();
+            gameDefeat.endButton.onClick.AddListener(() =>
+            {
+                GameManager.Instance.NetworkManager.DisconnectingServer();
+            });
+            gameDefeat.gameObject.SetActive(true);
+        }
         
         public void OpenCloseMenu(GameObject menu) 
         {
             menu.SetActive(!menu.activeSelf);
+        }
+
+        public void SetRoundResult(string playerNick, string enemyNick, int playerRound, int enemyRound)
+        {
+            playerNickResultText.text = playerNick;
+            enemyNickResultText.text = enemyNick;
+            playerScoreResultText.text = playerRound.ToString();
+            enemyScoreResultText.text = enemyRound.ToString();
+        }
+        
+        public void ActivePlayerRoundWin()
+        {
+            playerResultWin.SetActive(true);
+            enemyResultWin.SetActive(false);
+        }
+        
+        public void ActiveEnemyRoundWin()
+        {
+            playerResultWin.SetActive(false);
+            enemyResultWin.SetActive(true);
         }
 
         public void SetHitAnalysis(int value1, int value2)
@@ -233,6 +296,12 @@ namespace UIHolder
             playerReloadValueText.text = value1.ToString();
             enemyReloadValueText.text = value2.ToString();
             reloadSlider.value = value1 / (float)(value1 + value2);
+        }
+        
+        public void SetBulletUI(float nowBullet, float maxBullet)
+        {
+            bulletLine.DOFillAmount(nowBullet == 0 ? 0 : nowBullet / maxBullet, 0.1f);
+            bulletText.text = $"{nowBullet:F0}/{maxBullet:F0}";
         }
     }
 }
