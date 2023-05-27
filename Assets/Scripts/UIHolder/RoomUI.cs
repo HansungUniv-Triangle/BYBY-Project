@@ -27,6 +27,8 @@ namespace UIHolder
         public Button Shield;
         public Button Slow;
         public Button Sniper;
+        public Button HugeOne;
+        public Button SummonSword;
 
         #endregion
         
@@ -46,9 +48,9 @@ namespace UIHolder
                 tabPosition.y = buttonPosition.y - selectedButton.GetComponent<RectTransform>().sizeDelta.y / 2;
                 tabFocused.transform.position = tabPosition;
 
-                GameManager.Instance.selectWeaponNum = 0;
-                weaponName.text = GameManager.Instance.WeaponList[0].weaponName;
-                weaponExplain.text = GameManager.Instance.WeaponList[0].weaponExplain;
+                GameManager.Instance.selectWeaponNum = GameManager.Instance.WeaponList.FindIndex(x => x.weaponName.Equals("자동소총"));
+                weaponName.text = GameManager.Instance.WeaponList[GameManager.Instance.selectWeaponNum].weaponName;
+                weaponExplain.text = GameManager.Instance.WeaponList[GameManager.Instance.selectWeaponNum].weaponExplain;
             });
 
             /*Berserk.onClick.AddListener(() =>
@@ -65,9 +67,11 @@ namespace UIHolder
                 tabPosition.y = buttonPosition.y - selectedButton.GetComponent<RectTransform>().sizeDelta.y / 2;
                 tabFocused.transform.position = tabPosition;
 
-                GameManager.Instance.selectWeaponNum = 2;
-                weaponName.text = GameManager.Instance.WeaponList[2].weaponName;
-                weaponExplain.text = GameManager.Instance.WeaponList[2].weaponExplain;
+                GameManager.Instance.selectWeaponNum = GameManager.Instance.WeaponList.FindIndex(x => x.weaponName.Equals("캐논"));
+                weaponName.text = GameManager.Instance.WeaponList[GameManager.Instance.selectWeaponNum].weaponName;
+                weaponExplain.text = GameManager.Instance.WeaponList[GameManager.Instance.selectWeaponNum].weaponExplain;
+
+                //GameManager.Instance.selectWeaponNum = GameManager.Instance.WeaponList.FindIndex(x => x.weaponName.Equals("광전사"));
             });
 
             /*GuidedGun.onClick.AddListener(() =>
@@ -84,19 +88,20 @@ namespace UIHolder
                 tabPosition.y = buttonPosition.y - selectedButton.GetComponent<RectTransform>().sizeDelta.y / 2;
                 tabFocused.transform.position = tabPosition;
 
-                GameManager.Instance.selectWeaponNum = 4;
-                weaponName.text = GameManager.Instance.WeaponList[4].weaponName;
-                weaponExplain.text = GameManager.Instance.WeaponList[4].weaponExplain;
+                GameManager.Instance.selectWeaponNum = GameManager.Instance.WeaponList.FindIndex(x => x.weaponName.Equals("핸드건"));
+                weaponName.text = GameManager.Instance.WeaponList[GameManager.Instance.selectWeaponNum].weaponName;
+                weaponExplain.text = GameManager.Instance.WeaponList[GameManager.Instance.selectWeaponNum].weaponExplain;
+                //GameManager.Instance.selectWeaponNum = GameManager.Instance.WeaponList.FindIndex(x => x.weaponName.Equals("유도탄"));
             });
 
             /*Healgun.onClick.AddListener(() =>
             {
-                GameManager.Instance.selectWeaponNum = 5;
+                GameManager.Instance.selectWeaponNum = GameManager.Instance.WeaponList.FindIndex(x => x.weaponName.Equals("구급상자"));
             });
 
             Shield.onClick.AddListener(() =>
             {
-                GameManager.Instance.selectWeaponNum = 6;
+                GameManager.Instance.selectWeaponNum = GameManager.Instance.WeaponList.FindIndex(x => x.weaponName.Equals("회전 회오리"));
             });
 
             Slow.onClick.AddListener(() =>
@@ -113,11 +118,22 @@ namespace UIHolder
                 tabPosition.y = buttonPosition.y - selectedButton.GetComponent<RectTransform>().sizeDelta.y / 2;
                 tabFocused.transform.position = tabPosition;
 
-                GameManager.Instance.selectWeaponNum = 8;
-                weaponName.text = GameManager.Instance.WeaponList[8].weaponName;
-                weaponExplain.text = GameManager.Instance.WeaponList[8].weaponExplain;
+                GameManager.Instance.selectWeaponNum = GameManager.Instance.WeaponList.FindIndex(x => x.weaponName.Equals("스나이퍼"));
+                weaponName.text = GameManager.Instance.WeaponList[GameManager.Instance.selectWeaponNum].weaponName;
+                weaponExplain.text = GameManager.Instance.WeaponList[GameManager.Instance.selectWeaponNum].weaponExplain;
+                GameManager.Instance.selectWeaponNum = GameManager.Instance.WeaponList.FindIndex(x => x.weaponName.Equals("거미줄"));
             });
-            
+
+            /*HugeOne.onClick.AddListener(() =>
+            {
+                GameManager.Instance.selectWeaponNum = GameManager.Instance.WeaponList.FindIndex(x => x.weaponName.Equals("속도와질량"));
+            });
+
+            SummonSword.onClick.AddListener(() =>
+            {
+                GameManager.Instance.selectWeaponNum = GameManager.Instance.WeaponList.FindIndex(x => x.weaponName.Equals("하늘에서 칼이"));
+            });*/
+
             GameManager.Instance.NetworkManager.UpdateCanvasData();
         }
     }

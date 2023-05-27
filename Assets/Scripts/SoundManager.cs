@@ -8,6 +8,8 @@ public class SoundManager : Singleton<SoundManager>
     public AudioSource[] _audioSources;
     public Dictionary<string, AudioClip> _audioClips;
 
+    private readonly float initVolume = 0.5f;
+
     protected override void Initiate()
     {
         _audioSources = new AudioSource[(int)Sound.MaxCount];
@@ -18,6 +20,7 @@ public class SoundManager : Singleton<SoundManager>
         {
             var gameObject = new GameObject(soundNames[i]);
             _audioSources[i] = gameObject.AddComponent<AudioSource>();
+            _audioSources[i].volume = initVolume;
             gameObject.transform.parent = transform;
         }
 
