@@ -35,7 +35,6 @@ namespace Network
         }
 
         protected bool IsAttacking;
-        protected int RemainBullet;
         protected TickTimer delay;
 
         [Networked] private int NetWeaponData { get; set; } = -1;
@@ -54,6 +53,8 @@ namespace Network
             }
             private set => _weaponData = value;
         }
+
+        private Sequence _reloadSequence;
 
         private void Awake()
         {
@@ -134,11 +135,6 @@ namespace Network
 
         protected virtual bool CanAttack()
         {
-            if (!IsAttacking)
-            {
-                return false;
-            }
-
             if (!IsDoneShootAction)
             {
                 return false;
@@ -147,6 +143,11 @@ namespace Network
             if (RemainBullet == 0 && _weaponData.isMainWeapon)
             {
                 ReloadBullet();
+                return false;
+            }
+            
+            if (!IsAttacking)
+            {
                 return false;
             }
             
@@ -170,11 +171,21 @@ namespace Network
             IsAttacking = value;
         }
 
+        public void CallReload(bool attackMode)
+        {
+            if (!attackMode && WeaponData.isMainWeapon)
+            {
+                ReloadBullet();
+            }
+        }
+
         protected void ReloadBullet()
         {
-            Sequence reloadSequence = DOTween.Sequence();
+            _reloadSequence.Kill();
+            
+            _reloadSequence = DOTween.Sequence();
 
-            reloadSequence
+            _reloadSequence
                 .OnStart(() =>
                 {
                     IsDoneShootAction = false;
@@ -184,15 +195,16 @@ namespace Network
                     IsDoneShootAction = true;
                 });
 
+            var now = RemainBullet;
             var max = GetWeaponStat(WeaponStat.Bullet).Total;
             var time = GetWeaponStat(WeaponStat.Reload).Total;
             var separateTime = max / time;
             
             GameManager.Instance.AddBehaviourEventCount(BehaviourEvent.장전, (int)separateTime * 100);
             
-            for (int i = 0; i < max; i++)
+            for (int i = now; i < max; i++)
             {
-                reloadSequence
+                _reloadSequence
                     .AppendCallback(() =>
                     {
                         RemainBullet++;
@@ -200,7 +212,7 @@ namespace Network
                     .AppendInterval(separateTime);
             }
 
-            reloadSequence.Play();
+            _reloadSequence.Play();
         }
 
         protected abstract void Attack();

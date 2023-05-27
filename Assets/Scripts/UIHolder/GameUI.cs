@@ -35,8 +35,11 @@ namespace UIHolder
         public TextMeshProUGUI playerNickText;
         public TextMeshProUGUI enemyNickText;
 
+        public GameObject bulletCircle;
         public Image bulletLine;
         public TextMeshProUGUI bulletText;
+
+        public GameObject attackCircle;
 
         public GameEndUI gameWin;
         public GameEndUI gameDefeat;

@@ -415,18 +415,30 @@ namespace Network
         private Ray _gunRay;
         private RaycastHit _hit;
         private float _shootDistance = 30f;
-        private bool isShooting = true;
+        private bool isShooting = false;
         private const int shootRayMask = (int)Layer.Enemy | (int)Layer.World;
 
         public void ToggleShooting()
         {
             isShooting = !isShooting;
 
+            if (isShooting)
+            {
+                _gameUI.bulletCircle.SetActive(true);
+                _gameUI.attackCircle.SetActive(false);
+            }
+            else
+            {
+                _gameUI.attackCircle.SetActive(true);
+                _gameUI.bulletCircle.SetActive(false);
+            }
+            
             var weapon = GetComponentsInChildren<NetworkProjectileHolder>();
 
             foreach (var networkProjectileHolder in weapon)
             {
                 networkProjectileHolder.ChangeIsAttacking(isShooting);
+                networkProjectileHolder.CallReload(isShooting);
             }
         }
 
