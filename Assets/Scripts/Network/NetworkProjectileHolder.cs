@@ -34,6 +34,8 @@ namespace Network
             set => _remainBullet = value;
         }
 
+        protected bool IsAttacking;
+        protected int RemainBullet;
         protected TickTimer delay;
 
         [Networked] private int NetWeaponData { get; set; } = -1;
@@ -132,6 +134,11 @@ namespace Network
 
         protected virtual bool CanAttack()
         {
+            if (!IsAttacking)
+            {
+                return false;
+            }
+
             if (!IsDoneShootAction)
             {
                 return false;
@@ -156,6 +163,11 @@ namespace Network
         public void ChangeIsDone(bool value)
         {
             IsDoneShootAction = value;
+        }
+
+        public void ChangeIsAttacking(bool value)
+        {
+            IsAttacking = value;
         }
 
         protected void ReloadBullet()

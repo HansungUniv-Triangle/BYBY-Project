@@ -23,6 +23,8 @@ namespace UIHolder
         public Button Shield;
         public Button Slow;
         public Button Sniper;
+        public Button HugeOne;
+        public Button SummonSword;
 
         #endregion
         
@@ -38,47 +40,57 @@ namespace UIHolder
 
             Autorifle.onClick.AddListener(() =>
             {
-                GameManager.Instance.selectWeaponNum = 0;
+                GameManager.Instance.selectWeaponNum = GameManager.Instance.WeaponList.FindIndex(x => x.weaponName.Equals("자동소총"));
             });
 
             Berserk.onClick.AddListener(() =>
             {
-                GameManager.Instance.selectWeaponNum = 1;
+                GameManager.Instance.selectWeaponNum = GameManager.Instance.WeaponList.FindIndex(x => x.weaponName.Equals("광전사"));
             });
 
             Cannon.onClick.AddListener(() =>
             {
-                GameManager.Instance.selectWeaponNum = 2;
+                GameManager.Instance.selectWeaponNum = GameManager.Instance.WeaponList.FindIndex(x => x.weaponName.Equals("캐논"));
             });
 
             GuidedGun.onClick.AddListener(() =>
             {
-                GameManager.Instance.selectWeaponNum = 3;
+                GameManager.Instance.selectWeaponNum = GameManager.Instance.WeaponList.FindIndex(x => x.weaponName.Equals("유도탄"));
             });
 
             Handgun.onClick.AddListener(() =>
             {
-                GameManager.Instance.selectWeaponNum = 4;
+                GameManager.Instance.selectWeaponNum = GameManager.Instance.WeaponList.FindIndex(x => x.weaponName.Equals("핸드건"));
             });
 
             Healgun.onClick.AddListener(() =>
             {
-                GameManager.Instance.selectWeaponNum = 5;
+                GameManager.Instance.selectWeaponNum = GameManager.Instance.WeaponList.FindIndex(x => x.weaponName.Equals("구급상자"));
             });
 
             Shield.onClick.AddListener(() =>
             {
-                GameManager.Instance.selectWeaponNum = 6;
+                GameManager.Instance.selectWeaponNum = GameManager.Instance.WeaponList.FindIndex(x => x.weaponName.Equals("회전 회오리"));
             });
 
             Slow.onClick.AddListener(() =>
             {
-                GameManager.Instance.selectWeaponNum = 7;
+                GameManager.Instance.selectWeaponNum = GameManager.Instance.WeaponList.FindIndex(x => x.weaponName.Equals("거미줄"));
             });
 
             Sniper.onClick.AddListener(() =>
             {
-                GameManager.Instance.selectWeaponNum = 8;
+                GameManager.Instance.selectWeaponNum = GameManager.Instance.WeaponList.FindIndex(x => x.weaponName.Equals("스나이퍼"));
+            });
+
+            HugeOne.onClick.AddListener(() =>
+            {
+                GameManager.Instance.selectWeaponNum = GameManager.Instance.WeaponList.FindIndex(x => x.weaponName.Equals("속도와질량"));
+            });
+
+            SummonSword.onClick.AddListener(() =>
+            {
+                GameManager.Instance.selectWeaponNum = GameManager.Instance.WeaponList.FindIndex(x => x.weaponName.Equals("하늘에서 칼이"));
             });
 
             if (GameManager.Instance.NetworkManager is not null)

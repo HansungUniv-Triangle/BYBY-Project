@@ -421,6 +421,13 @@ namespace Network
         public void ToggleShooting()
         {
             isShooting = !isShooting;
+
+            var weapon = GetComponentsInChildren<NetworkProjectileHolder>();
+
+            foreach (var networkProjectileHolder in weapon)
+            {
+                networkProjectileHolder.ChangeIsAttacking(isShooting);
+            }
         }
 
         private void ShootAllWeapons(AttackType attackType) {
@@ -463,7 +470,8 @@ namespace Network
                 targetPoint = _hit.point;
             }
 
-            RotateToTarget(nph.transform, targetPoint, 8f, false);
+            if (nph.WeaponData.isMainWeapon)
+                RotateToTarget(nph.transform, targetPoint, 8f, false);
             nph.SetTarget(targetPoint);
         }
 
@@ -611,12 +619,28 @@ namespace Network
             if (HasStateAuthority)
             {
                 gameObject.layer = LayerMask.NameToLayer("Player");
+                SetLayersRecursively(transform.GetChild(0).GetChild(0), "Player");  // 고양이 모델링
+
                 _canvasManager.SwitchUI(CanvasType.GameMoving);
+
+                _camera.GetComponent<AudioListener>().enabled = false;
+                gameObject.AddComponent<AudioListener>();
             }
             else
             {
                 gameObject.layer = LayerMask.NameToLayer("Enemy");
+                SetLayersRecursively(transform.GetChild(0).GetChild(0), "Enemy");
+
                 _gameManager.NetworkManager.EnemyCharacter = this;
+            }
+        }
+
+        public void SetLayersRecursively(Transform trans, string name)
+        {
+            trans.gameObject.layer = LayerMask.NameToLayer(name);
+            foreach(Transform child in trans)
+            {
+                SetLayersRecursively(child, name);
             }
         }
 

@@ -19,10 +19,13 @@ MonoBehaviour:
     RawGuidValue: a0143ae393b87f341b44b0af7187a584
   bulletPrefabRef:
     RawGuidValue: 794fa73350143b94cbbcbbb89f447129
-  bulletShoot: {fileID: 19813786, guid: b0e7b6d77eafddf48a3ad293dc71a53e, type: 3}
-  bulletHit: {fileID: 19835194, guid: 16fb2cc8f64c08d46a5f2d055cc4f0c2, type: 3}
-  bulletHitToPlayer: {fileID: 19809874, guid: 51b115f247c922a47aa9a80144450be4, type: 3}
-  shootSoundPath: 
-  hitSoundPath: 
+  bulletShoot: {fileID: 198319247725527338, guid: e55ea435286c08d4ebde93309db325a8,
+    type: 3}
+  bulletHit: {fileID: 198855594234933758, guid: 55538705837f5f744bbb49da732dcedc,
+    type: 3}
+  bulletHitToPlayer: {fileID: 198855594234933758, guid: 55538705837f5f744bbb49da732dcedc,
+    type: 3}
+  shootSoundPath: hugegun_shoot
+  hitSoundPath: rocket_hit
   isMainWeapon: 0
   basicWeaponStat: []
