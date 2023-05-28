@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16dae06ff98f4f57b8499b1ebbcb3123, type: 3}
   m_Name: Slow
   m_EditorClassIdentifier: 
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 208d48c30755b4ff488ef02f613858f3, type: 3}
   weaponName: "\uAC70\uBBF8\uC904"
   weaponExplain: "\uB9DE\uC73C\uBA74 \uC18D\uB3C4\uAC00 \uB290\uB824\uC838\uC694."
   weaponPrefabRef:

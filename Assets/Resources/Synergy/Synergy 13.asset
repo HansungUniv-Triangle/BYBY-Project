@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rarity: 2
   sprite: {fileID: 21300000, guid: f08cfd210829743d6915a185fd97c7a6, type: 3}
-  synergyName: "\uB808\uC5B4 \uC2DC\uB108\uC9C01"
+  synergyName: "\uB2E8\uAC80"
   synergyExplain: "<color=green>\uC7AC\uC7A5\uC804+2<br>\uACF5\uACA9\uC18D\uB3C4+2</color>"
   charStatList: []
   weaponStatList:
@@ -23,6 +23,6 @@ MonoBehaviour:
     <Ratio>k__BackingField: 0
     <Addition>k__BackingField: 0
   - <Type>k__BackingField: 4
-    <Amount>k__BackingField: 2
+    <Amount>k__BackingField: 1
     <Ratio>k__BackingField: 0
     <Addition>k__BackingField: 0

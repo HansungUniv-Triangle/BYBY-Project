@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rarity: 2
   sprite: {fileID: 21300000, guid: 5590eb1cbe7d84c8f89d7fdc9f036a87, type: 3}
-  synergyName: "\uB808\uC5B4 \uC2DC\uB108\uC9C02"
+  synergyName: "\uD3ED\uD0C4"
   synergyExplain: "<color=green>\uACF5\uACA9\uB825+5<br></color><color=red>\uC0AC\uAC70\uB9AC-3</color>"
   charStatList: []
   weaponStatList:

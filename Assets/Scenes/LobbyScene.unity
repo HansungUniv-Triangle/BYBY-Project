@@ -271,6 +271,7 @@ GameObject:
   - component: {fileID: 26053913}
   - component: {fileID: 26053912}
   - component: {fileID: 26053911}
+  - component: {fileID: 26053915}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -361,6 +362,32 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &26053915
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 26053910}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b656a85f26b066b419e5c1dd6cdf9640, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _buttonOrigin: {fileID: 183203055}
+  _menuOrigin: {fileID: 406082884}
+  _tab_NumberOfWin: {fileID: 1472235303}
+  _tab_Odds: {fileID: 1899151863}
+  _tab_WinningStreak: {fileID: 880779739}
+  _spawnPointOrigin: {fileID: 1736532646}
+  swipeThreshold: 100
+  swipeDurationThreshold: 0.3
+  nickName: {fileID: 1402808838}
+  win: {fileID: 1857011312}
+  spawner: {fileID: 1448632436}
+  rankingTemp: {fileID: 2022454195}
+  prefabRankpage: {fileID: 5064345982501629644, guid: 9b485bed13f37b2498fecd6ebf409778,
+    type: 3}
 --- !u!1 &40480545
 GameObject:
   m_ObjectHideFlags: 0
@@ -1233,7 +1260,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 567332446}
+      - m_Target: {fileID: 26053915}
         m_TargetAssemblyTypeName: Lobby, Assembly-CSharp
         m_MethodName: PopupClose_Search
         m_Mode: 1
@@ -2789,7 +2816,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 567332446}
+      - m_Target: {fileID: 26053915}
         m_TargetAssemblyTypeName: Lobby, Assembly-CSharp
         m_MethodName: BeforeMenu
         m_Mode: 1
@@ -3134,7 +3161,6 @@ GameObject:
   m_Component:
   - component: {fileID: 567332444}
   - component: {fileID: 567332445}
-  - component: {fileID: 567332446}
   m_Layer: 0
   m_Name: SafeArea
   m_TagString: Untagged
@@ -3183,32 +3209,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a472a82cdd54cf140ae16d79553b19ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &567332446
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 567332443}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b656a85f26b066b419e5c1dd6cdf9640, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _buttonOrigin: {fileID: 183203055}
-  _menuOrigin: {fileID: 406082884}
-  _tab_NumberOfWin: {fileID: 1472235303}
-  _tab_Odds: {fileID: 1899151863}
-  _tab_WinningStreak: {fileID: 880779739}
-  _spawnPointOrigin: {fileID: 1736532646}
-  swipeThreshold: 100
-  swipeDurationThreshold: 0.3
-  nickName: {fileID: 1402808838}
-  win: {fileID: 1857011312}
-  spawner: {fileID: 1448632436}
-  rankingTemp: {fileID: 2022454195}
-  prefabRankpage: {fileID: 5064345982501629644, guid: 9b485bed13f37b2498fecd6ebf409778,
-    type: 3}
 --- !u!1 &572439899
 GameObject:
   m_ObjectHideFlags: 0
@@ -4481,7 +4481,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 567332446}
+      - m_Target: {fileID: 26053915}
         m_TargetAssemblyTypeName: Lobby, Assembly-CSharp
         m_MethodName: TabClicked
         m_Mode: 1
@@ -4709,7 +4709,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 567332446}
+      - m_Target: {fileID: 26053915}
         m_TargetAssemblyTypeName: Lobby, Assembly-CSharp
         m_MethodName: PlayButtonClicked_Settings
         m_Mode: 1
@@ -5486,7 +5486,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 567332446}
+      - m_Target: {fileID: 26053915}
         m_TargetAssemblyTypeName: Lobby, Assembly-CSharp
         m_MethodName: UnderButtonClicked_Ranking
         m_Mode: 1
@@ -5641,7 +5641,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 567332446}
+      - m_Target: {fileID: 26053915}
         m_TargetAssemblyTypeName: Lobby, Assembly-CSharp
         m_MethodName: PlayButtonClicked_Practice
         m_Mode: 1
@@ -6567,7 +6567,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 567332446}
+      - m_Target: {fileID: 26053915}
         m_TargetAssemblyTypeName: Lobby, Assembly-CSharp
         m_MethodName: TabClicked
         m_Mode: 1
@@ -7047,7 +7047,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 567332446}
+      - m_Target: {fileID: 26053915}
         m_TargetAssemblyTypeName: Lobby, Assembly-CSharp
         m_MethodName: UnderButtonClicked_Settings
         m_Mode: 1
@@ -8719,7 +8719,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 567332446}
+      - m_Target: {fileID: 26053915}
         m_TargetAssemblyTypeName: Lobby, Assembly-CSharp
         m_MethodName: UnderButtonClicked_Practice
         m_Mode: 1
@@ -9158,7 +9158,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 567332446}
+      - m_Target: {fileID: 26053915}
         m_TargetAssemblyTypeName: Lobby, Assembly-CSharp
         m_MethodName: NextMenu
         m_Mode: 1
@@ -9428,7 +9428,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0.8018868, g: 0.8018868, b: 0.8018868, a: 1}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 0
   m_OnCullStateChanged:
@@ -10608,7 +10608,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 567332446}
+      - m_Target: {fileID: 26053915}
         m_TargetAssemblyTypeName: Lobby, Assembly-CSharp
         m_MethodName: PlayButtonClicked_Search
         m_Mode: 1
@@ -10975,7 +10975,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 567332446}
+      - m_Target: {fileID: 26053915}
         m_TargetAssemblyTypeName: Lobby, Assembly-CSharp
         m_MethodName: PlayButtonClicked_Battle
         m_Mode: 1
@@ -11322,7 +11322,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 567332446}
+      - m_Target: {fileID: 26053915}
         m_TargetAssemblyTypeName: Lobby, Assembly-CSharp
         m_MethodName: UnderButtonClicked_Battle
         m_Mode: 1
@@ -11631,7 +11631,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 567332446}
+      - m_Target: {fileID: 26053915}
         m_TargetAssemblyTypeName: Lobby, Assembly-CSharp
         m_MethodName: PlayButtonClicked_Ranking
         m_Mode: 1
@@ -12067,7 +12067,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 567332446}
+      - m_Target: {fileID: 26053915}
         m_TargetAssemblyTypeName: Lobby, Assembly-CSharp
         m_MethodName: PopupClose_Ranking
         m_Mode: 1
@@ -12549,7 +12549,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 567332446}
+      - m_Target: {fileID: 26053915}
         m_TargetAssemblyTypeName: Lobby, Assembly-CSharp
         m_MethodName: TabClicked
         m_Mode: 1
@@ -12930,7 +12930,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 567332446}
+      - m_Target: {fileID: 26053915}
         m_TargetAssemblyTypeName: Lobby, Assembly-CSharp
         m_MethodName: PopupClose_Settings
         m_Mode: 1

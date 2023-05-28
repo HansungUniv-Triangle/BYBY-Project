@@ -158,6 +158,7 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
             {
                 child.transform.GetChild(0).GetComponentsInChildren<Image>()[0].sprite = synergyPage.synergies[i - 1].sprite;
                 child.transform.GetChild(3).GetComponentsInChildren<TextMeshProUGUI>()[0].text = synergyPage.synergies[i - 1].synergyExplain;
+                child.transform.GetChild(3).GetComponentsInChildren<TextMeshProUGUI>()[1].text = synergyPage.synergies[i - 1].synergyName;
                 child.transform.GetChild(4).GetComponentsInChildren<Image>()[0].GetComponentsInChildren<TextMeshProUGUI>()[0].text = synergyPage.synergyRecommendationPercentage[i - 1] + "%";
                 child.GetComponent<CanvasGroup>().alpha = 1f;
             }

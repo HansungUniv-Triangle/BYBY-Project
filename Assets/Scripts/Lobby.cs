@@ -53,9 +53,9 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
         }
         _buttons = _buttonOrigin.GetComponentsInChildren<Button>();
         _spawnPoint = _spawnPointOrigin.GetComponentsInChildren<RectTransform>();
-        _rankingPopup = transform.GetChild(6).gameObject;
-        _settingsPopup = transform.GetChild(7).gameObject;
-        _searchPopup = transform.GetChild(8).gameObject;
+        _rankingPopup = transform.GetChild(1).transform.GetChild(6).gameObject;
+        _settingsPopup = transform.GetChild(1).transform.GetChild(7).gameObject;
+        _searchPopup = transform.GetChild(1).transform.GetChild(8).gameObject;
     }
 
     void Start()
