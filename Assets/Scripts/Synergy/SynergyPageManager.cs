@@ -112,7 +112,9 @@ public class SynergyPageManager : MonoBehaviour
                         var increaseFinalValue = stat.Amount + increaseRatio;
                         totalRecommendation += increaseFinalValue * GameManager.Instance.PlayerBehaviorAnalyzer.GetRecommendation(stat.Type);
                     }
-                    _synergyPages[i].synergyRecommendationPercentage[count] = (int)(totalRecommendation * 100f);
+                    
+                    var recommend = (int)(totalRecommendation * 100f);
+                    _synergyPages[i].synergyRecommendationPercentage[count] = recommend > 0 ? recommend : 1;
                 }
 
                 var sum = _synergyPages[i].synergyRecommendationPercentage.Sum();

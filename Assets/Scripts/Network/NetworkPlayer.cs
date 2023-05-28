@@ -334,6 +334,7 @@ namespace Network
             InitialCharacterStatus();
             InitialWeaponStatus();
             Healing(999f);
+            ApplyShooting(_isShooting);
         }
 
         private void InitialCharacterStatus()
@@ -439,14 +440,18 @@ namespace Network
         private Ray _gunRay;
         private RaycastHit _hit;
         private float _shootDistance = 30f;
-        private bool isShooting = false;
-        private const int shootRayMask = (int)Layer.Enemy | (int)Layer.World;
+        private bool _isShooting = false;
+        private const int ShootRayMask = (int)Layer.Enemy | (int)Layer.World;
 
         public void ToggleShooting()
         {
-            isShooting = !isShooting;
+            _isShooting = !_isShooting;
+            ApplyShooting(_isShooting);
+        }
 
-            if (isShooting)
+        private void ApplyShooting(bool shooting)
+        {
+            if (shooting)
             {
                 _gameUI.bulletCircle.SetActive(true);
                 _gameUI.attackCircle.SetActive(false);
@@ -461,8 +466,8 @@ namespace Network
 
             foreach (var networkProjectileHolder in weapon)
             {
-                networkProjectileHolder.ChangeIsAttacking(isShooting);
-                networkProjectileHolder.CallReload(isShooting);
+                networkProjectileHolder.ChangeIsAttacking(shooting);
+                networkProjectileHolder.CallReload(shooting);
             }
         }
 
@@ -477,23 +482,13 @@ namespace Network
             }
         }
 
-        private void ShootAllWeapons(AttackType attackType) 
+        private void ShootAllWeapons() 
         {
+            if (!_isShooting) return;
+            
             var weapon = GetComponentsInChildren<NetworkProjectileHolder>();
 
             foreach (var networkProjectileHolder in weapon)
-            {
-                Shoot(networkProjectileHolder, attackType);
-            }
-        }
-
-        private void Shoot(NetworkProjectileHolder nph, AttackType attackType)
-        {
-            if (!isShooting) return;
-            
-            var weapons = GetComponentsInChildren<NetworkProjectileHolder>();
-
-            foreach (var networkProjectileHolder in weapons)
             {
                 Shoot(networkProjectileHolder);
             }
@@ -511,7 +506,7 @@ namespace Network
             _gunRay.origin = nph.GetShootPointTransform();
 
             //Debug.DrawRay(aimRayOrigin, aimRay.direction * _shootDistance, Color.blue, 0.3f);
-            if (Physics.Raycast(aimRayOrigin, aimRay.direction, out _hit, _shootDistance, shootRayMask))
+            if (Physics.Raycast(aimRayOrigin, aimRay.direction, out _hit, _shootDistance, ShootRayMask))
             {
                 _gunRay.direction = (_hit.point - _gunRay.origin).normalized;
             }
@@ -523,7 +518,7 @@ namespace Network
             //Debug.DrawRay(_gunRay.origin, _gunRay.direction * _shootDistance, Color.magenta, 0.3f);
             var targetPoint = _gunRay.origin + _gunRay.direction * _shootDistance;
 
-            if (Physics.Raycast(_gunRay, out _hit, _shootDistance, shootRayMask))
+            if (Physics.Raycast(_gunRay, out _hit, _shootDistance, ShootRayMask))
             {
                 targetPoint = _hit.point;
             }

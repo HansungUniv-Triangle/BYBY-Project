@@ -138,6 +138,11 @@ public class GameManager : Singleton<GameManager>
         _uiHolder = uiHolder;
     }
     
+    public void ClearUICanvasHolder()
+    {
+        _uiHolder = null;
+    }
+    
     public void SetSynergyPageManager(SynergyPageManager synergyPageManager)
     {
         SynergyPageManager = synergyPageManager;

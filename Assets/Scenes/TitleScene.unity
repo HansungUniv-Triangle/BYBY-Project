@@ -1048,9 +1048,11 @@ MonoBehaviour:
   _uiHolder: {fileID: 0}
   SynergyList: []
   WeaponList: []
+  CatMaterialList: []
   selectWeaponNum: 0
   shootCount: 0
   hitCount: 0
+  IsVibrateOn: 1
 --- !u!4 &1765604498
 Transform:
   m_ObjectHideFlags: 0

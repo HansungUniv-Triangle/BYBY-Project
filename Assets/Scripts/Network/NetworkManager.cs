@@ -144,6 +144,16 @@ namespace Network
         {
             if(RoomUIInstance is null) return;
             RoomUIInstance.ClearRoom();
+            
+            if (SinglePlayMode)
+            {
+                RoomUIInstance.roomNumber.text = "연습장";
+            }
+            else
+            {
+                RoomUIInstance.roomNumber.text = Runner.SessionInfo.Name;
+            }
+            
             var count = 0;
             foreach (var (_, playerData) in RoomPlayerList)
             {
@@ -927,14 +937,12 @@ namespace Network
 
             switch (Runner.GameMode)
             {
-                case GameMode.Shared:
+                case GameMode.Single:
                     StartCoroutine(LoadAsyncScene(3));
                     break;
-
-                case GameMode.Single:
-                    StartCoroutine(LoadAsyncScene(5));
+                case GameMode.Shared:
+                    StartCoroutine(LoadAsyncScene(4));
                     break;
-
                 default:
                     break;
             }

@@ -10,6 +10,7 @@ public class Synergy : ScriptableObject
     public Rarity rarity;
     public Sprite sprite;
     public string synergyName;
+    [TextArea]
     public string synergyExplain;
     public List<Stat<CharStat>> charStatList = new List<Stat<CharStat>>();
     public List<Stat<WeaponStat>> weaponStatList = new List<Stat<WeaponStat>>();

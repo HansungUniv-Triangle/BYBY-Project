@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace UIHolder
 {
@@ -12,6 +13,11 @@ namespace UIHolder
         private void Start()
         {
             Initial();
+        }
+
+        private void OnDestroy()
+        {
+            GameManager.Instance.ClearUICanvasHolder();
         }
 
         protected abstract void Initial();

@@ -49,15 +49,16 @@ public class Title : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            touchToStartScaleSequence.Kill();
-            touchToStart.gameObject.SetActive(false);
-            
             if (DBManager.Instance.NickName is "null")
             {
+                touchToStartScaleSequence.Kill();
+                touchToStart.gameObject.SetActive(false);
                 nameSetPopup.SetActive(true);
             }
             else if (DBManager.Instance.NickName is not null)
             {
+                touchToStartScaleSequence.Kill();
+                touchToStart.gameObject.SetActive(false);
                 MoveToLobby();
             }
         }
@@ -71,6 +72,6 @@ public class Title : MonoBehaviour
 
     public void MoveToLobby()
     {
-        SceneManager.LoadScene("LobbyScene");
+        SceneManager.LoadSceneAsync(1);
     }
 }
