@@ -30,7 +30,7 @@ namespace Network
             await _runner.StartGame(new StartGameArgs()
             {
                 GameMode = GameMode.Shared,
-            }).ContinueWithOnMainThread(_ => SceneManager.LoadSceneAsync("NetworkTest"));
+            }).ContinueWithOnMainThread(_ => SceneManager.LoadSceneAsync("RoomScene"));
         }
 
         public async void StartSingleGame()

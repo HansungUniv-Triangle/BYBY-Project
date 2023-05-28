@@ -19,11 +19,12 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
 
     private GameObject _rankingPopup;
     private GameObject _settingsPopup;
+    private GameObject _searchPopup;
 
     public GameObject _tab_NumberOfWin;
     public GameObject _tab_Odds;
     public GameObject _tab_WinningStreak;
-
+   
     [SerializeField]
     private Transform _spawnPointOrigin;
     private RectTransform[] _spawnPoint;
@@ -41,7 +42,8 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
     public TextMeshProUGUI win;
     public BasicSpawner spawner;
     public TextMeshProUGUI rankingTemp;
-    
+    public GameObject prefabRankpage;
+
     private void Awake()
     {
         CurrentPage = 0;
@@ -51,8 +53,9 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
         }
         _buttons = _buttonOrigin.GetComponentsInChildren<Button>();
         _spawnPoint = _spawnPointOrigin.GetComponentsInChildren<RectTransform>();
-        _rankingPopup = transform.GetChild(6).gameObject;
-        _settingsPopup = transform.GetChild(7).gameObject;
+        _rankingPopup = transform.GetChild(1).transform.GetChild(6).gameObject;
+        _settingsPopup = transform.GetChild(1).transform.GetChild(7).gameObject;
+        _searchPopup = transform.GetChild(1).transform.GetChild(8).gameObject;
     }
 
     void Start()
@@ -74,58 +77,73 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
         {
             case "½Â¸® ¼ö":
                 {
+                    for(int i = 0; i < _tab_NumberOfWin.transform.childCount; i++)
+                    {
+                        Destroy(_tab_NumberOfWin.transform.GetChild(i).gameObject);
+                    }
                     _tab_NumberOfWin.SetActive(true);
                     _tab_Odds.SetActive(false);
                     _tab_WinningStreak.SetActive(false);
                     DBManager.Instance.GetManyWinRanking().ContinueWithOnMainThread(task =>
                     {
                         var list = task.Result;
-                        string listToString = "";
 
                         foreach (var (item1, item2) in list)
                         {
-                            listToString += $"ÀÌ¸§: {item1}, ½Â¸® ¼ö: {item2}";
+                            int count = 1;
+                            GameObject rankpageTemp = Instantiate(prefabRankpage, gameObject.transform.position, Quaternion.identity, GameObject.Find("NumberOfWin").transform);
+                            rankpageTemp.GetComponentsInChildren<TextMeshProUGUI>()[0].text = count++.ToString();
+                            rankpageTemp.GetComponentsInChildren<TextMeshProUGUI>()[1].text = item1;
+                            rankpageTemp.GetComponentsInChildren<TextMeshProUGUI>()[2].text = item2.ToString() + "½Â";
                         }
-
-                        rankingTemp.text = listToString;
                     });
                     break;
                 }
             case "½Â·ü":
                 {
+                    for (int i = 0; i < _tab_Odds.transform.childCount; i++)
+                    {
+                        Destroy(_tab_Odds.transform.GetChild(i).gameObject);
+                    }
                     _tab_NumberOfWin.SetActive(false);
                     _tab_Odds.SetActive(true);
                     _tab_WinningStreak.SetActive(false);
                     DBManager.Instance.GetWinRatingRanking().ContinueWithOnMainThread(task =>
                     {
                         var list = task.Result;
-                        string listToString = "";
 
                         foreach (var (item1, item2) in list)
                         {
-                            listToString += $"ÀÌ¸§: {item1}, ½Â¸®·ü: {item2}%";
+                            int count = 1;
+                            GameObject rankpageTemp = Instantiate(prefabRankpage, gameObject.transform.position, Quaternion.identity, GameObject.Find("Odds").transform);
+                            rankpageTemp.GetComponentsInChildren<TextMeshProUGUI>()[0].text = count++.ToString();
+                            rankpageTemp.GetComponentsInChildren<TextMeshProUGUI>()[1].text = item1;
+                            rankpageTemp.GetComponentsInChildren<TextMeshProUGUI>()[2].text = item2.ToString() + "%";
                         }
-
-                        rankingTemp.text = listToString;
                     });
                     break;
                 }
             case "¿¬½Â":
                 {
+                    for (int i = 0; i < _tab_WinningStreak.transform.childCount; i++)
+                    {
+                        Destroy(_tab_WinningStreak.transform.GetChild(i).gameObject);
+                    }
                     _tab_NumberOfWin.SetActive(false);
                     _tab_Odds.SetActive(false);
                     _tab_WinningStreak.SetActive(true);
                     DBManager.Instance.GetWinStraightRanking().ContinueWithOnMainThread(task =>
                     {
                         var list = task.Result;
-                        string listToString = "";
 
                         foreach (var (item1, item2) in list)
                         {
-                            listToString += $"ÀÌ¸§: {item1}, ÃÖ´ë ¿¬½Â: {item2}";
+                            int count = 1;
+                            GameObject rankpageTemp = Instantiate(prefabRankpage, gameObject.transform.position, Quaternion.identity, GameObject.Find("WinningStreak").transform);
+                            rankpageTemp.GetComponentsInChildren<TextMeshProUGUI>()[0].text = count++.ToString();
+                            rankpageTemp.GetComponentsInChildren<TextMeshProUGUI>()[1].text = item1;
+                            rankpageTemp.GetComponentsInChildren<TextMeshProUGUI>()[2].text = item2.ToString() + "¿¬½Â";
                         }
-
-                        rankingTemp.text = listToString;
                     });
                     break;
                 }
@@ -135,6 +153,11 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
     public void PlayButtonClicked_Battle()
     {
         spawner.StartMultiGame();
+    }
+
+    public void PlayButtonClicked_Search()
+    {
+        _searchPopup.SetActive(true);
     }
 
     public void PlayButtonClicked_Practice()
@@ -160,6 +183,11 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
     public void PopupClose_Settings()
     {
         _settingsPopup.SetActive(false);
+    }
+
+    public void PopupClose_Search()
+    {
+        _searchPopup.SetActive(false);
     }
 
     public void UnderButtonClicked_Battle()

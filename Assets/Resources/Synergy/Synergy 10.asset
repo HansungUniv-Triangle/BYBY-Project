@@ -14,15 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rarity: 1
   sprite: {fileID: 21300000, guid: 5cc5c1a3c35034cbaba0579f2a98c92e, type: 3}
-  synergyName: "\uC5B8\uCEE4\uBA3C \uC2DC\uB108\uC9C04"
-  synergyExplain: "<color=green>\uC7AC\uC7A5\uC804+2<br>\uD0C4\uC18D+1</color>"
-  charStatList:
-  - <Type>k__BackingField: 2
-    <Amount>k__BackingField: 2
+  synergyName: "\uC5D0\uB108\uC9C0 \uD329"
+  synergyExplain: "<color=green>\uC7AC\uC7A5\uC804+2<br>\uD0C4\uC18D+2</color>"
+  charStatList: []
+  weaponStatList:
+  - <Type>k__BackingField: 6
+    <Amount>k__BackingField: 1
     <Ratio>k__BackingField: 0
     <Addition>k__BackingField: 0
-  weaponStatList:
-  - <Type>k__BackingField: 1
-    <Amount>k__BackingField: 3
+  - <Type>k__BackingField: 4
+    <Amount>k__BackingField: 1
     <Ratio>k__BackingField: 0
     <Addition>k__BackingField: 0

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16dae06ff98f4f57b8499b1ebbcb3123, type: 3}
   m_Name: GuidedGun
   m_EditorClassIdentifier: 
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 06f18bc7355b44d0c99e216198340a14, type: 3}
   weaponName: "\uC720\uB3C4\uD0C4"
   weaponExplain: "\uAC1C\uCA4C\uB294 \uC720\uB3C4\uD0C4"
   weaponPrefabRef:

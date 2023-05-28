@@ -152,10 +152,10 @@ namespace Network
             // 임시로 캔버스 지우는 동작
             RoomUIInstance.text1.text = "-";
             RoomUIInstance.text1.color = Color.black;
-            RoomUIInstance.player1Ready.color = _notReady;
+            RoomUIInstance.player1Ready.gameObject.SetActive(false);
             RoomUIInstance.text2.text = "-";
             RoomUIInstance.text2.color = Color.black;
-            RoomUIInstance.player2Ready.color = _notReady;
+            RoomUIInstance.player2Ready.gameObject.SetActive(false);
         
             var count = 0;
             foreach (var (_, playerData) in RoomPlayerList)
@@ -172,12 +172,12 @@ namespace Network
                 case 0:
                     RoomUIInstance.text1.text = nick;
                     RoomUIInstance.text1.color = color;
-                    RoomUIInstance.player1Ready.color = ready ? _ready : _notReady;
+                    RoomUIInstance.player1Ready.gameObject.SetActive(ready);
                     break;
                 case 1:
                     RoomUIInstance.text2.text = nick;
                     RoomUIInstance.text2.color = color;
-                    RoomUIInstance.player2Ready.color = ready ? _ready : _notReady;
+                    RoomUIInstance.player2Ready.gameObject.SetActive(ready);
                     break;
             }
         }

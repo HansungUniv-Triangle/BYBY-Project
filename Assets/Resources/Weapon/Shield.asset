@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16dae06ff98f4f57b8499b1ebbcb3123, type: 3}
   m_Name: Shield
   m_EditorClassIdentifier: 
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: aee8b472f34804516843ccda1e9a7233, type: 3}
   weaponName: "\uD68C\uC804 \uD68C\uC624\uB9AC"
   weaponExplain: "5\uCD08\uB9C8\uB2E4 \uBC45\uAE00\uBC45\uAE00 \uB3C4\uB294 \uC274\uB4DC
     \uC0DD\uC131"
