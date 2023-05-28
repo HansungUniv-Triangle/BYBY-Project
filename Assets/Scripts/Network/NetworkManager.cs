@@ -118,8 +118,8 @@ namespace Network
                 throw new Exception("카메라가 없음");
             }
         }
-        
-        
+
+        private int _spawnedWeapon;
     }
 
     // 룸 데이터 기반 UI 업데이트
@@ -195,7 +195,7 @@ namespace Network
     // 게임 승리 관리
     public partial class NetworkManager
     {
-        private const int MaxRound = 3;
+        private const int MaxRound = 5;
         private const int WinRound = MaxRound / 2 + 1;
 
         private struct BattleLog : INetworkStruct
@@ -714,28 +714,54 @@ namespace Network
             return true;
         }
         
-        private void SpawnPlayerCharacter(PlayerRef playerRef)
+        private void SpawnPlayerCharacter()
         {
-            Vector3 spawnPosition = new Vector3((playerRef.RawEncoded % Runner.Config.Simulation.DefaultPlayers) + 20, 30, 10);
-            NetworkObject networkPlayerObject = Runner.Spawn(_playerPrefab, spawnPosition, Quaternion.identity, playerRef);
+            NetworkObject networkPlayerObject = Runner.Spawn(_playerPrefab, new Vector3(30, 30, 30), Quaternion.identity, Runner.LocalPlayer);
             PlayerCharacter = networkPlayerObject.GetComponent<NetworkPlayer>();
-
-            var weaponData = GameManager.Instance.SelectWeapon;
-            SpawnWeapon(playerRef, weaponData, spawnPosition, networkPlayerObject.transform);
+            SpawnWeapon(GameManager.Instance.SelectWeapon);
         }
 
-        private void SpawnWeapon(PlayerRef playerRef, Weapon weaponData, Vector3 spawnPosition, Transform parent)
+        public void SpawnWeapon(Weapon weaponData)
         {
+            Vector3 position;
+
+            switch (_spawnedWeapon)
+            {
+                case 0:
+                    position = Vector3.right;
+                    break;
+                case 1:
+                    position = new Vector3(-1.5f, 1f, -1.5f);
+                    break;
+                case 2: 
+                    position = new Vector3(0, 1f, -1.5f);
+                    break;
+                case 3: 
+                    position = new Vector3(1.5f, 1f, -1.5f);
+                    break;
+                case 4: 
+                    position = new Vector3(-1.5f, 0, -1.5f);
+                    break;
+                case 5: 
+                    position = new Vector3(1.5f, 0, -1.5f);
+                    break;
+                default:
+                    position = new Vector3(0, 0, -1.5f);
+                    break;
+            }
+
             var weapon = Runner.Spawn(
-                weaponData.weaponPrefabRef, 
-                spawnPosition + Vector3.right + Vector3.up, 
+                weaponData.weaponPrefabRef,
+                PlayerCharacter.transform.position,
                 Quaternion.identity, 
-                playerRef
+                Runner.LocalPlayer
             );
             
             weapon.GetComponent<NetworkProjectileHolder>().InitialHolder(weaponData);
-            weapon.transform.SetParent(parent);
-
+            weapon.transform.SetParent(PlayerCharacter.transform);
+            weapon.transform.localPosition = position;
+            _spawnedWeapon++;
+            
             if (weaponData.isMainWeapon)
             {
                 PlayerCharacter.SetGunPos(weapon.transform);
@@ -760,9 +786,10 @@ namespace Network
         private void InitialGame()
         {
             NetworkRoundState = 0;
+            _spawnedWeapon = 0;
             GameManager.Instance.ResetBehaviourEventCount();
             WorldManager.Instance.GeneratorMap(Seed);
-            SpawnPlayerCharacter(Runner.LocalPlayer);
+            SpawnPlayerCharacter();
             
             var tempData1 = new NetworkPlayer.BehaviorData
             {
@@ -785,25 +812,24 @@ namespace Network
                 DestroyBullet = 1,
                 Reload = 1
             };
-
-            ActionBehaviourAnalysis(tempData1, tempData2);
             
-            if (RoomPlayerList.TryGet(Runner.LocalPlayer, out var playerData))
-            {
-                GameUIInstance.playerNickText.text = playerData.NickName.ToString();
-            }
-            
-            if (RoomPlayerList.TryGet(EnemyRef, out var enemyData))
-            {
-                GameUIInstance.playerNickText.text = enemyData.NickName.ToString();
-            }
-
             if (SinglePlayMode)
             {
                 PlayerCharacter.InitialStatus();
             }
             else
             {
+                ActionBehaviourAnalysis(tempData1, tempData2);
+                if (RoomPlayerList.TryGet(Runner.LocalPlayer, out var playerData))
+                {
+                    GameUIInstance.playerNickText.text = playerData.NickName.ToString();
+                }
+            
+                if (RoomPlayerList.TryGet(EnemyRef, out var enemyData))
+                {
+                    GameUIInstance.playerNickText.text = enemyData.NickName.ToString();
+                }
+                
                 ChangeRound();
             }
         }

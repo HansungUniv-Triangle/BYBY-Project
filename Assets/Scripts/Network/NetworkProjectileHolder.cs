@@ -58,7 +58,7 @@ namespace Network
 
         private void Awake()
         {
-            _baseWeaponStat = new BaseStat<WeaponStat>(1, 1);
+            _baseWeaponStat = new BaseStat<WeaponStat>(10, 1);
             _projectileList = new List<NetworkObject>();
             WeaponTransform = gameObject.transform;
             Target = gameObject.transform.forward;
@@ -79,7 +79,7 @@ namespace Network
 
         public override void FixedUpdateNetwork()
         {
-            if (!HasInputAuthority || !GameManager.Instance.NetworkManager.CanControlCharacter)
+            if (!HasInputAuthority || !IsAttacking || !IsDoneShootAction || !GameManager.Instance.NetworkManager.CanControlCharacter)
             {
                 return;
             }
@@ -135,19 +135,9 @@ namespace Network
 
         protected virtual bool CanAttack()
         {
-            if (!IsDoneShootAction)
-            {
-                return false;
-            }
-            
             if (RemainBullet == 0 && _weaponData.isMainWeapon)
             {
                 ReloadBullet();
-                return false;
-            }
-            
-            if (!IsAttacking)
-            {
                 return false;
             }
             

@@ -442,19 +442,19 @@ namespace Network
             }
         }
 
-        private void ShootAllWeapons(AttackType attackType) {
-            var weapon = GetComponentsInChildren<NetworkProjectileHolder>();
+        private void ShootAllWeapons() {
+            if (!isShooting) return;
+            
+            var weapons = GetComponentsInChildren<NetworkProjectileHolder>();
 
-            foreach (var networkProjectileHolder in weapon)
+            foreach (var networkProjectileHolder in weapons)
             {
-                Shoot(networkProjectileHolder, attackType);
+                Shoot(networkProjectileHolder);
             }
         }
 
-        private void Shoot(NetworkProjectileHolder nph, AttackType attackType)
+        private void Shoot(NetworkProjectileHolder nph)
         {
-            if (!isShooting) return;
-
             var aimRay = _camera.ScreenPointToRay(GetCrossHairPointInScreen());
             // 조준점으로 쏘는 레이의 원점이 플레이어 앞에서 시작되어야 한다.
             // 그렇지 않으면, 플레이어의 총알은 플레이어의 뒤에 있지만, 조준점에는 걸린 물체로 날아가게 된다. 한마디로 뒤로 쏘게 된다.
@@ -481,9 +481,8 @@ namespace Network
             {
                 targetPoint = _hit.point;
             }
-
-            if (nph.WeaponData.isMainWeapon)
-                RotateToTarget(nph.transform, targetPoint, 8f, false);
+            
+            RotateToTarget(nph.transform, targetPoint, 8f, false);
             nph.SetTarget(targetPoint);
         }
 
@@ -606,7 +605,7 @@ namespace Network
             _gunPos = transform.GetChild(2).transform;
             _moveDir = Vector3.zero;
             
-            _baseCharStat = new BaseStat<CharStat>(1, 1);
+            _baseCharStat = new BaseStat<CharStat>(10, 1);
             _characterController = GetComponent<CharacterController>();
             _catController = GetComponentInChildren<CatController>();
             
@@ -709,7 +708,7 @@ namespace Network
                 Dodge();
             }
         
-            ShootAllWeapons(AttackType.Basic);
+            ShootAllWeapons();
 
             if (_joystick is not null && _target is not null)
             {

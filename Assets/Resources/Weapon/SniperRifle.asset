@@ -26,3 +26,20 @@ MonoBehaviour:
   shootSoundPath: sniper_shoot
   hitSoundPath: hit
   isMainWeapon: 1
+  basicWeaponStat:
+  - <Type>k__BackingField: 5
+    <Amount>k__BackingField: -6
+    <Ratio>k__BackingField: 0
+    <Addition>k__BackingField: 0
+  - <Type>k__BackingField: 6
+    <Amount>k__BackingField: 10
+    <Ratio>k__BackingField: 0
+    <Addition>k__BackingField: 0
+  - <Type>k__BackingField: 4
+    <Amount>k__BackingField: -6
+    <Ratio>k__BackingField: 0
+    <Addition>k__BackingField: 0
+  - <Type>k__BackingField: 0
+    <Amount>k__BackingField: 0
+    <Ratio>k__BackingField: -0.5
+    <Addition>k__BackingField: 0

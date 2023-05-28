@@ -103,9 +103,7 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
             GameObject child = synergyPage.synergyObj.transform.GetChild(i).gameObject;
             if (i == 0)
             {
-
                 child.GetComponent<TextMeshProUGUI>().text = synergyPage.synergyRarity.ToString();
-
             }
             else
             {

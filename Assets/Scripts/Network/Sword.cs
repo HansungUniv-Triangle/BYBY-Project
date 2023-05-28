@@ -15,6 +15,7 @@ namespace Network
         protected override void UpdateProjectile()
         {
             _rigidbody.velocity = new Vector3(0, -30f, 0);
+            DamageSave = Damage * 2;
         }
 
         protected override void OnTriggerEnter(Collider other)
@@ -24,7 +25,7 @@ namespace Network
             var objectLayer = other.gameObject.layer;
             if (objectLayer.Equals(LayerMask.NameToLayer("Enemy")))
             {
-                GameManager.Instance.NetworkManager.AddCharacterHitData(Object, (int)Damage * 2, _projectileHolder.WeaponData.isMainWeapon);
+                GameManager.Instance.NetworkManager.AddCharacterHitData(Object, (int)DamageSave, _projectileHolder.WeaponData.isMainWeapon);
                 IsHit = true;
             }
             else if (objectLayer.Equals(LayerMask.NameToLayer("World")))

@@ -15,6 +15,7 @@ public class SynergyPage
     public List<Weapon> IsNumInWeaponList = new List<Weapon>();
     public int pageNumber;
     public Synergy selectedSynergy;
+    public Weapon selectedWeapon;
     public int[] synergyRecommendationPercentage = new int[3];
 
     public bool AddSynergy(Synergy synergy)
@@ -22,6 +23,7 @@ public class SynergyPage
         if (synergies[0] == null)
         {
             synergies[0] = synergy;
+            selectedSynergy = synergy;
             return true;
         }
         else if (synergies[1] == null)
@@ -45,6 +47,7 @@ public class SynergyPage
         if (weapons[0] == null)
         {
             weapons[0] = weapon;
+            selectedWeapon = weapon;
             return true;
         }
         else if (weapons[1] == null)
@@ -86,6 +89,17 @@ public class SynergyPage
             if (synergyExplain == synergies[i].synergyExplain)
             {
                 selectedSynergy = synergies[i];
+            }
+        }
+    }
+    
+    public void FindSelectedWeaponInSynergies(string weaponExplain)
+    {
+        for (var i = 0; i < weapons.Length; i++)
+        {
+            if (weaponExplain == weapons[i].weaponExplain)
+            {
+                selectedWeapon = weapons[i];
             }
         }
     }
