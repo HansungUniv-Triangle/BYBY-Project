@@ -862,9 +862,22 @@ namespace Network
         private void RPCLoadScene()
         {
             Runner.SessionInfo.IsOpen = false;
-            StartCoroutine(LoadAsyncScene(3));
+
+            switch (Runner.GameMode)
+            {
+                case GameMode.Shared:
+                    StartCoroutine(LoadAsyncScene(3));
+                    break;
+
+                case GameMode.Single:
+                    StartCoroutine(LoadAsyncScene(4));
+                    break;
+
+                default:
+                    break;
+            }
         }
-        
+
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
         private void RPCStartGame()
         {

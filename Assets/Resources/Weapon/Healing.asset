@@ -23,6 +23,6 @@ MonoBehaviour:
   bulletHit: {fileID: 19809874, guid: 51b115f247c922a47aa9a80144450be4, type: 3}
   bulletHitToPlayer: {fileID: 19835194, guid: 16fb2cc8f64c08d46a5f2d055cc4f0c2, type: 3}
   shootSoundPath: laser_shoot
-  hitSoundPath: healing
+  hitSoundPath: hit
   isMainWeapon: 1
   basicWeaponStat: []
