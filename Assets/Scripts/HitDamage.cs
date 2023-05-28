@@ -9,7 +9,7 @@ public class HitDamage : MonoBehaviour
     private TextMeshProUGUI textMesh;
     private Sequence sequence;
     private bool isAnimating;
-    private int _damage;
+    private float _damage;
     private float _initFontSize;
     private Vector2 _initPos;
 
@@ -29,7 +29,7 @@ public class HitDamage : MonoBehaviour
         _initPos = textMesh.rectTransform.anchoredPosition;
     }
 
-    public void HitDamageAnimation(int damage, bool isCritical)
+    public void HitDamageAnimation(float damage, bool isCritical)
     {
         textMesh.color = Color.white;
         if (isCritical)
@@ -43,7 +43,7 @@ public class HitDamage : MonoBehaviour
 
         textMesh.fontSize = _initFontSize;
         if (damage > damageThreshold)
-            textMesh.fontSize *= (float)damage / damageThreshold;
+            textMesh.fontSize *= damage / damageThreshold;
 
         textMesh.text = _damage.ToString();
         textMesh.rectTransform.anchoredPosition = _initPos;

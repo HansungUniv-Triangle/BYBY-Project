@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16dae06ff98f4f57b8499b1ebbcb3123, type: 3}
   m_Name: Hangun
   m_EditorClassIdentifier: 
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: fa4eb6c5524adaa4eab5f558aaba3b72, type: 3}
   weaponName: "\uD578\uB4DC\uAC74"
   weaponExplain: "\uAE30\uBCF8\uC801\uC778 \uAD8C\uCD1D \uC785\uB2C8\uB2E4."
   weaponPrefabRef:

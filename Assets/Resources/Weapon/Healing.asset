@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16dae06ff98f4f57b8499b1ebbcb3123, type: 3}
   m_Name: Healing
   m_EditorClassIdentifier: 
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: e718d8070ad3647d18a9ad3cc6cf30dd, type: 3}
   weaponName: "\uAD6C\uAE09\uC0C1\uC790"
   weaponExplain: "\uB9DE\uCD94\uBA74 \uCCB4\uB825 \uD68C\uBCF5"
   weaponPrefabRef:
@@ -23,6 +23,6 @@ MonoBehaviour:
   bulletHit: {fileID: 19809874, guid: 51b115f247c922a47aa9a80144450be4, type: 3}
   bulletHitToPlayer: {fileID: 19835194, guid: 16fb2cc8f64c08d46a5f2d055cc4f0c2, type: 3}
   shootSoundPath: laser_shoot
-  hitSoundPath: healing
-  isMainWeapon: 0
+  hitSoundPath: hit
+  isMainWeapon: 1
   basicWeaponStat: []

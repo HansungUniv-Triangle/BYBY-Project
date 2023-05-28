@@ -34,7 +34,7 @@ namespace Network
                 SessionName = roomNumber.ToString(),
                 GameMode = GameMode.Shared,
                 SceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>()
-            }).ContinueWithOnMainThread(_ => SceneManager.LoadSceneAsync("NetworkTest"));
+            }).ContinueWithOnMainThread(_ => SceneManager.LoadSceneAsync("RoomScene"));
         }
 
         public async void StartSingleGame()
@@ -48,7 +48,7 @@ namespace Network
             {
                 GameMode = GameMode.Single,
                 SceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>()
-            }).ContinueWithOnMainThread(_ => SceneManager.LoadSceneAsync("NetworkTest"));
+            }).ContinueWithOnMainThread(_ => SceneManager.LoadSceneAsync("RoomScene"));
         }
         
         public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)

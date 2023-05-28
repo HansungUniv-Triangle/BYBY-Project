@@ -143,9 +143,7 @@ namespace Network
         public void UpdateCanvasData()
         {
             if(RoomUIInstance is null) return;
-
             RoomUIInstance.ClearRoom();
-
             var count = 0;
             foreach (var (_, playerData) in RoomPlayerList)
             {
@@ -788,6 +786,7 @@ namespace Network
             NetworkRoundState = 0;
             _spawnedWeapon = 0;
             GameManager.Instance.ResetBehaviourEventCount();
+            WorldManager.Instance.SetWorldValues(Runner.GameMode);
             WorldManager.Instance.GeneratorMap(Seed);
             SpawnPlayerCharacter();
             
@@ -925,9 +924,22 @@ namespace Network
         private void RPCLoadScene()
         {
             Runner.SessionInfo.IsOpen = false;
-            StartCoroutine(LoadAsyncScene(3));
+
+            switch (Runner.GameMode)
+            {
+                case GameMode.Shared:
+                    StartCoroutine(LoadAsyncScene(3));
+                    break;
+
+                case GameMode.Single:
+                    StartCoroutine(LoadAsyncScene(5));
+                    break;
+
+                default:
+                    break;
+            }
         }
-        
+
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
         private void RPCStartGame()
         {

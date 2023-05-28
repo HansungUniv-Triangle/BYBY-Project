@@ -7,7 +7,7 @@ namespace Network
     {
         private void OnControllerColliderHit(ControllerColliderHit hit)
         {
-            Debug.Log("asdasd");
+            //Debug.Log("asdasd");
             
             if (hit.gameObject.TryGetComponent(out ICollisionObjectEvent collisionObject))
             {

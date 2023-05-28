@@ -38,7 +38,20 @@ public class ChangeJoystickBasedButtonsPos : MonoBehaviour, IPointerDownHandler
         }
 
         buttonPanel.anchoredPosition = pos;
-        buttonPanel.Translate(new Vector3(0, eventData.position.y, 0));
+
+        // 화면 밖을 벗어나지 못하도록
+        var yPos = eventData.position.y;
+        if (eventData.position.y < buttonPanel.rect.height * 0.5f)
+        {
+            yPos = buttonPanel.rect.height * 0.5f;
+        }
+
+        else if (eventData.position.y > Screen.height - buttonPanel.rect.height * 0.5f)
+        {
+            yPos = Screen.height - buttonPanel.rect.height * 0.5f;
+        }    
+
+        buttonPanel.Translate(new Vector3(0, yPos, 0));
     }
 
     private void ChangePlayerGun(bool isLeft)
