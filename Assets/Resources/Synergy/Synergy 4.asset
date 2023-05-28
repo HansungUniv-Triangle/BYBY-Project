@@ -18,11 +18,7 @@ MonoBehaviour:
   synergyExplain: "<color=green>\uC0AC\uAC70\uB9AC+5</color>"
   charStatList: []
   weaponStatList:
-  - <Type>k__BackingField: 2
-    <Amount>k__BackingField: 1
+  - <Type>k__BackingField: 3
+    <Amount>k__BackingField: 5
     <Ratio>k__BackingField: 0
-    <Addition>k__BackingField: 0
-  - <Type>k__BackingField: 1
-    <Amount>k__BackingField: 0
-    <Ratio>k__BackingField: 5
     <Addition>k__BackingField: 0

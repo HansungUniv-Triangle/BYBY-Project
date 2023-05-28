@@ -578,11 +578,11 @@ public class PlayerBehaviorAnalyzer
             .AddCorrelationValue(WeaponStat.Range, 0.5f);
 
         WeaponStats.SetCorrelationType(WeaponStat.Reload)
-            .AddCorrelationValue(WeaponStat.Bullet, 0.7f);
+            .AddCorrelationValue(WeaponStat.Bullet, 0.5f);
 
         WeaponStats.SetCorrelationType(WeaponStat.Bullet)
             .AddCorrelationValue(WeaponStat.Damage, 0.2f)
-            .AddCorrelationValue(WeaponStat.Reload, 0.7f);
+            .AddCorrelationValue(WeaponStat.Reload, 0.5f);
 
         WeaponStats.SetCorrelationType(WeaponStat.Special)
             .AddCorrelationValue(WeaponStat.Special, 0.5f);

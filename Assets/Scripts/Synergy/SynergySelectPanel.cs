@@ -34,6 +34,14 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
     private float swipeStartTime;
     private bool isSwiping = false;
 
+    Color backgroundColor_Common = new Color(0.82f, 0.82f, 0.82f);
+    Color backgroundColor_Uncommon = new Color32(135, 206, 235, 255);
+    Color backgroundColor_Rare = new Color32(255, 180, 195, 255);
+
+    Color rarityTextColor_Common =new Color(0.67f, 0.67f, 0.67f);
+    Color rarityTextColor_Uncommon = new Color(0.06f, 0.44f, 0.79f);
+    Color rarityTextColor_Rare = new Color(1f, 0.1f, 0.2f);
+
     public SynergyPageManager synergyPageManager;
 
     void Awake()
@@ -98,19 +106,59 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
     public void ApplySynergyToObj(SynergyPage synergyPage)
     {
         // 시너지 그려서 화면에 적용
+        switch (synergyPage.synergyRarity.ToString())
+        {
+            case "Common":
+                {
+                    synergyPage.synergyObj.GetComponent<Image>().color = backgroundColor_Common;
+                    break;
+                }
+            case "UnCommon":
+                {
+                    synergyPage.synergyObj.GetComponent<Image>().color = backgroundColor_Uncommon;
+                    break;
+                }
+            case "Rare":
+                {
+                    synergyPage.synergyObj.GetComponent<Image>().color = backgroundColor_Rare;
+                    break;
+                }
+            default:
+                {
+                    break;
+                }
+        }
+
         for (int i = 0; i < synergyPage.synergyObj.transform.childCount; i++)
         {
             GameObject child = synergyPage.synergyObj.transform.GetChild(i).gameObject;
             if (i == 0)
             {
-
                 child.GetComponent<TextMeshProUGUI>().text = synergyPage.synergyRarity.ToString();
-
+                switch (synergyPage.synergyRarity.ToString())
+                {
+                    case "Common":
+                        {
+                            child.GetComponent<TextMeshProUGUI>().color = rarityTextColor_Common;
+                            break;
+                        }
+                    case "UnCommon":
+                        {
+                            child.GetComponent<TextMeshProUGUI>().color = rarityTextColor_Uncommon;
+                            break;
+                        }
+                    case "Rare":
+                        {
+                            child.GetComponent<TextMeshProUGUI>().color = rarityTextColor_Rare;
+                            break;
+                        }
+                }           
             }
             else
             {
                 child.transform.GetChild(0).GetComponentsInChildren<Image>()[0].sprite = synergyPage.synergies[i - 1].sprite;
                 child.transform.GetChild(3).GetComponentsInChildren<TextMeshProUGUI>()[0].text = synergyPage.synergies[i - 1].synergyExplain;
+                child.transform.GetChild(3).GetComponentsInChildren<TextMeshProUGUI>()[1].text = synergyPage.synergies[i - 1].synergyName;
                 child.transform.GetChild(4).GetComponentsInChildren<Image>()[0].GetComponentsInChildren<TextMeshProUGUI>()[0].text = synergyPage.synergyRecommendationPercentage[i - 1] + "%";
                 child.GetComponent<CanvasGroup>().alpha = 1f;
             }
@@ -142,7 +190,7 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
     {
         for (int i = 0; i < 7; i++)
         {
-            Image temp = synergySelectPanel.transform.GetChild(2).GetChild(i).GetComponent<Image>();
+            Image temp = synergySelectPanel.transform.GetChild(1).GetChild(i).GetComponent<Image>();
             if (i == synergyPageManager.CurrentPage)
             {
                 temp.sprite = spriteCurrent;
@@ -260,12 +308,14 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
     {
         if (statPageStatus == false)
         {
-            statPage.transform.DOMoveY(1500f, 1f);
+            statPage.transform.GetChild(1).gameObject.SetActive(true);
+            statPage.transform.DOMoveY(760f, 0.3f);
             statPageStatus = true;
         }
         else
         {
-            statPage.transform.DOMoveY(25f, 1f);
+            statPage.transform.DOMoveY(20f, 0.1f);
+            statPage.transform.GetChild(1).gameObject.SetActive(false);
             statPageStatus = false;
         }
     }
