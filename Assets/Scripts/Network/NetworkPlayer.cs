@@ -8,6 +8,7 @@ using Types;
 using UnityEngine;
 using UIHolder;
 using Utils;
+using RDG;
 
 namespace Network
 {
@@ -31,6 +32,16 @@ namespace Network
             
             if (HasStateAuthority)
             {
+                if (NowHp < MaxHp * 0.5f && !isVibrateBeat)
+                {
+                    VibrateHeartBeat();
+                }
+                
+                if (NowHp >= MaxHp * 0.5f && isVibrateBeat)
+                {
+                    StopHeartBeat();
+                }
+
                 _gameUI.playerHpBarImage.DOFillAmount(NowHp / MaxHp, 0.5f);
             }
             else
@@ -39,9 +50,13 @@ namespace Network
             }
         }
 
+        private ParticleSystem _healingEffect;
+
         public void Healing(float point)
         {
-            // Todo: 힐링 파티클 있으면 좋을 듯?
+            EffectManager.Instance.PlayEffect(_healingEffect, transform.position + Vector3.up, -transform.forward, transform);
+            SoundManager.Instance.Play("healing", Sound.Effect);
+
             NowHp += point;
             if (MaxHp < NowHp)
             {
@@ -405,6 +420,15 @@ namespace Network
                 RDG.Vibration.Vibrate(pattern, amplitudes, 0);
             }
         }
+
+        public void StopHeartBeat()
+        {
+            if (isVibrateBeat)
+            {
+                RDG.Vibration.Cancel();
+                isVibrateBeat = false;
+            }
+        }
     }
 
     // 공격
@@ -425,6 +449,17 @@ namespace Network
             foreach (var networkProjectileHolder in weapon)
             {
                 networkProjectileHolder.ChangeIsAttacking(isShooting);
+            }
+        }
+
+        public void ReloadWeapon()
+        {
+            var weapon = GetComponentsInChildren<NetworkProjectileHolder>();
+
+            foreach (var networkProjectileHolder in weapon)
+            {
+                //if (networkProjectileHolder.WeaponData.isMainWeapon)
+                // 재장전 호출
             }
         }
 
@@ -582,6 +617,17 @@ namespace Network
         public static NetworkPlayer PlayerCharacter;
         public static NetworkPlayer EnemyCharacter;
 
+        [Networked(OnChanged = nameof(OnMaterialChanged))] private int materialIndex { get; set; }
+        private static void OnMaterialChanged(Changed<NetworkPlayer> changed)
+        {
+            changed.Behaviour.OnMaterialChanged();
+        }
+
+        private void OnMaterialChanged()
+        {
+            transform.GetChild(0).GetChild(0).GetChild(1).GetChild(0).GetComponent<SkinnedMeshRenderer>().material = GameManager.Instance.CatMaterialList[materialIndex];
+        }
+
         public override void Spawned()
         {
             _initPos = transform.position;
@@ -595,7 +641,8 @@ namespace Network
             _baseCharStat = new BaseStat<CharStat>(1, 1);
             _characterController = GetComponent<CharacterController>();
             _catController = GetComponentInChildren<CatController>();
-            
+            _healingEffect = Resources.Load<ParticleSystem>("Effect/HealOnce");
+
             _gameManager = GameManager.Instance;
             _gameUI = _gameManager.UIHolder as GameUI;
             _canvasManager = _gameUI.canvasManager;
@@ -618,10 +665,13 @@ namespace Network
             {
                 gameObject.layer = LayerMask.NameToLayer("Player");
                 SetLayersRecursively(transform.GetChild(0).GetChild(0), "Player");  // 고양이 모델링
+                
+                materialIndex = GetRandomCatMaterialIndex();  // 텍스쳐 랜덤 선택
 
                 _canvasManager.SwitchUI(CanvasType.GameMoving);
 
                 _camera.GetComponent<AudioListener>().enabled = false;
+                _gameUI.crossHair.GetComponent<SubCrosshair>().SetNetworkPlayer(this);
                 gameObject.AddComponent<AudioListener>();
             }
             else
@@ -640,6 +690,12 @@ namespace Network
             {
                 SetLayersRecursively(child, name);
             }
+        }
+
+        private int GetRandomCatMaterialIndex()
+        {
+            var list = GameManager.Instance.CatMaterialList;
+            return UnityEngine.Random.Range(0, list.Count);
         }
 
         public void SetGunPos(Transform transform)
@@ -946,7 +1002,25 @@ namespace Network
     public partial class NetworkPlayer
     {
         private List<Stat<CharStat>> _settingsStatList = new();
-        
+
+        public string IncreaseHp()
+        {
+            NowHp += 1;
+            if(NowHp > MaxHp)
+                NowHp = MaxHp;
+
+            return GetNowHp().ToString("F1");
+        }
+
+        public string DecreaseHp()
+        {
+            NowHp -= 1;
+            if (NowHp <= 0)
+                NowHp = 1;
+
+            return GetNowHp().ToString("F1");
+        }
+
         public string IncreaseSpeed()
         {
             _settingsStatList.Add(new Stat<CharStat>(CharStat.Speed, 1, 0));

@@ -67,7 +67,9 @@ namespace Network
         {
             var particle = IsEnemyHit ? WeaponData.bulletHitToPlayer : WeaponData.bulletHit;
             EffectManager.Instance.PlayEffect(particle, transform.position, -transform.forward);
-            SoundManager.Instance.Play3DSound(WeaponData.hitSoundPath, Sound.Effect, transform.position);
+
+            SoundManager.Instance.Play(WeaponData.hitSoundPath, Sound.Effect);
+            //SoundManager.Instance.Play3DSound(WeaponData.hitSoundPath, Sound.Effect, transform.position);
         }
         
         [Networked] public float Damage { get; set; }
@@ -91,8 +93,10 @@ namespace Network
         public override void Spawned()
         {
             GameManager.Instance.NetworkManager.AddNetworkObjectInList(Object);
-            EffectManager.Instance.PlayEffect(WeaponData.bulletShoot, transform.position, -transform.forward);
-            SoundManager.Instance.Play3DSound(WeaponData.shootSoundPath, Sound.Effect, transform.position);
+            EffectManager.Instance.PlayEffect(WeaponData.bulletShoot, transform.position, -transform.forward, _projectileHolder.transform);
+
+            SoundManager.Instance.Play(WeaponData.shootSoundPath, Sound.Effect);
+            //SoundManager.Instance.Play3DSound(WeaponData.shootSoundPath, Sound.Effect, transform.position);
         }
 
         public override void Despawned(NetworkRunner runner, bool hasState)

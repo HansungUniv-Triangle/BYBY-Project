@@ -45,7 +45,13 @@ public class PuppetMove : MonoBehaviour
         dodgeFrequency = slider.value;
         slider.GetComponentInChildren<TextMeshProUGUI>().text = dodgeFrequency.ToString("F2");
     }
-    
+
+    private bool isMove;
+    public void ToggleMoving()
+    {
+        isMove = !isMove;
+    }
+
     private Vector3 _initPos;
     public void InitPosition()
     {
@@ -109,12 +115,12 @@ public class PuppetMove : MonoBehaviour
     }
     private void Move()
     {
-        //h = ReverseHorizontalMove ? -Input.GetAxis("Horizontal") : Input.GetAxis("Horizontal");
-        //v = Input.GetAxis("Vertical");
-
         h = inputH;
         v = inputV;
         //v = (global::Move.targetDistance < 2f && v > 0) ? 0 : v;
+
+        if (!isMove)
+            h = v = 0;
 
         var speed = Speed;
 

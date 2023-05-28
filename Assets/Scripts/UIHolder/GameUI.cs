@@ -17,7 +17,7 @@ namespace UIHolder
         public Button resetPositionButton;
         public Button ultButton;
         public Button attackButton;
-        public Button vibrateButton;
+        public Button reloadButton;
         public Button dodgeButton;
         public Button disconnectButton;
 
@@ -59,8 +59,36 @@ namespace UIHolder
         public Slider reloadSlider;
 
         [Serializable]
+        public class SubWeapon
+        {
+            public Button None;
+            public Button Shield;
+            public Button BuffMachine;
+            public Button HeallingGun;
+
+            public void DisableAll()
+            {
+                None.transform.GetChild(0).gameObject.SetActive(false);
+                Shield.transform.GetChild(0).gameObject.SetActive(false);
+                BuffMachine.transform.GetChild(0).gameObject.SetActive(false);
+                HeallingGun.transform.GetChild(0).gameObject.SetActive(false);
+            }
+
+            public void Enable(Button button)
+            {
+                button.transform.GetChild(0).gameObject.SetActive(true);
+            }
+        }
+        public SubWeapon subWeapon;
+
+        [Serializable]
         public class Settings
         {
+            [Header("HP")]
+            public TextMeshProUGUI hpText;
+            public Button HpUp;
+            public Button HpDown;
+
             [Header("Speed")]
             public TextMeshProUGUI speedText;
             public Button SpeedUp;
@@ -110,9 +138,9 @@ namespace UIHolder
                 GameManager.Instance.NetworkManager.PlayerCharacter.ToggleShooting();
             });
             
-            vibrateButton.onClick.AddListener(() =>
+            reloadButton.onClick.AddListener(() =>
             {
-                GameManager.Instance.NetworkManager.PlayerCharacter.VibrateHeartBeat();
+                GameManager.Instance.NetworkManager.PlayerCharacter.ReloadWeapon();
             });
 
             dodgeButton.onClick.AddListener(() =>
@@ -125,7 +153,56 @@ namespace UIHolder
                 GameManager.Instance.NetworkManager.DisconnectingServer();
             });
 
+            if (subWeapon.None != null)
+            {
+                subWeapon.None.onClick.AddListener(() =>
+                {
+                    subWeapon.DisableAll();
+                    subWeapon.Enable(subWeapon.None);
+
+                    // 보조무기 없애는 코드
+                });
+
+                subWeapon.Shield.onClick.AddListener(() =>
+                {
+                    subWeapon.DisableAll();
+                    subWeapon.Enable(subWeapon.Shield);
+
+                    // 보조무기 바꾸는 코드
+                });
+
+                subWeapon.BuffMachine.onClick.AddListener(() =>
+                {
+                    subWeapon.DisableAll();
+                    subWeapon.Enable(subWeapon.BuffMachine);
+
+                    // 보조무기 바꾸는 코드
+                });
+
+                subWeapon.HeallingGun.onClick.AddListener(() =>
+                {
+                    subWeapon.DisableAll();
+                    subWeapon.Enable(subWeapon.HeallingGun);
+
+                    // 보조무기 바꾸는 코드
+                });
+            }
+
             /* Settings */
+            // hp (only in single mode)
+            if (settings.hpText != null)
+            {
+                settings.HpUp.onClick.AddListener(() =>
+                {
+                    settings.hpText.text = GameManager.Instance.NetworkManager.PlayerCharacter.IncreaseHp();
+                });
+
+                settings.HpDown.onClick.AddListener(() =>
+                {
+                    settings.hpText.text = GameManager.Instance.NetworkManager.PlayerCharacter.DecreaseHp();
+                });
+            }
+
             // speed
             settings.SpeedUp.onClick.AddListener(() =>
             {
@@ -181,11 +258,13 @@ namespace UIHolder
                 settings.shootDistanceText.text = GameManager.Instance.NetworkManager.PlayerCharacter.DecreaseShootDistance();
             });
             
+            /*
             // reverse horizontal moving
             settings.ReverseHorizontalMove.onValueChanged.AddListener( state => 
             {
                 GameManager.Instance.NetworkManager.PlayerCharacter.ToggleReverseHorizontalMove(state);
             });
+            */
         }
         
         public void OpenCloseMenu(GameObject menu) 
@@ -193,6 +272,10 @@ namespace UIHolder
             menu.SetActive(!menu.activeSelf);
         }
 
+        public void CloseMenu(GameObject menu)
+        {
+            menu.SetActive(false);
+        }
         public void SetHitAnalysis(int value1, int value2)
         {
             playerHitValueText.text = value1.ToString();

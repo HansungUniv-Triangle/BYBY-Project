@@ -34,6 +34,7 @@ public class GameManager : Singleton<GameManager>
     public SynergyPageManager SynergyPageManager { get; private set; }
     public List<Synergy> SynergyList;
     public List<Weapon> WeaponList;
+    public List<Material> CatMaterialList;
     
     public int selectWeaponNum = 0;
     public Weapon SelectWeapon => WeaponList[selectWeaponNum];
@@ -44,10 +45,18 @@ public class GameManager : Singleton<GameManager>
     public int shootCount;
     public int hitCount;
 
+    public bool IsVibrateOn = true;
+
+    public void ToggleVibrate()
+    {
+        IsVibrateOn = !IsVibrateOn;
+    }
+
     protected override void Initiate()
     {
         SynergyList = Resources.LoadAll<Synergy>(Path.Synergy).ToList();
         WeaponList = Resources.LoadAll<Weapon>(Path.Weapon).ToList();
+        CatMaterialList = Resources.LoadAll<Material>(Path.Cat).ToList();
         _uiLoadingPrefab = Resources.Load(Path.Loading) as GameObject;
         _uiDisconnectPrefab = Resources.Load(Path.Disconnect) as GameObject;
     }

@@ -756,6 +756,7 @@ namespace Network
         {
             NetworkRoundState = 0;
             GameManager.Instance.ResetBehaviourEventCount();
+            WorldManager.Instance.SetWorldValues(Runner.GameMode);
             WorldManager.Instance.GeneratorMap(Seed);
             SpawnPlayerCharacter(Runner.LocalPlayer);
 
@@ -862,9 +863,22 @@ namespace Network
         private void RPCLoadScene()
         {
             Runner.SessionInfo.IsOpen = false;
-            StartCoroutine(LoadAsyncScene(3));
+
+            switch (Runner.GameMode)
+            {
+                case GameMode.Shared:
+                    StartCoroutine(LoadAsyncScene(3));
+                    break;
+
+                case GameMode.Single:
+                    StartCoroutine(LoadAsyncScene(5));
+                    break;
+
+                default:
+                    break;
+            }
         }
-        
+
         [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
         private void RPCStartGame()
         {

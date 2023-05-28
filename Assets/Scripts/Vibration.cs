@@ -83,6 +83,9 @@ namespace RDG
         /// </summary>
         public static void Vibrate(long milliseconds, int amplitude = -1, bool cancel = false)
         {
+            if (!GameManager.Instance.IsVibrateOn)
+                return;
+
             string funcToStr() => string.Format("Vibrate ({0}, {1}, {2})", milliseconds, amplitude, cancel);
 
             Initialize(); // make sure script is initialized
@@ -128,6 +131,9 @@ namespace RDG
         /// </summary>
         public static void Vibrate(long[] pattern, int[] amplitudes = null, int repeat = -1, bool cancel = false)
         {
+            if (!GameManager.Instance.IsVibrateOn)
+                return;
+
             string funcToStr() => string.Format("Vibrate (({0}), ({1}), {2}, {3})", arrToStr(pattern), arrToStr(amplitudes), repeat, cancel);
 
             Initialize(); // make sure script is initialized
