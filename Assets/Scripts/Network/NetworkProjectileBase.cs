@@ -93,7 +93,7 @@ namespace Network
         public override void Spawned()
         {
             GameManager.Instance.NetworkManager.AddNetworkObjectInList(Object);
-            EffectManager.Instance.PlayEffect(WeaponData.bulletShoot, transform.position, -transform.forward);
+            EffectManager.Instance.PlayEffect(WeaponData.bulletShoot, transform.position, -transform.forward, _projectileHolder.transform);
 
             SoundManager.Instance.Play(WeaponData.shootSoundPath, Sound.Effect);
             //SoundManager.Instance.Play3DSound(WeaponData.shootSoundPath, Sound.Effect, transform.position);

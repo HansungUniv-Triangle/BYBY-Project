@@ -1006,12 +1006,18 @@ namespace Network
         public string IncreaseHp()
         {
             NowHp += 1;
+            if(NowHp > MaxHp)
+                NowHp = MaxHp;
+
             return GetNowHp().ToString("F1");
         }
 
         public string DecreaseHp()
         {
             NowHp -= 1;
+            if (NowHp <= 0)
+                NowHp = 1;
+
             return GetNowHp().ToString("F1");
         }
 

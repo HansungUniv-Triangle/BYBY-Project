@@ -176,7 +176,28 @@ public class WorldManager : Singleton<WorldManager>
             ChunkSize.z = MapHeight / WorldChunkHeight;
         }
     }
+    public void SetWorldValues(GameMode gameMode)
+    {
+        switch (gameMode)
+        {
+            case GameMode.Shared:
+                TreeThreshold = 0.04f;
+                TerrainHeight = 15;
+                TerrainBaseHeight = 6;
 
+                break;
+
+            case GameMode.Single:
+                TreeThreshold = 0.02f;
+                TerrainHeight = 6;
+                TerrainBaseHeight = 5;
+
+                break;
+
+            default:
+                break;
+        }
+    }
     protected override void Initiate()
     {
         

@@ -756,6 +756,7 @@ namespace Network
         {
             NetworkRoundState = 0;
             GameManager.Instance.ResetBehaviourEventCount();
+            WorldManager.Instance.SetWorldValues(Runner.GameMode);
             WorldManager.Instance.GeneratorMap(Seed);
             SpawnPlayerCharacter(Runner.LocalPlayer);
 

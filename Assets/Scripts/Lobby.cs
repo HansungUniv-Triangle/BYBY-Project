@@ -394,6 +394,11 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
         }
     }
 
+    public void ToggleIsVibrate(bool active)
+    {
+        GameManager.Instance.IsVibrateOn = !GameManager.Instance.IsVibrateOn;
+    }
+
     private IEnumerator ResetSwipeCoroutine()
     {
         yield return new WaitForSecondsRealtime(0.5f); // 1프레임 대기
