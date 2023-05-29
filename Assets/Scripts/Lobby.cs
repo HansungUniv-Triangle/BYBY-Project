@@ -168,7 +168,7 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
         _searchPopup.SetActive(true);
     }
     
-    public void PlayButtonClicked_SearchBattle(TextMeshProUGUI field)
+    public void PlayButtonClicked_SearchBattle(TMP_InputField field)
     {
         int number = int.TryParse(field.text, out var result) ? result : Random.Range(1000, 10000);
         spawner.StartMultiGameNumberRoom(number);
