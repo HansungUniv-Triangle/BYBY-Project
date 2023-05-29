@@ -20,7 +20,7 @@ namespace Network
                 {
                     var special = GetWeaponStat(WeaponStat.Special).Total;
                     var ratio = 1 + special * 0.01f;
-                    projectile.GetComponent<NetworkProjectileBase>().IndividualDamage += GetWeaponStat(WeaponStat.Damage).Total * ratio;
+                    projectile.GetComponent<NetworkProjectileBase>().IndividualDamage += GetWeaponStat(WeaponStat.Attack).Total * ratio;
                 }
             }
         }

@@ -324,7 +324,7 @@ public class PlayerBehaviorAnalyzer
         { BehaviourEvent.피격, new Enum[] { CharStat.Health, CharStat.Armor} },
         { BehaviourEvent.회피, new Enum[] { CharStat.Speed, CharStat.Rolling} },
         { BehaviourEvent.명중, new Enum[] { CharStat.Calm, WeaponStat.Velocity} },
-        { BehaviourEvent.피해, new Enum[] { WeaponStat.Damage, WeaponStat.Interval} },
+        { BehaviourEvent.피해, new Enum[] { WeaponStat.Attack, WeaponStat.Interval} },
         { BehaviourEvent.특화, new Enum[] { WeaponStat.Special} },
         { BehaviourEvent.파괴, new Enum[] { WeaponStat.Range} },
         { BehaviourEvent.장전, new Enum[] { WeaponStat.Bullet, WeaponStat.Reload } },
@@ -346,7 +346,7 @@ public class PlayerBehaviorAnalyzer
             { CharStat.Calm, 0 },
             { WeaponStat.Interval, 0 },
             { WeaponStat.Special, 0 },
-            { WeaponStat.Damage, 0 },
+            { WeaponStat.Attack, 0 },
             { WeaponStat.Range, 0 },
             { WeaponStat.Reload, 0 },
             { WeaponStat.Bullet, 0 },
@@ -362,7 +362,7 @@ public class PlayerBehaviorAnalyzer
             { CharStat.Calm, 0 },
             { WeaponStat.Interval, 0 },
             { WeaponStat.Special, 0 },
-            { WeaponStat.Damage, 0 },
+            { WeaponStat.Attack, 0 },
             { WeaponStat.Range, 0 },
             { WeaponStat.Reload, 0 },
             { WeaponStat.Bullet, 0 },
@@ -378,7 +378,7 @@ public class PlayerBehaviorAnalyzer
             { CharStat.Calm, 0 },
             { WeaponStat.Interval, 0 },
             { WeaponStat.Special, 0 },
-            { WeaponStat.Damage, 0 },
+            { WeaponStat.Attack, 0 },
             { WeaponStat.Range, 0 },
             { WeaponStat.Reload, 0 },
             { WeaponStat.Bullet, 0 },
@@ -394,7 +394,7 @@ public class PlayerBehaviorAnalyzer
             { CharStat.Calm, 0 },
             { WeaponStat.Interval, 0 },
             { WeaponStat.Special, 0 },
-            { WeaponStat.Damage, 0 },
+            { WeaponStat.Attack, 0 },
             { WeaponStat.Range, 0 },
             { WeaponStat.Reload, 0 },
             { WeaponStat.Bullet, 0 },
@@ -515,12 +515,12 @@ public class PlayerBehaviorAnalyzer
 
         WeaponStats.SetCorrelationType(WeaponStat.Interval)
             .AddCorrelationValue(WeaponStat.Interval, -0.1f)
-            .AddCorrelationValue(WeaponStat.Damage, 0.3f)
+            .AddCorrelationValue(WeaponStat.Attack, 0.3f)
             .AddCorrelationValue(WeaponStat.Bullet, 0.3f)
             .AddCorrelationValue(WeaponStat.Reload, 0.3f);
 
-        WeaponStats.SetCorrelationType(WeaponStat.Damage)
-            .AddCorrelationValue(WeaponStat.Damage, 0.1f)
+        WeaponStats.SetCorrelationType(WeaponStat.Attack)
+            .AddCorrelationValue(WeaponStat.Attack, 0.1f)
             .AddCorrelationValue(WeaponStat.Interval, 0.2f)
             .AddCorrelationValue(WeaponStat.Bullet, 0.2f)
             .AddCorrelationValue(WeaponStat.Reload, 0.2f)
@@ -538,7 +538,7 @@ public class PlayerBehaviorAnalyzer
             .AddCorrelationValue(WeaponStat.Bullet, 0.5f);
 
         WeaponStats.SetCorrelationType(WeaponStat.Bullet)
-            .AddCorrelationValue(WeaponStat.Damage, 0.2f)
+            .AddCorrelationValue(WeaponStat.Attack, 0.2f)
             .AddCorrelationValue(WeaponStat.Reload, 0.5f);
 
         WeaponStats.SetCorrelationType(WeaponStat.Special)
