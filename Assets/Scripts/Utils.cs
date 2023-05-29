@@ -31,7 +31,8 @@ namespace Utils
                 case CharStat.Armor:
                     return 100 / (100 + total);
                 case CharStat.Calm:
-                    return 140 + total * 10;
+                    var value = 200 - (total * 5);
+                    return value > 0 ? value : 1;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
