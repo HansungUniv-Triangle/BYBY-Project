@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: -4457907077580859119}
   m_Layer: 0
   m_Name: HandGun
-  m_TagString: Untagged
+  m_TagString: MainWeapon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -49,9 +49,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interpolationDataSource: 0
-  _projectileObject: {fileID: 731377849170397947, guid: 2a259965b1266844f92f128fef025bf9,
-    type: 3}
-  isMainWeapon: 1
 --- !u!114 &5565578386045293377
 MonoBehaviour:
   m_ObjectHideFlags: 0

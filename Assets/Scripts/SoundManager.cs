@@ -39,7 +39,12 @@ public class SoundManager : Singleton<SoundManager>
         _audioClips.Clear();
     }
 
-    public void SetVolumn(Sound type, float volume)
+    public float GetVolume(Sound type)
+    {
+        return _audioSources[(int)type].volume;
+    }
+
+    public void SetVolume(Sound type, float volume)
     {
         _audioSources[(int)type].volume = volume;
     }

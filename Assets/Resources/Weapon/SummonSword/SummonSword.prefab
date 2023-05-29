@@ -45,7 +45,7 @@ GameObject:
   - component: {fileID: 6830377825897917574}
   m_Layer: 0
   m_Name: SummonSword
-  m_TagString: Untagged
+  m_TagString: SubWeapon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -181,6 +181,18 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4740138509339350, guid: 97bea2cb17c392345b7f6901db843d53, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4740138509339350, guid: 97bea2cb17c392345b7f6901db843d53, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4740138509339350, guid: 97bea2cb17c392345b7f6901db843d53, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4740138509339350, guid: 97bea2cb17c392345b7f6901db843d53, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -219,6 +231,10 @@ PrefabInstance:
     - target: {fileID: 4740138509339350, guid: 97bea2cb17c392345b7f6901db843d53, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4740138509339350, guid: 97bea2cb17c392345b7f6901db843d53, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 97bea2cb17c392345b7f6901db843d53, type: 3}

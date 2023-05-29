@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using DG.Tweening;
 using Network;
 using TMPro;
@@ -83,17 +84,32 @@ namespace UIHolder
         [Serializable]
         public class SubWeapon
         {
-            public Button None;
-            public Button Shield;
-            public Button BuffMachine;
-            public Button HeallingGun;
+            public List<Button> buttons;
 
-            public void DisableAll()
+            public void SetInfo(Button button, Weapon weapon = null)
             {
-                None.transform.GetChild(0).gameObject.SetActive(false);
-                Shield.transform.GetChild(0).gameObject.SetActive(false);
-                BuffMachine.transform.GetChild(0).gameObject.SetActive(false);
-                HeallingGun.transform.GetChild(0).gameObject.SetActive(false);
+                string name, explain;
+                if (weapon)
+                {
+                    name = weapon.weaponName;
+                    explain = weapon.weaponExplain;
+                }
+                else
+                {
+                    name = "없음";
+                    explain = "";
+                }
+
+                button.transform.parent.GetChild(0).GetComponent<TextMeshProUGUI>().text = name;
+                button.transform.parent.GetChild(1).GetComponent<TextMeshProUGUI>().text = explain;
+            }
+
+            public void DisableCheckMarkAll()
+            {
+                foreach (var button in buttons)
+                {
+                    button.transform.GetChild(0).gameObject.SetActive(false);
+                }
             }
 
             public void Enable(Button button)
@@ -135,7 +151,12 @@ namespace UIHolder
             public TextMeshProUGUI shootDistanceText;
             public Button ShootDistanceUp;
             public Button ShootDistanceDown;
-            
+
+            [Header("Calm")]
+            public TextMeshProUGUI calmText;
+            public Button CalmUp;
+            public Button CalmDown;
+
             [Header("Moving")]
             public Toggle ReverseHorizontalMove;
         }
@@ -182,40 +203,55 @@ namespace UIHolder
                 {
                     GameManager.Instance.NetworkManager.PlayerCharacter.InitPosition();
                 });
-            
-                if (subWeapon.None != null)
+
+                /* Sub Weapons */
+                // None Button
+                subWeapon.SetInfo(subWeapon.buttons[0]);
+                subWeapon.buttons[0].onClick.AddListener(() =>
                 {
-                    subWeapon.None.onClick.AddListener(() =>
-                    {
-                        subWeapon.DisableAll();
-                        subWeapon.Enable(subWeapon.None);
+                    subWeapon.DisableCheckMarkAll();
+                    subWeapon.Enable(subWeapon.buttons[0]);
 
-                        // 보조무기 없애는 코드
+                    // 보조무기 없애는 코드
+                    GameManager.Instance.NetworkManager.DespawnSubWeapon();
+                });
+
+                var weaponList = GameManager.Instance.WeaponList;
+                List<Weapon> subWeaponList = new List<Weapon>();
+
+                foreach(var weapon in weaponList)
+                {
+                    if (!weapon.isMainWeapon)
+                        subWeaponList.Add(weapon);
+                }
+
+                for (int i = 0; i < subWeapon.buttons.Count - 1; i++)
+                {
+                    var weapon = subWeaponList[i];
+                    var button = subWeapon.buttons[i + 1];
+                    subWeapon.SetInfo(button, weapon);
+
+                    button.onClick.AddListener(() =>
+                    {
+                        GameManager.Instance.NetworkManager.DespawnSubWeapon();
+
+                        subWeapon.DisableCheckMarkAll();
+                        subWeapon.Enable(button);
+
+                        // 보조무기 생성 코드
+                        var name = button.transform.parent.GetChild(0).GetComponent<TextMeshProUGUI>().text;
+                        var weapon = GameManager.Instance.WeaponList.Find(weapon => weapon.weaponName == name);
+
+                        if (weapon is not null)
+                        {
+                            GameManager.Instance.NetworkManager.SpawnWeapon(weapon);
+                        }
+                        else
+                        {
+                            throw new Exception("선택된 무기 찾기 실패");
+                        }
                     });
 
-                    subWeapon.Shield.onClick.AddListener(() =>
-                    {
-                        subWeapon.DisableAll();
-                        subWeapon.Enable(subWeapon.Shield);
-
-                        // 보조무기 바꾸는 코드
-                    });
-
-                    subWeapon.BuffMachine.onClick.AddListener(() =>
-                    {
-                        subWeapon.DisableAll();
-                        subWeapon.Enable(subWeapon.BuffMachine);
-
-                        // 보조무기 바꾸는 코드
-                    });
-
-                    subWeapon.HeallingGun.onClick.AddListener(() =>
-                    {
-                        subWeapon.DisableAll();
-                        subWeapon.Enable(subWeapon.HeallingGun);
-
-                        // 보조무기 바꾸는 코드
-                    });
                 }
 
                 /* Settings */
@@ -287,6 +323,18 @@ namespace UIHolder
                 {
                     settings.shootDistanceText.text = GameManager.Instance.NetworkManager.PlayerCharacter.DecreaseShootDistance();
                 });
+
+                // shoot distance
+                settings.CalmUp.onClick.AddListener(() =>
+                {
+                    settings.calmText.text = GameManager.Instance.NetworkManager.PlayerCharacter.IncreaseCalm();
+                });
+
+                settings.CalmDown.onClick.AddListener(() =>
+                {
+                    settings.calmText.text = GameManager.Instance.NetworkManager.PlayerCharacter.DecreaseCalm();
+                });
+
                 /*
                 // reverse horizontal moving
                 settings.ReverseHorizontalMove.onValueChanged.AddListener( state => 

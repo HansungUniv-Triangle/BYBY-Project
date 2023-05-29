@@ -19,7 +19,7 @@ public class PlayerCamera : MonoBehaviour
     private Vector3 _originalCameraFocusPos;
 
     private readonly float _moveSpeed = 3f; // 고정된 값 필요, 너무 빠르면 어지러움증 유발
-    private readonly float _rotationSpeed = 8f;
+    private float _rotationSpeed = 8f;
 
     private RaycastHit _hit;
     private Ray _ray;
@@ -33,7 +33,7 @@ public class PlayerCamera : MonoBehaviour
     
     #region UI Settings
     public float zAngle;
-    private float zOffset = 0.10f;
+    private float zOffset = 0.14f;
     private bool isGyroOn = true;
 
     public void IncreaseZoffset(GameObject text) { text.GetComponent<TextMeshProUGUI>().text = (zOffset += 0.01f).ToString("F2"); }
@@ -169,6 +169,7 @@ public class PlayerCamera : MonoBehaviour
         var position = _player.position;
         _ray.origin = position;
         _ray.direction = (_cameraPos.position - position).normalized;
+        _rotationSpeed = _networkPlayer.GetCharStat(CharStat.Calm).Total * 0.3f + 8f;
 
         //Debug.DrawRay(ray.origin, ray.direction * 10, Color.white);
         if (Physics.Raycast(_ray, out _hit, 10, (int)Layer.World))

@@ -389,6 +389,9 @@ MonoBehaviour:
   prefabRankpage: {fileID: 5064345982501629644, guid: 9b485bed13f37b2498fecd6ebf409778,
     type: 3}
   rankingHint: {fileID: 2022454193}
+  IsVibrateOn: {fileID: 295375947}
+  BGM: {fileID: 2076197904}
+  SoundEffect: {fileID: 1355977379}
 --- !u!1 &40480545
 GameObject:
   m_ObjectHideFlags: 0
@@ -2312,19 +2315,7 @@ MonoBehaviour:
   m_Group: {fileID: 0}
   onValueChanged:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 26053915}
-        m_TargetAssemblyTypeName: Lobby, Assembly-CSharp
-        m_MethodName: ToggleIsVibrate
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   m_IsOn: 1
 --- !u!1 &313404785
 GameObject:
@@ -7399,7 +7390,19 @@ MonoBehaviour:
   m_Value: 0.5
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 26053915}
+        m_TargetAssemblyTypeName: Lobby, Assembly-CSharp
+        m_MethodName: SetEffectVolume
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1355977379}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.Slider, UnityEngine.UI
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1401395051
 GameObject:
   m_ObjectHideFlags: 0
@@ -11553,7 +11556,19 @@ MonoBehaviour:
   m_Value: 0.5
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 26053915}
+        m_TargetAssemblyTypeName: Lobby, Assembly-CSharp
+        m_MethodName: SetBGMVolume
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 2076197904}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.Slider, UnityEngine.UI
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &2106250600
 GameObject:
   m_ObjectHideFlags: 0
