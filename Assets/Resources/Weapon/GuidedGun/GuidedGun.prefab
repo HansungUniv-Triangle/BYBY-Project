@@ -45,7 +45,7 @@ GameObject:
   - component: {fileID: 3159077367523499632}
   m_Layer: 0
   m_Name: GuidedGun
-  m_TagString: Untagged
+  m_TagString: SubWeapon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

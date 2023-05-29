@@ -33,7 +33,7 @@ public class PlayerCamera : MonoBehaviour
     
     #region UI Settings
     public float zAngle;
-    private float zOffset = 0.10f;
+    private float zOffset = 0.14f;
     private bool isGyroOn = true;
 
     public void IncreaseZoffset(GameObject text) { text.GetComponent<TextMeshProUGUI>().text = (zOffset += 0.01f).ToString("F2"); }

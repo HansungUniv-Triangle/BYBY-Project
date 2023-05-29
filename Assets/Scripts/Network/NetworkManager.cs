@@ -776,6 +776,16 @@ namespace Network
             }
         }
         
+        public void DespawnSubWeapon()
+        {
+            var subWeapon = GameObject.FindWithTag("SubWeapon");
+            if (subWeapon == null) 
+                return;
+
+            Runner.Despawn(subWeapon.GetComponent<NetworkObject>());
+            _spawnedWeapon--;
+        }
+
         public void AddBlockHitData(Vector3 pos, int damage)
         {
             PlayerCharacter.AddBlockHitData(pos, 0, damage);

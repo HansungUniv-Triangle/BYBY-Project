@@ -76,7 +76,7 @@ GameObject:
   - component: {fileID: 1675795672780575173}
   m_Layer: 0
   m_Name: ShieldGenerator
-  m_TagString: Untagged
+  m_TagString: SubWeapon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

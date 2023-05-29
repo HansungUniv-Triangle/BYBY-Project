@@ -45,7 +45,7 @@ GameObject:
   - component: {fileID: 6830377825897917574}
   m_Layer: 0
   m_Name: SummonSword
-  m_TagString: Untagged
+  m_TagString: SubWeapon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

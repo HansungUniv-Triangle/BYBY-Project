@@ -181,4 +181,10 @@ public class PuppetMove : MonoBehaviour
             }
         }
     }
+
+    // 플레이어가 나가도 참조하는거 방지
+    public void TurnOff()
+    {
+        gameObject.SetActive(false);
+    }
 }

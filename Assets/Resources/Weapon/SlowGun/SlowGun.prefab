@@ -9726,7 +9726,7 @@ GameObject:
   - component: {fileID: -3464782434740389178}
   m_Layer: 0
   m_Name: SlowGun
-  m_TagString: Untagged
+  m_TagString: SubWeapon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
