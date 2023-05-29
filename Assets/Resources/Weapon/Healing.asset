@@ -14,7 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sprite: {fileID: 21300000, guid: e718d8070ad3647d18a9ad3cc6cf30dd, type: 3}
   weaponName: "\uAD6C\uAE09\uC0C1\uC790"
-  weaponExplain: "\uB9DE\uCD94\uBA74 \uCCB4\uB825 \uD68C\uBCF5"
+  weaponExplain: "5\uCD08 \uB9C8\uB2E4 \uD68C\uBCF5\uD0C4\uC744 \uBC1C\uC0AC\uD569\uB2C8\uB2E4.
+    \uC801\uC744 \uB9DE\uCD94\uBA74 \uACF5\uACA9\uB825 \uB9CC\uD07C \uCCB4\uB825\uC744
+    \uD68C\uBCF5\uD569\uB2C8\uB2E4."
   weaponPrefabRef:
     RawGuidValue: e8ded74e0f008ac4aafad5adfc0a2e41
   bulletPrefabRef:

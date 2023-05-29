@@ -29,13 +29,13 @@ namespace Network
                 point.y = (float)Math.Round(point.y, 3);
                 point.z = (float)Math.Round(point.z, 3);
 
-                WorldManager.Instance.GetWorld().HitBlock(point, 1);
-                GameManager.Instance.NetworkManager.AddBlockHitData(point, 1);
+                WorldManager.Instance.GetWorld().HitBlock(point, (int)DamageSave);
+                GameManager.Instance.NetworkManager.AddBlockHitData(point, (int)DamageSave);
                 IsHit = true;
             }
             else if (objectLayer.Equals(LayerMask.NameToLayer("Enemy")))
             {
-                GameManager.Instance.NetworkManager.AddCharacterHitData(Object, (int)Damage, _projectileHolder.WeaponData.isMainWeapon);
+                GameManager.Instance.NetworkManager.AddCharacterHitData(Object, (int)DamageSave, _projectileHolder.WeaponData.isMainWeapon);
                 IsHit = true;
                 IsEnemyHit = true;
             }

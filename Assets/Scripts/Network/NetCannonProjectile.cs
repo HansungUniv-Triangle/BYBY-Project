@@ -29,8 +29,8 @@ namespace Network
                 point.y = (float)Math.Round(point.y, 3);
                 point.z = (float)Math.Round(point.z, 3);
 
-                WorldManager.Instance.GetWorld().ExplodeBlocks(point, special, (int)TotalDamage);
-                GameManager.Instance.NetworkManager.AddBlockHitData(point, special, (int)TotalDamage);
+                WorldManager.Instance.GetWorld().ExplodeBlocks(point, special, (int)DamageSave);
+                GameManager.Instance.NetworkManager.AddBlockHitData(point, special, (int)DamageSave);
                 
                 Collider[] hitColliders = Physics.OverlapSphere(gameObject.transform.position, special, (int)Layer.Enemy);
                 if (hitColliders.Length > 0)

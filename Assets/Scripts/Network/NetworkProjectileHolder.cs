@@ -163,7 +163,7 @@ namespace Network
 
         public void CallReload(bool attackMode)
         {
-            if (!attackMode && WeaponData.isMainWeapon)
+            if (IsDoneShootAction && !attackMode && WeaponData.isMainWeapon)
             {
                 ReloadBullet();
             }
@@ -201,8 +201,6 @@ namespace Network
                     })
                     .AppendInterval(separateTime);
             }
-
-            _reloadSequence.Play();
         }
 
         protected abstract void Attack();

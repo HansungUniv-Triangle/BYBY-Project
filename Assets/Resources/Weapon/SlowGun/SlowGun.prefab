@@ -9789,7 +9789,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interpolationDataSource: 0
-  timer: 1
+  timer: 3
 --- !u!114 &-3464782434740389178
 MonoBehaviour:
   m_ObjectHideFlags: 0
