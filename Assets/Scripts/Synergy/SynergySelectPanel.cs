@@ -34,11 +34,11 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
     private float swipeStartTime;
     private bool isSwiping = false;
 
-    Color backgroundColor_Common = new Color(0.82f, 0.82f, 0.82f);
+    Color backgroundColor_Common = new Color(0.78f, 0.78f, 0.78f);
     Color backgroundColor_Uncommon = new Color32(135, 206, 235, 255);
     Color backgroundColor_Rare = new Color32(255, 180, 195, 255);
 
-    Color rarityTextColor_Common =new Color(0.67f, 0.67f, 0.67f);
+    Color rarityTextColor_Common =new Color(0.5f, 0.5f, 0.5f);
     Color rarityTextColor_Uncommon = new Color(0.06f, 0.44f, 0.79f);
     Color rarityTextColor_Rare = new Color(1f, 0.1f, 0.2f);
 
@@ -58,7 +58,7 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
     public GameObject SpawnSynergy(Transform spawnPoint)
     {
         var instance = Instantiate(prefabSynergyPage, spawnPoint.position, Quaternion.identity, gameObject.transform);
-        instance.transform.SetSiblingIndex(3);
+        instance.transform.SetSiblingIndex(2);
         for (int i = 0; i < instance.GetComponentsInChildren<Button>().Length; i++)
         {
             instance.GetComponentsInChildren<Button>()[i].onClick.AddListener(() => synergyPageManager.SelectSynergy());
@@ -90,7 +90,7 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
     public void DisplayRecommendation(SynergyPage synergyPage, int i)
     {
         GameObject child = synergyPage.synergyObj.transform.GetChild(i + 1).gameObject;
-        child.transform.GetChild(2).GetComponent<Image>().gameObject.SetActive(true);
+        child.transform.GetChild(1).GetComponent<Image>().gameObject.SetActive(true);
     }
 
     public void RemoveSynergyPages(SynergyPage[] synergyPages)
@@ -152,14 +152,18 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
                             child.GetComponent<TextMeshProUGUI>().color = rarityTextColor_Rare;
                             break;
                         }
-                }           
+                    default:
+                        {
+                            break;
+                        }
+                }
             }
             else
             {
                 child.transform.GetChild(0).GetComponentsInChildren<Image>()[0].sprite = synergyPage.synergies[i - 1].sprite;
-                child.transform.GetChild(3).GetComponentsInChildren<TextMeshProUGUI>()[0].text = synergyPage.synergies[i - 1].synergyExplain;
-                child.transform.GetChild(3).GetComponentsInChildren<TextMeshProUGUI>()[1].text = synergyPage.synergies[i - 1].synergyName;
-                child.transform.GetChild(4).GetComponentsInChildren<Image>()[0].GetComponentsInChildren<TextMeshProUGUI>()[0].text = synergyPage.synergyRecommendationPercentage[i - 1] + "%";
+                child.transform.GetChild(2).GetComponentsInChildren<TextMeshProUGUI>()[0].text = synergyPage.synergies[i - 1].synergyExplain;
+                child.transform.GetChild(2).GetComponentsInChildren<TextMeshProUGUI>()[1].text = synergyPage.synergies[i - 1].synergyName;
+                child.transform.GetChild(3).GetComponentsInChildren<Image>()[0].GetComponentsInChildren<TextMeshProUGUI>()[0].text = synergyPage.synergyRecommendationPercentage[i - 1] + "%";
                 child.GetComponent<CanvasGroup>().alpha = 1f;
             }
         }
@@ -178,9 +182,9 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
             else
             {
                 child.transform.GetChild(0).GetComponentsInChildren<Image>()[0].sprite = synergyPage.weapons[i - 1].sprite;
-                child.transform.GetChild(3).GetComponentsInChildren<TextMeshProUGUI>()[0].text = synergyPage.weapons[i - 1].weaponExplain;
-                child.transform.GetChild(3).GetComponentsInChildren<TextMeshProUGUI>()[1].text = synergyPage.weapons[i - 1].weaponName;
-                child.transform.GetChild(4).GetComponentsInChildren<Image>()[0].GetComponentsInChildren<TextMeshProUGUI>()[0].text = synergyPage.synergyRecommendationPercentage[i - 1].ToString() + "%";
+                child.transform.GetChild(2).GetComponentsInChildren<TextMeshProUGUI>()[0].text = synergyPage.weapons[i - 1].weaponExplain;
+                child.transform.GetChild(2).GetComponentsInChildren<TextMeshProUGUI>()[1].text = synergyPage.weapons[i - 1].weaponName;
+                child.transform.GetChild(3).GetComponentsInChildren<Image>()[0].GetComponentsInChildren<TextMeshProUGUI>()[0].text = synergyPage.synergyRecommendationPercentage[i - 1].ToString() + "%";
                 child.GetComponent<CanvasGroup>().alpha = 1f;
             }
         }
