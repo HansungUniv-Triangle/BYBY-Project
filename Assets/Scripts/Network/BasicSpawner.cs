@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Firebase.Extensions;
 using Fusion;
 using Fusion.Sockets;
@@ -23,7 +24,6 @@ namespace Network
 
         public async void StartMultiGameRandomRoom()
         {
-            var roomNumber = Random.Range(1000, 10000);
             _runner = gameObject.AddComponent<NetworkRunner>();
             _runner.ProvideInput = true;
             
@@ -31,7 +31,6 @@ namespace Network
 
             await _runner.StartGame(new StartGameArgs()
             {
-                SessionName = roomNumber.ToString(),
                 GameMode = GameMode.Shared,
                 SceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>()
             }).ContinueWithOnMainThread(_ => SceneManager.LoadSceneAsync("RoomScene"));
@@ -47,6 +46,7 @@ namespace Network
             {
                 SessionName = roomNumber.ToString(),
                 GameMode = GameMode.Shared,
+                IsVisible = false,
                 SceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>()
             }).ContinueWithOnMainThread(_ => SceneManager.LoadSceneAsync("RoomScene"));
         }
@@ -67,10 +67,16 @@ namespace Network
         
         public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
         {
-            if (player.PlayerId == 0)
+            if (runner.ActivePlayers.Count() == 1)
             {
                 var obj = runner.Spawn(NetworkManagerPrefab);
                 _networkManager = obj.GetComponent<NetworkManager>();
+                _networkManager.RPCAddPlayer(runner.LocalPlayer, DBManager.Instance.NickName);
+            }
+            else
+            {
+                _networkManager ??= FindObjectOfType<NetworkManager>();
+                _networkManager.RPCAddPlayer(runner.LocalPlayer, DBManager.Instance.NickName);
             }
         }
 
@@ -81,8 +87,17 @@ namespace Network
         }
         
         public void OnConnectedToServer(NetworkRunner runner) { }
-        public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
-        public void OnDisconnectedFromServer(NetworkRunner runner) { }
+
+        public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
+        {
+            GameManager.Instance.ActiveDisconnectUI();
+        }
+
+        public void OnDisconnectedFromServer(NetworkRunner runner)
+        {
+            Debug.Log("서버 연결 끊김");
+        }
+        
         public void OnInput(NetworkRunner runner, NetworkInput input) { }
         public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
         public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token) { }

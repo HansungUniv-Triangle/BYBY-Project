@@ -26,10 +26,7 @@ namespace UIHolder
         public Button Sniper;
 
         #endregion
-        
-        private readonly Color32 _ready = Color.green;
-        private readonly Color32 _notReady = Color.red;
-        
+
         protected override void Initial()
         {
             readyButton.onClick.AddListener(() =>
