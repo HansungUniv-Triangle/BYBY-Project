@@ -1,4 +1,6 @@
 ﻿using System;
+using DG.Tweening;
+using Network;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -8,6 +10,7 @@ namespace UIHolder
 {
     public class GameUI : UIHolder
     {
+        public bool singleMode;
         public CanvasManager canvasManager;
         
         public RectTransform crossHair;
@@ -31,9 +34,28 @@ namespace UIHolder
         
         public TextMeshProUGUI playerScoreText;
         public TextMeshProUGUI enemyScoreText;
+        public TextMeshProUGUI playerNickText;
+        public TextMeshProUGUI enemyNickText;
+
+        public GameObject bulletCircle;
+        public Image bulletLine;
+        public TextMeshProUGUI bulletText;
+
+        public GameObject attackCircle;
+
+        public GameEndUI gameWin;
+        public GameEndUI gameDefeat;
         
         [Header("행동분석용")]
         public GameObject behaviourObject;
+
+        public TextMeshProUGUI playerNickResultText;
+        public TextMeshProUGUI enemyNickResultText;
+        public TextMeshProUGUI playerScoreResultText;
+        public TextMeshProUGUI enemyScoreResultText;
+        public GameObject playerResultWin;
+        public GameObject enemyResultWin;
+        
         public TextMeshProUGUI playerHitValueText;
         public TextMeshProUGUI enemyHitValueText;
         public Slider hitSlider;
@@ -122,12 +144,7 @@ namespace UIHolder
         protected override void Initial()
         {
             canvasManager = new CanvasManager();
-            
-            resetPositionButton.onClick.AddListener(() =>
-            {
-                GameManager.Instance.NetworkManager.PlayerCharacter.InitPosition();
-            });
-            
+
             ultButton.onClick.AddListener(() =>
             {
                 GameManager.Instance.NetworkManager.PlayerCharacter.GetUlt();
@@ -148,123 +165,162 @@ namespace UIHolder
                 GameManager.Instance.NetworkManager.PlayerCharacter.Dodge();
             });
             
+            reloadButton.onClick.AddListener(() =>
+            {
+                var weapon = GameManager.Instance.NetworkManager.PlayerCharacter.gameObject.GetComponentInChildren<NetworkProjectileHolder>();
+                weapon.CallReload(false);
+            });
+            
             disconnectButton.onClick.AddListener(() =>
             {
                 GameManager.Instance.NetworkManager.DisconnectingServer();
             });
 
-            if (subWeapon.None != null)
+            if (singleMode)
             {
-                subWeapon.None.onClick.AddListener(() =>
+                resetPositionButton.onClick.AddListener(() =>
                 {
-                    subWeapon.DisableAll();
-                    subWeapon.Enable(subWeapon.None);
-
-                    // 보조무기 없애는 코드
+                    GameManager.Instance.NetworkManager.PlayerCharacter.InitPosition();
                 });
-
-                subWeapon.Shield.onClick.AddListener(() =>
+            
+                if (subWeapon.None != null)
                 {
-                    subWeapon.DisableAll();
-                    subWeapon.Enable(subWeapon.Shield);
+                    subWeapon.None.onClick.AddListener(() =>
+                    {
+                        subWeapon.DisableAll();
+                        subWeapon.Enable(subWeapon.None);
 
-                    // 보조무기 바꾸는 코드
-                });
+                        // 보조무기 없애는 코드
+                    });
 
-                subWeapon.BuffMachine.onClick.AddListener(() =>
+                    subWeapon.Shield.onClick.AddListener(() =>
+                    {
+                        subWeapon.DisableAll();
+                        subWeapon.Enable(subWeapon.Shield);
+
+                        // 보조무기 바꾸는 코드
+                    });
+
+                    subWeapon.BuffMachine.onClick.AddListener(() =>
+                    {
+                        subWeapon.DisableAll();
+                        subWeapon.Enable(subWeapon.BuffMachine);
+
+                        // 보조무기 바꾸는 코드
+                    });
+
+                    subWeapon.HeallingGun.onClick.AddListener(() =>
+                    {
+                        subWeapon.DisableAll();
+                        subWeapon.Enable(subWeapon.HeallingGun);
+
+                        // 보조무기 바꾸는 코드
+                    });
+                }
+
+                /* Settings */
+                // hp (only in single mode)
+                if (settings.hpText != null)
                 {
-                    subWeapon.DisableAll();
-                    subWeapon.Enable(subWeapon.BuffMachine);
+                    settings.HpUp.onClick.AddListener(() =>
+                    {
+                        settings.hpText.text = GameManager.Instance.NetworkManager.PlayerCharacter.IncreaseHp();
+                    });
 
-                    // 보조무기 바꾸는 코드
-                });
+                    settings.HpDown.onClick.AddListener(() =>
+                    {
+                        settings.hpText.text = GameManager.Instance.NetworkManager.PlayerCharacter.DecreaseHp();
+                    });
+                }
 
-                subWeapon.HeallingGun.onClick.AddListener(() =>
+                // speed
+                settings.SpeedUp.onClick.AddListener(() =>
                 {
-                    subWeapon.DisableAll();
-                    subWeapon.Enable(subWeapon.HeallingGun);
-
-                    // 보조무기 바꾸는 코드
+                    settings.speedText.text = GameManager.Instance.NetworkManager.PlayerCharacter.IncreaseSpeed();
                 });
+                
+                settings.SpeedDown.onClick.AddListener(() =>
+                {
+                    settings.speedText.text = GameManager.Instance.NetworkManager.PlayerCharacter.DecreaseSpeed();
+                });
+                
+                // jump
+                settings.JumpUp.onClick.AddListener(() =>
+                {
+                    settings.jumpText.text = GameManager.Instance.NetworkManager.PlayerCharacter.IncreaseJump();
+                });
+                
+                settings.JumpDown.onClick.AddListener(() =>
+                {
+                    settings.jumpText.text = GameManager.Instance.NetworkManager.PlayerCharacter.DecreaseJump();
+                });
+                
+                // dodge
+                settings.DodgeUp.onClick.AddListener(() =>
+                {
+                    settings.dodgeText.text = GameManager.Instance.NetworkManager.PlayerCharacter.IncreaseDodge();
+                });
+                
+                settings.DodgeDown.onClick.AddListener(() =>
+                {
+                    settings.dodgeText.text = GameManager.Instance.NetworkManager.PlayerCharacter.DecreaseDodge();
+                });
+                
+                // shake sensitivity
+                settings.ShakeSensitivityUp.onClick.AddListener(() =>
+                {
+                    settings.shakeSensitivityText.text = GameManager.Instance.NetworkManager.PlayerCharacter.IncreaseShakeSensitivity();
+                });
+                
+                settings.ShakeSensitivityDown.onClick.AddListener(() =>
+                {
+                    settings.shakeSensitivityText.text = GameManager.Instance.NetworkManager.PlayerCharacter.DecreaseShakeSensitivity();
+                });
+                
+                // shoot distance
+                settings.ShootDistanceUp.onClick.AddListener(() =>
+                {
+                    settings.shootDistanceText.text = GameManager.Instance.NetworkManager.PlayerCharacter.IncreaseShootDistance();
+                });
+                
+                settings.ShootDistanceDown.onClick.AddListener(() =>
+                {
+                    settings.shootDistanceText.text = GameManager.Instance.NetworkManager.PlayerCharacter.DecreaseShootDistance();
+                });
+                /*
+                // reverse horizontal moving
+                settings.ReverseHorizontalMove.onValueChanged.AddListener( state => 
+                {
+                    GameManager.Instance.NetworkManager.PlayerCharacter.ToggleReverseHorizontalMove(state);
+                });
+                */
             }
+        }
 
-            /* Settings */
-            // hp (only in single mode)
-            if (settings.hpText != null)
+        public void ActiveGameWin(string playerNick, string enemyNick, int playerScore, int enemyScore)
+        {
+            gameWin.player.text = playerNick;
+            gameWin.enemy.text = enemyNick;
+            gameWin.playerScore.text = playerScore.ToString();
+            gameWin.enemyScore.text = enemyScore.ToString();
+            gameWin.endButton.onClick.AddListener(() =>
             {
-                settings.HpUp.onClick.AddListener(() =>
-                {
-                    settings.hpText.text = GameManager.Instance.NetworkManager.PlayerCharacter.IncreaseHp();
-                });
-
-                settings.HpDown.onClick.AddListener(() =>
-                {
-                    settings.hpText.text = GameManager.Instance.NetworkManager.PlayerCharacter.DecreaseHp();
-                });
-            }
-
-            // speed
-            settings.SpeedUp.onClick.AddListener(() =>
-            {
-                settings.speedText.text = GameManager.Instance.NetworkManager.PlayerCharacter.IncreaseSpeed();
+                GameManager.Instance.NetworkManager.DisconnectingServer();
             });
-            
-            settings.SpeedDown.onClick.AddListener(() =>
+            gameWin.gameObject.SetActive(true);
+        }
+        
+        public void ActiveGameDefeat(string playerNick, string enemyNick, int playerScore, int enemyScore)
+        {
+            gameDefeat.player.text = playerNick;
+            gameDefeat.enemy.text = enemyNick;
+            gameDefeat.playerScore.text = playerScore.ToString();
+            gameDefeat.enemyScore.text = enemyScore.ToString();
+            gameDefeat.endButton.onClick.AddListener(() =>
             {
-                settings.speedText.text = GameManager.Instance.NetworkManager.PlayerCharacter.DecreaseSpeed();
+                GameManager.Instance.NetworkManager.DisconnectingServer();
             });
-            
-            // jump
-            settings.JumpUp.onClick.AddListener(() =>
-            {
-                settings.jumpText.text = GameManager.Instance.NetworkManager.PlayerCharacter.IncreaseJump();
-            });
-            
-            settings.JumpDown.onClick.AddListener(() =>
-            {
-                settings.jumpText.text = GameManager.Instance.NetworkManager.PlayerCharacter.DecreaseJump();
-            });
-            
-            // dodge
-            settings.DodgeUp.onClick.AddListener(() =>
-            {
-                settings.dodgeText.text = GameManager.Instance.NetworkManager.PlayerCharacter.IncreaseDodge();
-            });
-            
-            settings.DodgeDown.onClick.AddListener(() =>
-            {
-                settings.dodgeText.text = GameManager.Instance.NetworkManager.PlayerCharacter.DecreaseDodge();
-            });
-            
-            // shake sensitivity
-            settings.ShakeSensitivityUp.onClick.AddListener(() =>
-            {
-                settings.shakeSensitivityText.text = GameManager.Instance.NetworkManager.PlayerCharacter.IncreaseShakeSensitivity();
-            });
-            
-            settings.ShakeSensitivityDown.onClick.AddListener(() =>
-            {
-                settings.shakeSensitivityText.text = GameManager.Instance.NetworkManager.PlayerCharacter.DecreaseShakeSensitivity();
-            });
-            
-            // shoot distance
-            settings.ShootDistanceUp.onClick.AddListener(() =>
-            {
-                settings.shootDistanceText.text = GameManager.Instance.NetworkManager.PlayerCharacter.IncreaseShootDistance();
-            });
-            
-            settings.ShootDistanceDown.onClick.AddListener(() =>
-            {
-                settings.shootDistanceText.text = GameManager.Instance.NetworkManager.PlayerCharacter.DecreaseShootDistance();
-            });
-            
-            /*
-            // reverse horizontal moving
-            settings.ReverseHorizontalMove.onValueChanged.AddListener( state => 
-            {
-                GameManager.Instance.NetworkManager.PlayerCharacter.ToggleReverseHorizontalMove(state);
-            });
-            */
+            gameDefeat.gameObject.SetActive(true);
         }
         
         public void OpenCloseMenu(GameObject menu) 
@@ -272,10 +328,31 @@ namespace UIHolder
             menu.SetActive(!menu.activeSelf);
         }
 
+        public void SetRoundResult(string playerNick, string enemyNick, int playerRound, int enemyRound)
+        {
+            playerNickResultText.text = playerNick;
+            enemyNickResultText.text = enemyNick;
+            playerScoreResultText.text = playerRound.ToString();
+            enemyScoreResultText.text = enemyRound.ToString();
+        }
+        
+        public void ActivePlayerRoundWin()
+        {
+            playerResultWin.SetActive(true);
+            enemyResultWin.SetActive(false);
+        }
+        
+        public void ActiveEnemyRoundWin()
+        {
+            playerResultWin.SetActive(false);
+            enemyResultWin.SetActive(true);
+        }
+
         public void CloseMenu(GameObject menu)
         {
             menu.SetActive(false);
         }
+
         public void SetHitAnalysis(int value1, int value2)
         {
             playerHitValueText.text = value1.ToString();
@@ -316,6 +393,12 @@ namespace UIHolder
             playerReloadValueText.text = value1.ToString();
             enemyReloadValueText.text = value2.ToString();
             reloadSlider.value = value1 / (float)(value1 + value2);
+        }
+        
+        public void SetBulletUI(float nowBullet, float maxBullet)
+        {
+            bulletLine.DOFillAmount(nowBullet == 0 ? 0 : nowBullet / maxBullet, 0.1f);
+            bulletText.text = $"{nowBullet:F0}/{maxBullet:F0}";
         }
     }
 }

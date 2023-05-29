@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,6 +7,7 @@ using Firebase.Extensions;
 using Network;
 using UnityEngine.EventSystems;
 using TMPro;
+using Random = UnityEngine.Random;
 
 public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
 {
@@ -43,6 +45,7 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
     public BasicSpawner spawner;
     public TextMeshProUGUI rankingTemp;
     public GameObject prefabRankpage;
+    public GameObject rankingHint;
 
     private void Awake()
     {
@@ -72,6 +75,8 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
 
     public void TabClicked()
     {
+        rankingHint.SetActive(false);
+        
         string tabName = EventSystem.current.currentSelectedGameObject.GetComponentInChildren<TextMeshProUGUI>().text;
         switch (tabName)
         {
@@ -152,12 +157,18 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
 
     public void PlayButtonClicked_Battle()
     {
-        spawner.StartMultiGame();
+        spawner.StartMultiGameRandomRoom();
     }
 
     public void PlayButtonClicked_Search()
     {
         _searchPopup.SetActive(true);
+    }
+    
+    public void PlayButtonClicked_SearchBattle(TextMeshProUGUI field)
+    {
+        int number = int.TryParse(field.text, out var result) ? result : Random.Range(1000, 10000);
+        spawner.StartMultiGameNumberRoom(number);
     }
 
     public void PlayButtonClicked_Practice()

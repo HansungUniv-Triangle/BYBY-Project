@@ -6,6 +6,7 @@ using Fusion;
 using Fusion.Sockets;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Random = UnityEngine.Random;
 
 namespace Network
 {
@@ -20,16 +21,33 @@ namespace Network
 
         #region Fusion
 
-        public async void StartMultiGame()
+        public async void StartMultiGameRandomRoom()
         {
+            var roomNumber = Random.Range(1000, 10000);
             _runner = gameObject.AddComponent<NetworkRunner>();
             _runner.ProvideInput = true;
-
+            
             GameManager.Instance.ActiveLoadingUI();
 
             await _runner.StartGame(new StartGameArgs()
             {
+                SessionName = roomNumber.ToString(),
                 GameMode = GameMode.Shared,
+                SceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>()
+            }).ContinueWithOnMainThread(_ => SceneManager.LoadSceneAsync("RoomScene"));
+        }
+        
+        public async void StartMultiGameNumberRoom(int roomNumber)
+        {
+            _runner = gameObject.AddComponent<NetworkRunner>();
+            _runner.ProvideInput = true;
+            GameManager.Instance.ActiveLoadingUI();
+
+            await _runner.StartGame(new StartGameArgs()
+            {
+                SessionName = roomNumber.ToString(),
+                GameMode = GameMode.Shared,
+                SceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>()
             }).ContinueWithOnMainThread(_ => SceneManager.LoadSceneAsync("RoomScene"));
         }
 
@@ -43,6 +61,7 @@ namespace Network
             await _runner.StartGame(new StartGameArgs()
             {
                 GameMode = GameMode.Single,
+                SceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>()
             }).ContinueWithOnMainThread(_ => SceneManager.LoadSceneAsync("RoomScene"));
         }
         
@@ -57,6 +76,7 @@ namespace Network
 
         public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
         {
+            _networkManager ??= FindObjectOfType<NetworkManager>();
             _networkManager.OnPlayerLeft(player);
         }
         

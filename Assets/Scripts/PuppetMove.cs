@@ -104,15 +104,19 @@ public class PuppetMove : MonoBehaviour
     
     void Update()
     {
-        if (target == null)
+        if (target is null)
         {
-            target = GameManager.Instance.NetworkManager.PlayerCharacter.gameObject;
+            if (GameManager.Instance.NetworkManager is not null && GameManager.Instance.NetworkManager.PlayerCharacter is not null)
+            {
+                target = GameManager.Instance.NetworkManager.PlayerCharacter.gameObject;
+            }
         }
         else
         {
             Move();
         }
     }
+    
     private void Move()
     {
         h = inputH;

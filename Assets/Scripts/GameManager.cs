@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Firebase.Extensions;
 using GameStatus;
 using Network;
+using TMPro;
 using Types;
 using UnityEngine;
+using UnityEngine.UI;
 using Utils;
 using NetworkPlayer = Network.NetworkPlayer;
 
@@ -64,36 +65,6 @@ public class GameManager : Singleton<GameManager>
     private void Start()
     {
         PlayerBehaviorAnalyzer = new PlayerBehaviorAnalyzer();
-        
-        DBManager.Instance.GetManyWinRanking().ContinueWithOnMainThread(task =>
-        {
-            var ranking = task.Result;
-            Debug.Log($"승리수 랭킹");
-            foreach ((string nick, int win) in ranking)
-            {
-                Debug.Log($"{nick}: {win}");
-            }
-        });
-        
-        DBManager.Instance.GetWinRatingRanking().ContinueWithOnMainThread(task =>
-        {
-            var ranking = task.Result;
-            Debug.Log($"승률 랭킹");
-            foreach ((string nick, int win) in ranking)
-            {
-                Debug.Log($"{nick}: {win}%");
-            }
-        });
-        
-        DBManager.Instance.GetWinStraightRanking().ContinueWithOnMainThread(task =>
-        {
-            var ranking = task.Result;
-            Debug.Log($"연승 랭킹");
-            foreach ((string nick, int win) in ranking)
-            {
-                Debug.Log($"{nick}: {win}연승");
-            }
-        });
     }
 
     public void ResetBehaviourEventCount()
@@ -165,6 +136,11 @@ public class GameManager : Singleton<GameManager>
     public void SetUICanvasHolder(UIHolder.UIHolder uiHolder)
     {
         _uiHolder = uiHolder;
+    }
+    
+    public void ClearUICanvasHolder()
+    {
+        _uiHolder = null;
     }
     
     public void SetSynergyPageManager(SynergyPageManager synergyPageManager)
@@ -319,25 +295,6 @@ public class StatCorrelationList<T> where T : Enum
         }
 
         return 0;
-    }
-
-    public void PrintDebug()
-    {
-        foreach (var (key, value) in _charList)
-        {
-            foreach (var statCorrelation in value)
-            {
-                Debug.Log($"{key} : {statCorrelation}");
-            }
-        }
-        
-        foreach (var (key, value) in _weaponList)
-        {
-            foreach (var statCorrelation in value)
-            {
-                Debug.Log($"{key} : {statCorrelation}");
-            }
-        }
     }
 }
 
@@ -533,7 +490,7 @@ public class PlayerBehaviorAnalyzer
     {
         CharStats = new StatCorrelationList<CharStat>();
         WeaponStats = new StatCorrelationList<WeaponStat>();
-
+        
         CharStats.SetCorrelationType(CharStat.Health)
             .AddCorrelationValue(CharStat.Armor, 0.5f);
 

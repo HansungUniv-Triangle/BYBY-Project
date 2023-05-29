@@ -12,8 +12,7 @@ public class SynergyPageManager : MonoBehaviour
 {
     public GameObject prefabPanel;
     private GameObject synergyPanel;
-
-    //private NetworkPlayer _NetworkPlayer;
+    
     private SynergyPage[] _synergyPages = new SynergyPage[7];
     private SynergySelectPanel _synergySelectPanel;
     public int CurrentPage { get; private set; }
@@ -41,7 +40,6 @@ public class SynergyPageManager : MonoBehaviour
     private void Start()
     {
         GameManager.Instance.SetSynergyPageManager(this);
-        MakeSynergyPage();
     }
 
     public void SetActiveSynergyPanel(bool value)
@@ -114,7 +112,9 @@ public class SynergyPageManager : MonoBehaviour
                         var increaseFinalValue = stat.Amount + increaseRatio;
                         totalRecommendation += increaseFinalValue * GameManager.Instance.PlayerBehaviorAnalyzer.GetRecommendation(stat.Type);
                     }
-                    _synergyPages[i].synergyRecommendationPercentage[count] = (int)(totalRecommendation * 100f);
+                    
+                    var recommend = (int)(totalRecommendation * 100f);
+                    _synergyPages[i].synergyRecommendationPercentage[count] = recommend > 0 ? recommend : 1;
                 }
 
                 var sum = _synergyPages[i].synergyRecommendationPercentage.Sum();
@@ -133,26 +133,53 @@ public class SynergyPageManager : MonoBehaviour
 
     public void SelectSynergy()
     {
-        string synergyExplain = EventSystem.current.currentSelectedGameObject.GetComponentInChildren<TextMeshProUGUI>().text;
+        string explain = EventSystem.current.currentSelectedGameObject.GetComponentInChildren<TextMeshProUGUI>().text;
         GameObject selectedSynergy = EventSystem.current.currentSelectedGameObject;
         _synergySelectPanel.DisplaySynergySelected(_synergyPages[CurrentPage], selectedSynergy);
-        _synergyPages[CurrentPage].FindSelectedSynergyInSynergies(synergyExplain);
+
+        if (CurrentPage == 3)
+        {
+            _synergyPages[CurrentPage].FindSelectedWeaponInSynergies(explain);
+        }
+        else
+        {
+            _synergyPages[CurrentPage].FindSelectedSynergyInSynergies(explain);
+        }
     }
 
     public void ApplySelectedSynergyToCharacter()
     {
-        foreach (var synergyPage in _synergyPages)
+        for (var i = 0; i < _synergyPages.Length; i++)
         {
-            var selectedSynergyName = synergyPage.selectedSynergy.synergyName;
-            var index = GameManager.Instance.SynergyList.FindIndex(synergy => synergy.synergyName == selectedSynergyName);
-
-            if (index != -1)
+            var synergyPage = _synergyPages[i];
+            
+            if (i == 3)
             {
-                GameManager.Instance.NetworkManager.PlayerCharacter.AddSynergy(index);
+                var selectedWeaponName = synergyPage.selectedWeapon.weaponName;
+                var weapon = GameManager.Instance.WeaponList.Find(weapon => weapon.weaponName == selectedWeaponName);
+                
+                if (weapon is not null)
+                {
+                    GameManager.Instance.NetworkManager.SpawnWeapon(weapon);
+                }
+                else
+                {
+                    throw new Exception("선택된 무기 찾기 실패");
+                }
             }
             else
             {
-                throw new Exception("선택된 시너지 찾기 실패");
+                var selectedSynergyName = synergyPage.selectedSynergy.synergyName;
+                var index = GameManager.Instance.SynergyList.FindIndex(synergy => synergy.synergyName == selectedSynergyName);
+
+                if (index != -1)
+                {
+                    GameManager.Instance.NetworkManager.PlayerCharacter.AddSynergy(index);
+                }
+                else
+                {
+                    throw new Exception("선택된 시너지 찾기 실패");
+                }
             }
         }
     }
@@ -231,25 +258,6 @@ public class SynergyPageManager : MonoBehaviour
         return i;
     }
 
-    private void GetRecommendationPercentage()
-    {
-        int max = 100;
-        int recommendation = 0;
-        for (int i = 0; i < _synergyPages[CurrentPage].synergies.Length; i++)
-        {
-            if (i == 2)
-            {
-                _synergyPages[CurrentPage].synergyRecommendationPercentage[i] = max;
-            }
-            else
-            {
-                recommendation = Random.Range(0, max + 1);
-                max -= recommendation;
-                _synergyPages[CurrentPage].synergyRecommendationPercentage[i] = recommendation;
-            }
-        }
-    }
-
     public void SetSynergySelectTimer(float value, float max)
     {
         _synergySelectPanel.SetTimerValue(value, max);
@@ -275,7 +283,7 @@ public class SynergyPageManager : MonoBehaviour
             while (synergyPage.synergies[2] == null) {
                 var rarityGroup = GameManager.Instance.SynergyList.FindAll(s => s.rarity.Equals(rarity));
                 var randomNumberRarityGroup = Random.Range(0, rarityGroup.Count);
-                var randomSynergy = GameManager.Instance.SynergyList[randomNumberRarityGroup];
+                var randomSynergy = rarityGroup[randomNumberRarityGroup];
                 
                 if (synergyPage.CheckIsNumInSynergyList(randomSynergy) == false)
                 {
@@ -292,16 +300,15 @@ public class SynergyPageManager : MonoBehaviour
         {
             while (synergyPage.weapons[2] == null)
             {
-                var weaponGroup = GameManager.Instance.WeaponList;
+                var weaponGroup = GameManager.Instance.WeaponList.FindAll(w => !w.isMainWeapon);
                 var randomNumberWeaponGroup = Random.Range(0, weaponGroup.Count);
-                var randomWeapon = GameManager.Instance.WeaponList[randomNumberWeaponGroup];
-                synergyPage.AddWeapon(randomWeapon);
-                
-                // if (synergyPage.CheckIsNumInWeaponList(randomWeapon) == false)
-                // {
-                //     synergyPage.IsNumInWeaponList.Add(randomWeapon);
-                //     synergyPage.AddWeapon(randomWeapon);
-                // }
+                var randomWeapon = weaponGroup[randomNumberWeaponGroup];
+
+                if (synergyPage.CheckIsNumInWeaponList(randomWeapon) == false)
+                {
+                    synergyPage.IsNumInWeaponList.Add(randomWeapon);
+                    synergyPage.AddWeapon(randomWeapon);
+                }
             }
         }
     }

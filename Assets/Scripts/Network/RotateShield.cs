@@ -12,6 +12,7 @@ namespace Network
         
         public GameObject[] childShieldObject = new GameObject[4];
         public int childCount = 4;
+        private float _timer;
 
         private static void ChangeChildState(Changed<RotateShield> changed)
         {
@@ -29,21 +30,17 @@ namespace Network
         public override void Spawned()
         {
             base.Spawned();
+            _projectileHolder.ChangeIsDone(false);
             gameObject.transform.eulerAngles = Vector3.zero;
-            if (_projectileHolder)
-            {
-                _projectileHolder.ChangeIsDone(false);
-            }
+            _timer = 0f;
         }
 
         protected override bool IsExpirationProjectile()
         {
-            if (childCount == 0 || Distance > (MaxRange * 10))
+            if (childCount == 0 || _timer > 5f)
             {
-                if (_projectileHolder)
-                {
-                    _projectileHolder.ChangeIsDone(true);
-                }
+                _timer = 0f;
+                _projectileHolder.ChangeIsDone(true);
                 return true;
             }
 
@@ -52,6 +49,7 @@ namespace Network
 
         protected override void UpdateProjectile()
         {
+            _timer += Runner.DeltaTime;
             gameObject.transform.Rotate(Vector3.up, TotalVelocity / 10);
             gameObject.transform.position = GameManager.Instance.NetworkManager.PlayerCharacter.transform.position;
         }
@@ -61,13 +59,11 @@ namespace Network
             var childNum = shield.transform.GetSiblingIndex();
             if (HasStateAuthority && !bullet.HasStateAuthority) // 쉴드는 내꺼, 총알은 상대꺼
             {
-                Debug.Log("적 총알과 충돌");
                 ChildShieldActive.Set(childNum, false);
                 childCount--;
             }
             else if (!HasStateAuthority && bullet.HasStateAuthority) // 쉴드는 상대꺼, 총알은 내꺼
             {
-                Debug.Log("적 쉴드와 충돌");
                 bullet.GetComponent<NetworkProjectileBase>().DestroyProjectile();
             }
         }

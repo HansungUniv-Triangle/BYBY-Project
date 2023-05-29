@@ -26,4 +26,20 @@ MonoBehaviour:
   shootSoundPath: rocket_shoot
   hitSoundPath: rocket_hit
   isMainWeapon: 1
-  basicWeaponStat: []
+  basicWeaponStat:
+  - <Type>k__BackingField: 1
+    <Amount>k__BackingField: 0
+    <Ratio>k__BackingField: -0.8
+    <Addition>k__BackingField: 0
+  - <Type>k__BackingField: 5
+    <Amount>k__BackingField: -9
+    <Ratio>k__BackingField: 0
+    <Addition>k__BackingField: 0
+  - <Type>k__BackingField: 6
+    <Amount>k__BackingField: 0
+    <Ratio>k__BackingField: -0.2
+    <Addition>k__BackingField: 0
+  - <Type>k__BackingField: 4
+    <Amount>k__BackingField: -9
+    <Ratio>k__BackingField: 0
+    <Addition>k__BackingField: 0

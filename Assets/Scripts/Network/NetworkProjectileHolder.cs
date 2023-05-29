@@ -18,9 +18,23 @@ namespace Network
         protected Transform ShootPointTransform;
         protected Vector3 Target;
         protected bool IsDoneShootAction;
+        
+        private int _maxBullet;
+        private int _remainBullet;
+        protected int RemainBullet
+        {
+            get
+            {
+                if (WeaponData.isMainWeapon)
+                {
+                    GameManager.Instance.NetworkManager.UpdateBullet(_remainBullet, _maxBullet);
+                }
+                return _remainBullet;
+            }
+            set => _remainBullet = value;
+        }
+
         protected bool IsAttacking;
-        protected int RemainBullet;
-        protected TextMeshProUGUI BulletText;
         protected TickTimer delay;
 
         [Networked] private int NetWeaponData { get; set; } = -1;
@@ -40,9 +54,11 @@ namespace Network
             private set => _weaponData = value;
         }
 
+        private Sequence _reloadSequence;
+
         private void Awake()
         {
-            _baseWeaponStat = new BaseStat<WeaponStat>(1, 1);
+            _baseWeaponStat = new BaseStat<WeaponStat>(10, 1);
             _projectileList = new List<NetworkObject>();
             WeaponTransform = gameObject.transform;
             Target = gameObject.transform.forward;
@@ -51,26 +67,24 @@ namespace Network
             var shootPoint = transform.Find("ShootPoint");
             ShootPointTransform = shootPoint ? shootPoint : WeaponTransform;
         }
-
-        private void Start()
+        
+        public void SetBullet()
         {
             if (WeaponData.isMainWeapon)
             {
                 RemainBullet = (int)GetWeaponStat(WeaponStat.Bullet).Total;
+                _maxBullet = (int)GetWeaponStat(WeaponStat.Bullet).Total;
             }
-            //BulletText = (GameManager.Instance.UIHolder as GameUI).bulletText;
         }
 
         public override void FixedUpdateNetwork()
         {
-            if (!HasInputAuthority || !GameManager.Instance.NetworkManager.CanControlCharacter)
+            if (!HasInputAuthority || !IsAttacking || !IsDoneShootAction || !GameManager.Instance.NetworkManager.CanControlCharacter)
             {
                 return;
             }
             
             Attack();
-
-            //BulletText.text = RemainBullet.ToString();
         }
 
         public void InitialHolder(Weapon weaponData)
@@ -121,17 +135,7 @@ namespace Network
 
         protected virtual bool CanAttack()
         {
-            if (!IsAttacking)
-            {
-                return false;
-            }
-
-            if (!IsDoneShootAction)
-            {
-                return false;
-            }
-            
-            if (RemainBullet == 0)
+            if (RemainBullet == 0 && _weaponData.isMainWeapon)
             {
                 ReloadBullet();
                 return false;
@@ -157,36 +161,48 @@ namespace Network
             IsAttacking = value;
         }
 
+        public void CallReload(bool attackMode)
+        {
+            if (!attackMode && WeaponData.isMainWeapon)
+            {
+                ReloadBullet();
+            }
+        }
+
         protected void ReloadBullet()
         {
-            Sequence reloadSequence = DOTween.Sequence();
+            _reloadSequence.Kill();
+            
+            _reloadSequence = DOTween.Sequence();
 
-            reloadSequence
+            _reloadSequence
                 .OnStart(() =>
                 {
                     IsDoneShootAction = false;
-                    //GameManager.Instance.ActiveLoadingUI();
                 })
                 .OnComplete(() =>
                 {
                     IsDoneShootAction = true;
-                    //GameManager.Instance.DeActiveLoadingUI();
                 });
 
+            var now = RemainBullet;
             var max = GetWeaponStat(WeaponStat.Bullet).Total;
             var time = GetWeaponStat(WeaponStat.Reload).Total;
             var separateTime = max / time;
             
             GameManager.Instance.AddBehaviourEventCount(BehaviourEvent.장전, (int)separateTime * 100);
             
-            for (int i = 0; i < max; i++)
+            for (int i = now; i < max; i++)
             {
-                reloadSequence
-                    .AppendCallback(() => RemainBullet++)
+                _reloadSequence
+                    .AppendCallback(() =>
+                    {
+                        RemainBullet++;
+                    })
                     .AppendInterval(separateTime);
             }
 
-            reloadSequence.Play();
+            _reloadSequence.Play();
         }
 
         protected abstract void Attack();

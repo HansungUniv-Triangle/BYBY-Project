@@ -334,6 +334,7 @@ namespace Network
             InitialCharacterStatus();
             InitialWeaponStatus();
             Healing(999f);
+            ApplyShooting(_isShooting);
         }
 
         private void InitialCharacterStatus()
@@ -359,6 +360,8 @@ namespace Network
                 {    
                     weapon.AddWeaponStatList(synergy.weaponStatList);
                 }
+
+                weapon.SetBullet();
             }
         }
 
@@ -437,18 +440,34 @@ namespace Network
         private Ray _gunRay;
         private RaycastHit _hit;
         private float _shootDistance = 30f;
-        private bool isShooting = true;
-        private const int shootRayMask = (int)Layer.Enemy | (int)Layer.World;
+        private bool _isShooting = false;
+        private const int ShootRayMask = (int)Layer.Enemy | (int)Layer.World;
 
         public void ToggleShooting()
         {
-            isShooting = !isShooting;
+            _isShooting = !_isShooting;
+            ApplyShooting(_isShooting);
+        }
 
+        private void ApplyShooting(bool shooting)
+        {
+            if (shooting)
+            {
+                _gameUI.bulletCircle.SetActive(true);
+                _gameUI.attackCircle.SetActive(false);
+            }
+            else
+            {
+                _gameUI.attackCircle.SetActive(true);
+                _gameUI.bulletCircle.SetActive(false);
+            }
+            
             var weapon = GetComponentsInChildren<NetworkProjectileHolder>();
 
             foreach (var networkProjectileHolder in weapon)
             {
-                networkProjectileHolder.ChangeIsAttacking(isShooting);
+                networkProjectileHolder.ChangeIsAttacking(shooting);
+                networkProjectileHolder.CallReload(shooting);
             }
         }
 
@@ -463,19 +482,20 @@ namespace Network
             }
         }
 
-        private void ShootAllWeapons(AttackType attackType) {
+        private void ShootAllWeapons() 
+        {
+            if (!_isShooting) return;
+            
             var weapon = GetComponentsInChildren<NetworkProjectileHolder>();
 
             foreach (var networkProjectileHolder in weapon)
             {
-                Shoot(networkProjectileHolder, attackType);
+                Shoot(networkProjectileHolder);
             }
         }
 
-        private void Shoot(NetworkProjectileHolder nph, AttackType attackType)
+        private void Shoot(NetworkProjectileHolder nph)
         {
-            if (!isShooting) return;
-
             var aimRay = _camera.ScreenPointToRay(GetCrossHairPointInScreen());
             // 조준점으로 쏘는 레이의 원점이 플레이어 앞에서 시작되어야 한다.
             // 그렇지 않으면, 플레이어의 총알은 플레이어의 뒤에 있지만, 조준점에는 걸린 물체로 날아가게 된다. 한마디로 뒤로 쏘게 된다.
@@ -486,7 +506,7 @@ namespace Network
             _gunRay.origin = nph.GetShootPointTransform();
 
             //Debug.DrawRay(aimRayOrigin, aimRay.direction * _shootDistance, Color.blue, 0.3f);
-            if (Physics.Raycast(aimRayOrigin, aimRay.direction, out _hit, _shootDistance, shootRayMask))
+            if (Physics.Raycast(aimRayOrigin, aimRay.direction, out _hit, _shootDistance, ShootRayMask))
             {
                 _gunRay.direction = (_hit.point - _gunRay.origin).normalized;
             }
@@ -498,13 +518,12 @@ namespace Network
             //Debug.DrawRay(_gunRay.origin, _gunRay.direction * _shootDistance, Color.magenta, 0.3f);
             var targetPoint = _gunRay.origin + _gunRay.direction * _shootDistance;
 
-            if (Physics.Raycast(_gunRay, out _hit, _shootDistance, shootRayMask))
+            if (Physics.Raycast(_gunRay, out _hit, _shootDistance, ShootRayMask))
             {
                 targetPoint = _hit.point;
             }
-
-            if (nph.WeaponData.isMainWeapon)
-                RotateToTarget(nph.transform, targetPoint, 8f, false);
+            
+            RotateToTarget(nph.transform, targetPoint, 8f, false);
             nph.SetTarget(targetPoint);
         }
 
@@ -638,7 +657,7 @@ namespace Network
             _gunPos = transform.GetChild(2).transform;
             _moveDir = Vector3.zero;
             
-            _baseCharStat = new BaseStat<CharStat>(1, 1);
+            _baseCharStat = new BaseStat<CharStat>(10, 1);
             _characterController = GetComponent<CharacterController>();
             _catController = GetComponentInChildren<CatController>();
             _healingEffect = Resources.Load<ParticleSystem>("Effect/HealOnce");
@@ -751,7 +770,7 @@ namespace Network
                 Dodge();
             }
         
-            ShootAllWeapons(AttackType.Basic);
+            ShootAllWeapons();
 
             if (_joystick is not null && _target is not null)
             {

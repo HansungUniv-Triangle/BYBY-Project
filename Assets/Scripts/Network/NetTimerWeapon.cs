@@ -10,17 +10,12 @@ namespace Network
         {
             if (CanAttack())
             {
-                SpawnProjectile(WeaponTransform.position);
+                SpawnProjectile(ShootPointTransform.position);
             }
         }
         
         protected override bool CanAttack()
         {
-            if (!IsDoneShootAction)
-            {
-                return false;
-            }
-
             if (delay.ExpiredOrNotRunning(Runner))
             {
                 delay = TickTimer.CreateFromSeconds(Runner, timer);

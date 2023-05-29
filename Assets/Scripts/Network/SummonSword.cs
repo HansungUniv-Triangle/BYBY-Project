@@ -15,11 +15,6 @@ namespace Network
         
         protected override bool CanAttack()
         {
-            if (!IsDoneShootAction)
-            {
-                return false;
-            }
-
             if (delay.ExpiredOrNotRunning(Runner))
             {
                 delay = TickTimer.CreateFromSeconds(Runner, 5f);
