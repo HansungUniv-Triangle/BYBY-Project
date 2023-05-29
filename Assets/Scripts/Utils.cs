@@ -55,7 +55,7 @@ namespace Utils
                     }
                 case WeaponStat.Special:
                     return total;
-                case WeaponStat.Damage:
+                case WeaponStat.Attack:
                     return total;
                 case WeaponStat.Range:
                     return 10 + total;

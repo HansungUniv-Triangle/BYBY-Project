@@ -20,7 +20,14 @@ namespace GameStatus
         [field: SerializeReference]
         public float Addition { get; private set; }
         
-        public float Total => Amount * Ratio + Addition;
+        public float Total
+        {
+            get
+            {
+                var calcValue = Amount * Ratio + Addition;
+                return calcValue > 1 ? calcValue : 1;
+            }
+        }
 
         public Stat(T type, float amount, float ratio)
         {

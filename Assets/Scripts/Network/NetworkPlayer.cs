@@ -477,8 +477,10 @@ namespace Network
 
             foreach (var networkProjectileHolder in weapon)
             {
-                //if (networkProjectileHolder.WeaponData.isMainWeapon)
-                // 재장전 호출
+                if (networkProjectileHolder.WeaponData.isMainWeapon)
+                {
+                    networkProjectileHolder.CallReload(false);
+                }
             }
         }
 

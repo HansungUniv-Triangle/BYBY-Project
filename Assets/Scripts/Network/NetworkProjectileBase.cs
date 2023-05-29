@@ -50,7 +50,7 @@ namespace Network
         // 기본 + 변동 스탯
         protected float TotalVelocity => StatConverter.ConversionStatValue(_baseStat(WeaponStat.Velocity)) + IndividualVelocity;
         public float IndividualVelocity;
-        protected float TotalDamage => StatConverter.ConversionStatValue(_baseStat(WeaponStat.Damage)) + IndividualDamage;
+        protected float TotalDamage => StatConverter.ConversionStatValue(_baseStat(WeaponStat.Attack)) + IndividualDamage;
         public float IndividualDamage;
 
         // 네트워크 관련

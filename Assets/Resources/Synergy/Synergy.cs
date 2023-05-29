@@ -111,7 +111,7 @@ public class Synergy : ScriptableObject
         {
             WeaponStat.Interval => "연사",
             WeaponStat.Special => "특화",
-            WeaponStat.Damage => "공격력",
+            WeaponStat.Attack => "공격력",
             WeaponStat.Range => "사거리",
             WeaponStat.Reload => "장전",
             WeaponStat.Bullet => "탄환",

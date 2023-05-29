@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using DG.Tweening;
+using GameStatus;
 using TMPro;
 using Types;
 using UnityEngine.EventSystems;
@@ -261,6 +262,12 @@ public class SynergyPageManager : MonoBehaviour
     public void SetSynergySelectTimer(float value, float max)
     {
         _synergySelectPanel.SetTimerValue(value, max);
+    }
+    
+    public void SetSynergySelectStats(BaseStat<CharStat> charBaseStat, BaseStat<WeaponStat> weaponBaseStat)
+    {
+        _synergySelectPanel.SetCharStats(charBaseStat);
+        _synergySelectPanel.SetWeaponStats(weaponBaseStat);
     }
 
     private Rarity GetRandomRarity()

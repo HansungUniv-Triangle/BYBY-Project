@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: Shield
   m_EditorClassIdentifier: 
   sprite: {fileID: 21300000, guid: aee8b472f34804516843ccda1e9a7233, type: 3}
-  weaponName: "\uD68C\uC804 \uD68C\uC624\uB9AC"
-  weaponExplain: "5\uCD08\uB9C8\uB2E4 \uBC45\uAE00\uBC45\uAE00 \uB3C4\uB294 \uC274\uB4DC
-    \uC0DD\uC131"
+  weaponName: "\uD68C\uC804 \uBC29\uD328"
+  weaponExplain: "12\uCD08 \uB9C8\uB2E4 \uD50C\uB808\uC774\uC5B4 \uCE90\uB9AD\uD130\uB97C
+    \uB530\uB77C \uB2E4\uB2C8\uBA70, \uD68C\uC804\uD558\uB294 \uBC29\uD328\uB97C
+    \uC0DD\uC131\uD569\uB2C8\uB2E4."
   weaponPrefabRef:
     RawGuidValue: ff2429f452998344496ee1f3047af527
   bulletPrefabRef:

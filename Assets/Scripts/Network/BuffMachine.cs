@@ -23,7 +23,7 @@ namespace Network
                     var weapons = player.GetProjectileHolderList();
                     foreach (var networkProjectileHolder in weapons)
                     {
-                        var damage = networkProjectileHolder.GetWeaponStat(WeaponStat.Damage);
+                        var damage = networkProjectileHolder.GetWeaponStat(WeaponStat.Attack);
                         damage.AddAddition(damage.Total / 2);
                     }
                     IsAlreadyBuff = true;

@@ -38,7 +38,7 @@ namespace Types
     { // 발사주기, 크기, 재장전, 탄장, 정확도, 데미지,
         Interval, // 연사력 주기적인 발사
         Special, // 무기별 특화
-        Damage, // 기본 데미지
+        Attack, // 기본 데미지
         Range, // 사거리
         Reload, // 재장전 속도
         Bullet, // 탄창수
