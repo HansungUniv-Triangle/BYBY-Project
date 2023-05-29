@@ -739,22 +739,22 @@ namespace Network
                     position = Vector3.right;
                     break;
                 case 1:
-                    position = new Vector3(-1.5f, 1f, -1.5f);
+                    position = new Vector3(-0.7f, 0.88f, -0.6f);
                     break;
                 case 2: 
-                    position = new Vector3(0, 1f, -1.5f);
+                    position = new Vector3(0.7f, 0.88f, -0.6f);
                     break;
                 case 3: 
-                    position = new Vector3(1.5f, 1f, -1.5f);
+                    position = new Vector3(0f, 1.45f, -0.15f);
                     break;
                 case 4: 
-                    position = new Vector3(-1.5f, 0, -1.5f);
+                    position = new Vector3(-0.88f, 1.64f, -0.6f);
                     break;
                 case 5: 
-                    position = new Vector3(1.5f, 0, -1.5f);
+                    position = new Vector3(0.88f, 1.64f, -0.6f);
                     break;
                 default:
-                    position = new Vector3(0, 0, -1.5f);
+                    position = new Vector3(0f, 2.15f, -0.15f);
                     break;
             }
 

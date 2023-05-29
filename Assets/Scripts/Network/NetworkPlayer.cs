@@ -527,43 +527,6 @@ namespace Network
             nph.SetTarget(targetPoint);
         }
 
-        // private void LaserBeam(Ray gunRay, float aimDistance, AttackType attackType, LineRenderer lineRenderer)
-        // {
-        //     lineRenderer.SetPosition(0, gunRay.origin);
-        //
-        //     /* 실제 총알이 날아가는 경로 */
-        //     if (Physics.Raycast(gunRay, out _hit, aimDistance, shootRayMask))
-        //     {
-        //         var point = _hit.point - _hit.normal * 0.01f;
-        //
-        //         if (_hit.transform.gameObject == _target.gameObject)
-        //         {
-        //             // 임시 헤드 판정
-        //             var isCritical = _hit.point.y - (_target.transform.position.y - 1) > 1.25f;
-        //             _gameUI.hitDamageText.GetComponent<HitDamage>().HitDamageAnimation(_damage, isCritical);
-        //         }
-        //         
-        //         switch (attackType)
-        //         {
-        //             case AttackType.Basic:
-        //                 AddBlockHitData(point, 1);
-        //                 break;
-        //
-        //             case AttackType.Ultimate:
-        //                 WorldManager.Instance.GetWorld().ExplodeBlocks(point, 3, 3);
-        //                 VibrateUlt();
-        //                 break;
-        //             default:
-        //                 throw new ArgumentOutOfRangeException(nameof(attackType), attackType, null);
-        //         }
-        //
-        //         targetPoint = _hit.point;
-        //     }
-        //     
-        //     GetComponentInChildren<NetworkProjectileHolder>().target = targetPoint;
-        //     lineRenderer.SetPosition(1, targetPoint);
-        // }
-
         private Vector3 GetCrossHairPointInScreen()
         {
             var position = _crossHair.position;
