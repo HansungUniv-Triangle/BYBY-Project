@@ -26,7 +26,9 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
     public GameObject _tab_NumberOfWin;
     public GameObject _tab_Odds;
     public GameObject _tab_WinningStreak;
-   
+
+    private GameObject _vibrationToggle;
+
     [SerializeField]
     private Transform _spawnPointOrigin;
     private RectTransform[] _spawnPoint;
@@ -59,6 +61,7 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
         _rankingPopup = transform.GetChild(1).transform.GetChild(6).gameObject;
         _settingsPopup = transform.GetChild(1).transform.GetChild(7).gameObject;
         _searchPopup = transform.GetChild(1).transform.GetChild(8).gameObject;
+        _vibrationToggle = _settingsPopup.GetComponentInChildren<Toggle>().gameObject;
     }
 
     void Start()
@@ -408,6 +411,7 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
     public void ToggleIsVibrate(bool active)
     {
         GameManager.Instance.IsVibrateOn = !GameManager.Instance.IsVibrateOn;
+        _vibrationToggle.transform.GetChild(1).gameObject.SetActive(GameManager.Instance.IsVibrateOn);
     }
 
     private IEnumerator ResetSwipeCoroutine()
