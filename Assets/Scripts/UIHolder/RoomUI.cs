@@ -44,13 +44,16 @@ namespace UIHolder
 
             Autorifle.onClick.AddListener(() =>
             {
+                if (!tabFocused.IsActive())
+                {
+                    tabFocused.gameObject.SetActive(true);
+                }
                 GameObject selectedButton = EventSystem.current.currentSelectedGameObject;
                 Vector3 buttonPosition = selectedButton.transform.position;
                 Vector3 tabPosition = tabFocused.transform.position;
                 tabPosition.x = buttonPosition.x;
-                tabPosition.y = buttonPosition.y - selectedButton.GetComponent<RectTransform>().sizeDelta.y / 2;
                 tabFocused.transform.position = tabPosition;
-
+                
                 GameManager.Instance.selectWeaponNum = GameManager.Instance.WeaponList.FindIndex(x => x.weaponName.Equals("자동소총"));
                 weaponName.text = GameManager.Instance.WeaponList[GameManager.Instance.selectWeaponNum].weaponName;
                 weaponExplain.text = GameManager.Instance.WeaponList[GameManager.Instance.selectWeaponNum].weaponExplain;
@@ -58,11 +61,14 @@ namespace UIHolder
 
             Cannon.onClick.AddListener(() =>
             {
+                if (!tabFocused.IsActive())
+                {
+                    tabFocused.gameObject.SetActive(true);
+                }
                 GameObject selectedButton = EventSystem.current.currentSelectedGameObject;
                 Vector3 buttonPosition = selectedButton.transform.position;
                 Vector3 tabPosition = tabFocused.transform.position;
                 tabPosition.x = buttonPosition.x;
-                tabPosition.y = buttonPosition.y - selectedButton.GetComponent<RectTransform>().sizeDelta.y / 2;
                 tabFocused.transform.position = tabPosition;
 
                 GameManager.Instance.selectWeaponNum = GameManager.Instance.WeaponList.FindIndex(x => x.weaponName.Equals("대포"));
@@ -72,11 +78,14 @@ namespace UIHolder
 
             Handgun.onClick.AddListener(() =>
             {
+                if (!tabFocused.IsActive())
+                {
+                    tabFocused.gameObject.SetActive(true);
+                }
                 GameObject selectedButton = EventSystem.current.currentSelectedGameObject;
                 Vector3 buttonPosition = selectedButton.transform.position;
                 Vector3 tabPosition = tabFocused.transform.position;
                 tabPosition.x = buttonPosition.x;
-                tabPosition.y = buttonPosition.y - selectedButton.GetComponent<RectTransform>().sizeDelta.y / 2;
                 tabFocused.transform.position = tabPosition;
 
                 GameManager.Instance.selectWeaponNum = GameManager.Instance.WeaponList.FindIndex(x => x.weaponName.Equals("권총"));
@@ -86,11 +95,14 @@ namespace UIHolder
 
             Sniper.onClick.AddListener(() =>
             {
+                if (!tabFocused.IsActive())
+                {
+                    tabFocused.gameObject.SetActive(true);
+                }
                 GameObject selectedButton = EventSystem.current.currentSelectedGameObject;
                 Vector3 buttonPosition = selectedButton.transform.position;
                 Vector3 tabPosition = tabFocused.transform.position;
                 tabPosition.x = buttonPosition.x;
-                tabPosition.y = buttonPosition.y - selectedButton.GetComponent<RectTransform>().sizeDelta.y / 2;
                 tabFocused.transform.position = tabPosition;
 
                 GameManager.Instance.selectWeaponNum = GameManager.Instance.WeaponList.FindIndex(x => x.weaponName.Equals("저격총"));
