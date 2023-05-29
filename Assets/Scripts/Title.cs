@@ -16,7 +16,7 @@ public class Title : MonoBehaviour
     private Sequence titleLogoScaleSequence;
     private Sequence touchToStartScaleSequence;
 
-    void Start()
+    private void Start()
     {
         titleLogoScaleSequence = DOTween.Sequence();
         touchToStartScaleSequence = DOTween.Sequence();
@@ -64,13 +64,13 @@ public class Title : MonoBehaviour
         }
     }
 
-    public async void ChangeNickname(string nick)
+    private async void ChangeNickname(string nick)
     {
         await DBManager.Instance.ChangeNickname(nick);
         MoveToLobby();
     }
 
-    public void MoveToLobby()
+    private void MoveToLobby()
     {
         SceneManager.LoadSceneAsync(1);
     }
