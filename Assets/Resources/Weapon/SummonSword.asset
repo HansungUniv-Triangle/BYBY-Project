@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: SummonSword
   m_EditorClassIdentifier: 
   sprite: {fileID: 21300000, guid: 02aad4f9e002f4e5499ecc3ba987c56a, type: 3}
-  weaponName: "\uD558\uB298\uC5D0\uC11C \uCE7C\uC774"
-  weaponExplain: "\uD558\uB298\uC5D0\uC11C \uCE7C\uC774 \uB5A8\uC5B4\uC9C4\uB2E4."
+  weaponName: "\uAC80 \uAC15\uB9BC"
+  weaponExplain: "5\uCD08 \uB9C8\uB2E4 \uC870\uC900\uC810 \uC704\uCE58\uC5D0 \uB5A8\uC5B4\uC9C0\uB294
+    \uCE7C\uC744 \uC18C\uD658\uD569\uB2C8\uB2E4."
   weaponPrefabRef:
     RawGuidValue: 44aaa9620947c7b44be3576760ff3ec2
   bulletPrefabRef:

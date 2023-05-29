@@ -1,5 +1,6 @@
 ﻿using DG.Tweening;
 using Types;
+using UnityEngine;
 
 namespace Network
 {
@@ -9,23 +10,22 @@ namespace Network
         {
             if (CanAttack())
             {
+                Debug.Log("shoot");
+                
                 var speed = GetCharStat(CharStat.Speed).Total * 0.8f;
 
                 DOTween.Sequence()
                     .OnStart(() =>
                     {
                         IsDoneShootAction = false;
+                        SpawnProjectile(ShootPointTransform.position);
                         RemainBullet--;
+                        var why = RemainBullet;
                     })
-                    .OnComplete(() =>
-                    {
-                        IsDoneShootAction = true;
-                    })
-                    .AppendCallback(() => SpawnProjectile(ShootPointTransform.position))
                     .AppendCallback(() => AddCharAdditionStat(CharStat.Speed, -speed))
                     .AppendInterval(2.0f)
                     .AppendCallback(() => AddCharAdditionStat(CharStat.Speed, +speed))
-                    .AppendInterval(2.0f);
+                    .AppendCallback(() => IsDoneShootAction = true);
             }
         }
     }

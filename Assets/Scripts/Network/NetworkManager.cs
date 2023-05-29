@@ -326,7 +326,7 @@ namespace Network
                     break;
                 case RoundState.SynergySelect:
                     ViewSynergySelect();
-                    SetTimerSec(10f);
+                    SetTimerSec(60f);
                     break;
                 case RoundState.WaitToStart:
                     ViewWait();
@@ -466,8 +466,11 @@ namespace Network
             GameUIInstance.behaviourObject.SetActive(false);
             GameUIInstance.gameUIGroup.SetActive(false);
             PlayerCamera.ChangeCameraMode(CameraMode.None);
-            SynergyPageManager.SetActiveSynergyPanel(true);
+            
             SynergyPageManager.MakeSynergyPage();
+            SynergyPageManager.SetSynergySelectStats(PlayerCharacter.GetCharBaseStat(), PlayerCharacter.GetWeaponBaseStat());
+            
+            SynergyPageManager.SetActiveSynergyPanel(true);
         }
 
         /// <summary>

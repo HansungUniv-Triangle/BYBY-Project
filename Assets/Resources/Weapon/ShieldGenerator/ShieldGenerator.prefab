@@ -165,7 +165,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interpolationDataSource: 0
-  timer: 10
+  timer: 12
 --- !u!1001 &6410657166041160192
 PrefabInstance:
   m_ObjectHideFlags: 0

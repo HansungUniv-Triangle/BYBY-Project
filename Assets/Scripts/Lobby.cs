@@ -26,7 +26,7 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
     public GameObject _tab_NumberOfWin;
     public GameObject _tab_Odds;
     public GameObject _tab_WinningStreak;
-   
+
     [SerializeField]
     private Transform _spawnPointOrigin;
     private RectTransform[] _spawnPoint;
@@ -69,6 +69,8 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
         {
             ToggleIsVibrate();
         });
+        IsVibrateOn.transform.GetChild(1).gameObject.SetActive(GameManager.Instance.IsVibrateOn);
+
         BGM.value = SoundManager.Instance.GetVolume(Types.Sound.BGM);
         SoundEffect.value = SoundManager.Instance.GetVolume(Types.Sound.Effect);
     }
@@ -420,6 +422,7 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
     public void ToggleIsVibrate()
     {
         GameManager.Instance.ToggleVibrate();
+        IsVibrateOn.transform.GetChild(1).gameObject.SetActive(GameManager.Instance.IsVibrateOn);
         Debug.Log(GameManager.Instance.IsVibrateOn);
     }
 

@@ -1007,10 +1007,7 @@ MonoBehaviour:
   enemyReloadValueText: {fileID: 1498905188}
   reloadSlider: {fileID: 202965168}
   subWeapon:
-    None: {fileID: 0}
-    Shield: {fileID: 0}
-    BuffMachine: {fileID: 0}
-    HeallingGun: {fileID: 0}
+    buttons: []
   settings:
     hpText: {fileID: 0}
     HpUp: {fileID: 0}
@@ -1030,6 +1027,9 @@ MonoBehaviour:
     shootDistanceText: {fileID: 0}
     ShootDistanceUp: {fileID: 0}
     ShootDistanceDown: {fileID: 0}
+    calmText: {fileID: 0}
+    CalmUp: {fileID: 0}
+    CalmDown: {fileID: 0}
     ReverseHorizontalMove: {fileID: 0}
 --- !u!4 &147223794
 Transform:
@@ -2466,7 +2466,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -100}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 2000, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &258996227
@@ -17898,7 +17898,7 @@ RectTransform:
   m_GameObject: {fileID: 2078673923}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.75000006, y: 0.75000006, z: 0.75000006}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1202949364}
@@ -17907,7 +17907,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 150, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2078673925
 MonoBehaviour:
@@ -17929,7 +17929,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: 5b56d9fa0e8bd6e409ed188db38a692c, type: 3}
+  m_Texture: {fileID: 2800000, guid: fdecbf408c5d58f4e852d6cce652b7a1, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
