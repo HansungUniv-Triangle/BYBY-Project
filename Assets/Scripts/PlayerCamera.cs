@@ -50,7 +50,10 @@ public class PlayerCamera : MonoBehaviour
             StopGyro();
     }
 
-    public void StartGyro() { Input.gyro.enabled = true; }
+    public void StartGyro() { 
+        Input.gyro.enabled = true;
+        Debug.Log(Input.gyro.enabled);
+    }
     public void StopGyro() { 
         Input.gyro.enabled = false;
         ResetZangle();
@@ -105,6 +108,7 @@ public class PlayerCamera : MonoBehaviour
         if (GameManager.Instance.NetworkManager.SinglePlayMode)
         {
             GameView();
+            CameraGyroRotate();
         }
         else
         {

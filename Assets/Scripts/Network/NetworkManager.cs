@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UIHolder;
 using Random = UnityEngine.Random;
+using RDG;
 
 namespace Network
 {
@@ -859,6 +860,8 @@ namespace Network
         private IEnumerator LoadAsyncScene(int sceneNum)
         {
             GameManager.Instance.ActiveLoadingUI();
+            SoundManager.Instance.Clear();
+            Vibration.Cancel();
             AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneNum);
 
             while (!asyncLoad.isDone)

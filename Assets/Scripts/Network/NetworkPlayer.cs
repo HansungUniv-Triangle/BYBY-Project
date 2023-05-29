@@ -486,8 +486,6 @@ namespace Network
 
         private void ShootAllWeapons() 
         {
-            if (!_isShooting) return;
-            
             var weapon = GetComponentsInChildren<NetworkProjectileHolder>();
 
             foreach (var networkProjectileHolder in weapon)
@@ -864,6 +862,9 @@ namespace Network
         {
             if (!_isDodge && _isDodgeReady)
             {
+                // 쿨타임 최소 0.5, 최대 2.5
+                float cooltime = Mathf.Clamp(0.5f + (2.0f - ((_baseCharStat.GetStat(CharStat.Rolling).Total - 10f) * 0.1f)), 0.5f, 2.5f);
+
                 AnimationIdx = 8;
                 _isDodge = true;
                 _isDodgeReady = false;
@@ -875,7 +876,7 @@ namespace Network
                         _isWalk = true;
                         
                     })
-                    .AppendInterval(0.5f)   // 대기 시간
+                    .AppendInterval(cooltime)   // 대기 시간
                     .OnComplete(() =>
                     {
                         AnimationIdx = 1;

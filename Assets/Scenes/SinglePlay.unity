@@ -3394,8 +3394,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 5320, y: 400}
+  m_AnchoredPosition: {x: -0.000091552734, y: 0}
+  m_SizeDelta: {x: 4500, y: 400}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &194466885
 MonoBehaviour:
@@ -3415,7 +3415,7 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 3
-  m_Spacing: 90
+  m_Spacing: 0
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
@@ -9925,7 +9925,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: -470}
-  m_SizeDelta: {x: 0, y: 540}
+  m_SizeDelta: {x: 10, y: 540}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &514945139
 MonoBehaviour:
@@ -11858,7 +11858,7 @@ MonoBehaviour:
     _type: 1
     _solidType: 1
     _transparencyType: 0
-    _maxHP: 3
+    _maxHP: 30
     _frontFaceTextureID: 43
     _rightFaceTextureID: 43
     _topFaceTextureID: 15
@@ -11869,7 +11869,7 @@ MonoBehaviour:
     _type: 2
     _solidType: 1
     _transparencyType: 0
-    _maxHP: 2
+    _maxHP: 20
     _frontFaceTextureID: 52
     _rightFaceTextureID: 52
     _topFaceTextureID: 52
@@ -11880,7 +11880,7 @@ MonoBehaviour:
     _type: 3
     _solidType: 1
     _transparencyType: 0
-    _maxHP: 5
+    _maxHP: 50
     _frontFaceTextureID: 39
     _rightFaceTextureID: 39
     _topFaceTextureID: 39
@@ -11891,7 +11891,7 @@ MonoBehaviour:
     _type: 4
     _solidType: 1
     _transparencyType: 0
-    _maxHP: 2
+    _maxHP: 20
     _frontFaceTextureID: 57
     _rightFaceTextureID: 57
     _topFaceTextureID: 57
@@ -11902,7 +11902,7 @@ MonoBehaviour:
     _type: 5
     _solidType: 1
     _transparencyType: 0
-    _maxHP: 4
+    _maxHP: 40
     _frontFaceTextureID: 1
     _rightFaceTextureID: 1
     _topFaceTextureID: 81
@@ -29179,7 +29179,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 2101753505}
   m_Direction: 0
   m_Value: 0
-  m_Size: 0.16875002
+  m_Size: 0.19499107
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using GameStatus;
 using Network;
+using RDG;
 using TMPro;
 using Types;
 using UnityEngine;
@@ -51,6 +52,8 @@ public class GameManager : Singleton<GameManager>
     public void ToggleVibrate()
     {
         IsVibrateOn = !IsVibrateOn;
+        if (IsVibrateOn == false)
+            Vibration.Cancel();
     }
 
     protected override void Initiate()
