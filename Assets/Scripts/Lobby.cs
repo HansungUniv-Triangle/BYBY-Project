@@ -27,8 +27,6 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
     public GameObject _tab_Odds;
     public GameObject _tab_WinningStreak;
 
-    private GameObject _vibrationToggle;
-
     [SerializeField]
     private Transform _spawnPointOrigin;
     private RectTransform[] _spawnPoint;
@@ -49,6 +47,10 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
     public GameObject prefabRankpage;
     public GameObject rankingHint;
 
+    public Toggle IsVibrateOn;
+    public Slider BGM;
+    public Slider SoundEffect;
+
     private void Awake()
     {
         CurrentPage = 0;
@@ -61,7 +63,16 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
         _rankingPopup = transform.GetChild(1).transform.GetChild(6).gameObject;
         _settingsPopup = transform.GetChild(1).transform.GetChild(7).gameObject;
         _searchPopup = transform.GetChild(1).transform.GetChild(8).gameObject;
-        _vibrationToggle = _settingsPopup.GetComponentInChildren<Toggle>().gameObject;
+
+        IsVibrateOn.isOn = GameManager.Instance.IsVibrateOn;
+        IsVibrateOn.onValueChanged.AddListener(delegate
+        {
+            ToggleIsVibrate();
+        });
+        IsVibrateOn.transform.GetChild(1).gameObject.SetActive(GameManager.Instance.IsVibrateOn);
+
+        BGM.value = SoundManager.Instance.GetVolume(Types.Sound.BGM);
+        SoundEffect.value = SoundManager.Instance.GetVolume(Types.Sound.Effect);
     }
 
     void Start()
@@ -408,10 +419,21 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
         }
     }
 
-    public void ToggleIsVibrate(bool active)
+    public void ToggleIsVibrate()
     {
-        GameManager.Instance.IsVibrateOn = !GameManager.Instance.IsVibrateOn;
-        _vibrationToggle.transform.GetChild(1).gameObject.SetActive(GameManager.Instance.IsVibrateOn);
+        GameManager.Instance.ToggleVibrate();
+        IsVibrateOn.transform.GetChild(1).gameObject.SetActive(GameManager.Instance.IsVibrateOn);
+        Debug.Log(GameManager.Instance.IsVibrateOn);
+    }
+
+    public void SetBGMVolume(Slider slider)
+    {
+        SoundManager.Instance.SetVolume(Types.Sound.BGM, slider.value);
+    }
+
+    public void SetEffectVolume(Slider slider)
+    {
+        SoundManager.Instance.SetVolume(Types.Sound.Effect, slider.value);
     }
 
     private IEnumerator ResetSwipeCoroutine()
