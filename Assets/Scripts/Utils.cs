@@ -10,8 +10,18 @@ namespace Utils
         public const string Synergy = "Synergy";
         public const string Weapon = "Weapon";
         public const string Loading = "Loading";
-        public const string Disconnect = "Disconnect";
+        public const string Disconnect = "Disconnecting";
         public const string Cat = "Cat";
+    }
+
+    public static class GameInfo
+    {
+        public const float GameStartWait = 10f;
+        public const float SynergySelectTime = 40f;
+        public const float RoundTime = 120f;
+        public const float RoundAnalysis = 10f;
+        public const int MaxRound = 5;
+        public const int WinRound = MaxRound / 2 + 1;
     }
 
     public static class StatConverter

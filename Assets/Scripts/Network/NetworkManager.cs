@@ -8,6 +8,7 @@ using Types;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UIHolder;
+using Utils;
 using Random = UnityEngine.Random;
 
 namespace Network
@@ -143,6 +144,7 @@ namespace Network
         public void UpdateCanvasData()
         {
             if(RoomUIInstance is null) return;
+
             RoomUIInstance.ClearRoom();
             
             if (SinglePlayMode)
@@ -203,9 +205,6 @@ namespace Network
     // 게임 승리 관리
     public partial class NetworkManager
     {
-        private const int MaxRound = 5;
-        private const int WinRound = MaxRound / 2 + 1;
-
         private struct BattleLog : INetworkStruct
         {
             public int Round;
@@ -288,14 +287,14 @@ namespace Network
                     var playerWin = BattleLogs.Count(log => !log.IsDraw && log.Winner == Runner.LocalPlayer);
                     var enemyWin = BattleLogs.Count(log => !log.IsDraw && log.Winner != Runner.LocalPlayer);
 
-                    if (playerWin == WinRound)
+                    if (playerWin == GameInfo.WinRound)
                     {
                         RPCEndGame(Runner.LocalPlayer);
                         roundState = RoundState.GameEnd;
                         break;
                     }
 
-                    if (enemyWin == WinRound)
+                    if (enemyWin == GameInfo.WinRound)
                     {
                         RPCEndGame(EnemyRef);
                         roundState = RoundState.GameEnd;
@@ -322,11 +321,11 @@ namespace Network
                 case RoundState.None:
                     break;
                 case RoundState.GameStart:
-                    SetTimerSec(10f);
+                    SetTimerSec(GameInfo.GameStartWait);
                     break;
                 case RoundState.SynergySelect:
                     ViewSynergySelect();
-                    SetTimerSec(60f);
+                    SetTimerSec(GameInfo.SynergySelectTime);
                     break;
                 case RoundState.WaitToStart:
                     ViewWait();
@@ -334,7 +333,7 @@ namespace Network
                     break;
                 case RoundState.RoundStart:
                     ViewRoundStart();
-                    SetTimerSec(10f);
+                    SetTimerSec(GameInfo.RoundTime);
                     break;
                 case RoundState.RoundEnd:
                     OrganizeRound();
@@ -345,7 +344,7 @@ namespace Network
                     break;
                 case RoundState.RoundAnalysis:
                     ViewRoundAnalysis();
-                    SetTimerSec(10f);
+                    SetTimerSec(GameInfo.RoundAnalysis);
                     break;
                 case RoundState.GameEnd:
                     SetTimerSec(30f);
@@ -393,7 +392,7 @@ namespace Network
             var time = RoundChangeTimer.RemainingTime(Runner) ?? 00;
             var min = time / 60f;
             var sec = time % 60f;
-            GameUIInstance.timeText.text = $"{min:00}:{sec:00}";
+            GameUIInstance.timeText.text = $"{(int)min:00}:{(int)sec:00}";
         }
         
         public void UpdateBullet(float now, float max)
@@ -403,7 +402,7 @@ namespace Network
         
         private void UpdateSynergySelect()
         {
-            SynergyPageManager.SetSynergySelectTimer(RoundChangeTimer.RemainingTime(Runner) ?? 0, 60f);
+            SynergyPageManager.SetSynergySelectTimer(RoundChangeTimer.RemainingTime(Runner) ?? 0, GameInfo.SynergySelectTime);
         }
 
         private void SetTimerSec(float sec)
@@ -654,7 +653,6 @@ namespace Network
             SinglePlayMode = (Runner.GameMode == GameMode.Single);
             _networkObjectList = new List<NetworkObject>();
             Seed = Random.Range(0, 10000);
-            RPCAddPlayer(Runner.LocalPlayer, DBManager.Instance.NickName);
         }
         
         public void OnReady()
@@ -667,6 +665,7 @@ namespace Network
             if (RoomPlayerList.ContainsKey(playerRef))
             {
                 RoomPlayerList.Remove(playerRef);
+
                 if (PlayerCharacter is not null && EnemyCharacter is not null && playerRef != Runner.LocalPlayer)
                 {
                     DisconnectedGame();
@@ -674,32 +673,20 @@ namespace Network
             }
             else
             {
-                DisconnectedGame();
                 throw new Exception("플레이어 퇴장, 해당 플레이어 리스트에 없음");
             }
         }
 
         private void DisconnectedGame()
         {
-            DOTween.Sequence()
-                .OnStart(() =>
-                {
-                    GameManager.Instance.ActiveDisconnectUI();
-                })
-                .AppendInterval(5f)
-                .OnComplete(() =>
-                {
-                    GameManager.Instance.DeActiveDisconnectUI();
-                    FindObjectOfType<NetworkRunner>().Shutdown();
-                    SceneManager.LoadSceneAsync(1);
-                })
-                .Play();
+            FindObjectOfType<NetworkRunner>().Shutdown();
+            GameManager.Instance.ActiveDisconnectUI();
         }
 
         private bool IsAllPlayerReady()
         {
             // 혼자서도 인게임 들어갈 수 있게 임시 주석
-            // if (RoomPlayerList.Count < 2) return false;
+            if (!SinglePlayMode && RoomPlayerList.Count < 2) return false;
         
             foreach (var (_, playerData) in RoomPlayerList)
             {
@@ -885,13 +872,13 @@ namespace Network
     public partial class NetworkManager
     {
         [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-        private void RPCAddPlayer(PlayerRef playerRef, NetworkString<_16> nick)
+        public void RPCAddPlayer(PlayerRef playerRef, NetworkString<_16> nick)
         {
             if (RoomPlayerList.ContainsKey(playerRef))
             {
                 throw new Exception("플레이어 추가, 방 리스트에 해당 플레이어가 이미 존재함.");
             }
-
+            
             RoomPlayerList.Add(playerRef, new RoomPlayerData {
                 NickName = nick,
                 IsReady = false,
