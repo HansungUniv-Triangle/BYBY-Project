@@ -14,7 +14,7 @@ namespace Network
                     .OnStart(() => IsDoneShootAction = false)
                     .OnComplete(() => IsDoneShootAction = true);
                 
-                var shoot = Math.Min(GetWeaponStatTotal(WeaponStat.Special), RemainBullet);
+                var shoot = Math.Min(GetWeaponStatTotal(WeaponStat.Special), GetBullet());
 
                 for (int i = 0; i < shoot; i++)
                 {
@@ -22,9 +22,9 @@ namespace Network
                         .AppendCallback(() =>
                         {
                             SpawnProjectile(ShootPointTransform.position);
-                            RemainBullet--;
+                            UpdateBullet(-1);
                         })
-                        .AppendInterval(0.05f);
+                        .AppendInterval(0.1f);
                 }
             }
         }

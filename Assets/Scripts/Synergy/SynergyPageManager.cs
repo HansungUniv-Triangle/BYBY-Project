@@ -236,8 +236,18 @@ public class SynergyPageManager : MonoBehaviour
         if (_synergyPages[CurrentPage].isRerolled == false)
         {
             _synergyPages[CurrentPage].Clear();
-            CreateRandomSynergy(_synergyPages[CurrentPage]);
-            _synergySelectPanel.ApplySynergyToObj(_synergyPages[CurrentPage]);
+
+            if (CurrentPage == 3)
+            {
+                CreateRandomWeapon(_synergyPages[CurrentPage]);
+                _synergySelectPanel.ApplyWeaponToObj(_synergyPages[CurrentPage]);
+            }
+            else
+            {
+                CreateRandomSynergy(_synergyPages[CurrentPage]);
+                _synergySelectPanel.ApplySynergyToObj(_synergyPages[CurrentPage]);
+            }
+            
             _synergyPages[CurrentPage].rerollCount--;
             _synergySelectPanel.DisplayRerolled(_synergyPages[CurrentPage], _synergyPages[CurrentPage].rerollCount);
             _synergyPages[CurrentPage].isRerolled = true;

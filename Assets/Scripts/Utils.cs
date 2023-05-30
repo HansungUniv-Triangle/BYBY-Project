@@ -33,7 +33,7 @@ namespace Utils
             switch (stat.Type)
             {
                 case CharStat.Health:
-                    return 40 + total;
+                    return 70 + total;
                 case CharStat.Speed:
                     return total * 0.4f;
                 case CharStat.Rolling:
@@ -74,7 +74,7 @@ namespace Utils
                 case WeaponStat.Bullet:
                     return total;
                 case WeaponStat.Velocity:
-                    return total;
+                    return 20 + total;
                 default:
                     throw new ArgumentOutOfRangeException();
             }

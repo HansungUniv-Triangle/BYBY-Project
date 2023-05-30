@@ -106,14 +106,14 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
                     DBManager.Instance.GetManyWinRanking().ContinueWithOnMainThread(task =>
                     {
                         var list = task.Result;
+                        int count = 1;
 
                         foreach (var (item1, item2) in list)
                         {
-                            int count = 1;
                             GameObject rankpageTemp = Instantiate(prefabRankpage, gameObject.transform.position, Quaternion.identity, GameObject.Find("NumberOfWin").transform);
                             rankpageTemp.GetComponentsInChildren<TextMeshProUGUI>()[0].text = count++.ToString();
                             rankpageTemp.GetComponentsInChildren<TextMeshProUGUI>()[1].text = item1;
-                            rankpageTemp.GetComponentsInChildren<TextMeshProUGUI>()[2].text = item2.ToString() + "½Â";
+                            rankpageTemp.GetComponentsInChildren<TextMeshProUGUI>()[2].text = item2 + "½Â";
                         }
                     });
                     break;
@@ -130,14 +130,15 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
                     DBManager.Instance.GetWinRatingRanking().ContinueWithOnMainThread(task =>
                     {
                         var list = task.Result;
-
+                        int count = 1;
+                        
                         foreach (var (item1, item2) in list)
                         {
-                            int count = 1;
+                            
                             GameObject rankpageTemp = Instantiate(prefabRankpage, gameObject.transform.position, Quaternion.identity, GameObject.Find("Odds").transform);
                             rankpageTemp.GetComponentsInChildren<TextMeshProUGUI>()[0].text = count++.ToString();
                             rankpageTemp.GetComponentsInChildren<TextMeshProUGUI>()[1].text = item1;
-                            rankpageTemp.GetComponentsInChildren<TextMeshProUGUI>()[2].text = item2.ToString() + "%";
+                            rankpageTemp.GetComponentsInChildren<TextMeshProUGUI>()[2].text = item2 + "%";
                         }
                     });
                     break;
@@ -154,14 +155,14 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
                     DBManager.Instance.GetWinStraightRanking().ContinueWithOnMainThread(task =>
                     {
                         var list = task.Result;
+                        int count = 1;
 
                         foreach (var (item1, item2) in list)
                         {
-                            int count = 1;
                             GameObject rankpageTemp = Instantiate(prefabRankpage, gameObject.transform.position, Quaternion.identity, GameObject.Find("WinningStreak").transform);
                             rankpageTemp.GetComponentsInChildren<TextMeshProUGUI>()[0].text = count++.ToString();
                             rankpageTemp.GetComponentsInChildren<TextMeshProUGUI>()[1].text = item1;
-                            rankpageTemp.GetComponentsInChildren<TextMeshProUGUI>()[2].text = item2.ToString() + "¿¬½Â";
+                            rankpageTemp.GetComponentsInChildren<TextMeshProUGUI>()[2].text = item2 + "¿¬½Â";
                         }
                     });
                     break;

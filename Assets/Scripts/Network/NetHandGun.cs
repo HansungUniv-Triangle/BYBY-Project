@@ -14,7 +14,7 @@ namespace Network
                 var calcValue = speedValue * specialValue;
 
                 DOTween.Sequence()
-                    .OnStart(() => RemainBullet--)
+                    .OnStart(() => UpdateBullet(-1))
                     .AppendCallback(() => SpawnProjectile(ShootPointTransform.position))
                     .AppendCallback(() => AddCharAdditionStat(CharStat.Speed, +calcValue))
                     .AppendInterval(0.1f)

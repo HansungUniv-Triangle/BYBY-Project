@@ -52,7 +52,6 @@ public class PlayerCamera : MonoBehaviour
 
     public void StartGyro() { 
         Input.gyro.enabled = true;
-        Debug.Log(Input.gyro.enabled);
     }
     public void StopGyro() { 
         Input.gyro.enabled = false;

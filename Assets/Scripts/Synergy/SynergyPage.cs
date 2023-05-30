@@ -71,7 +71,11 @@ public class SynergyPage
         synergies[0] = null;
         synergies[1] = null;
         synergies[2] = null;
+        weapons[0] = null;
+        weapons[1] = null;
+        weapons[2] = null;
         IsNumInSynergyList.Clear();
+        IsNumInWeaponList.Clear();
     }
 
     public void RerollCountClear()
