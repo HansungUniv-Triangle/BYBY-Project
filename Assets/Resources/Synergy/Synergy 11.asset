@@ -24,6 +24,10 @@ MonoBehaviour:
     <Addition>k__BackingField: 0
   weaponStatList:
   - <Type>k__BackingField: 2
-    <Amount>k__BackingField: 2
+    <Amount>k__BackingField: 1
+    <Ratio>k__BackingField: 0
+    <Addition>k__BackingField: 0
+  - <Type>k__BackingField: 0
+    <Amount>k__BackingField: 1
     <Ratio>k__BackingField: 0
     <Addition>k__BackingField: 0

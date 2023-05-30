@@ -27,3 +27,7 @@ MonoBehaviour:
     <Amount>k__BackingField: 3
     <Ratio>k__BackingField: 0
     <Addition>k__BackingField: 0
+  - <Type>k__BackingField: 4
+    <Amount>k__BackingField: -2
+    <Ratio>k__BackingField: 0
+    <Addition>k__BackingField: 0

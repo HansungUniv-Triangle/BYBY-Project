@@ -248,22 +248,6 @@ namespace Network
             var calcDamage = damage * armor;
             NowHp -= calcDamage;
         }
-        
-        private void OnDamagedDebug()
-        {
-            var damage = 5f;
-            var armor = StatConverter.ConversionStatValue(_baseCharStat.GetStat(CharStat.Armor));
-            var calcDamage = damage * armor;
-            NowHp -= calcDamage;
-        }
-        
-        void OnGUI()
-        {
-            if (GUI.Button(new Rect(10, 10, 500, 250), "I am a button"))
-            {
-                OnDamagedDebug();
-            }
-        }
     }
 
     public partial class NetworkPlayer
