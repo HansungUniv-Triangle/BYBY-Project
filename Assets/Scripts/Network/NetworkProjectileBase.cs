@@ -79,7 +79,6 @@ namespace Network
         public void Initialized(NetworkProjectileHolder holder, int netWeaponData)
         {
             _projectileHolder = holder;
-            
             NetWeaponData = netWeaponData;
             IndividualVelocity = 0;
             IndividualDamage = 0;
@@ -93,10 +92,8 @@ namespace Network
         public override void Spawned()
         {
             GameManager.Instance.NetworkManager.AddNetworkObjectInList(Object);
-            EffectManager.Instance.PlayEffect(WeaponData.bulletShoot, transform.position, -transform.forward, _projectileHolder.transform);
-
+            EffectManager.Instance.PlayEffect(WeaponData.bulletShoot, transform.position, -transform.forward);
             SoundManager.Instance.Play(WeaponData.shootSoundPath, Sound.Effect);
-            //SoundManager.Instance.Play3DSound(WeaponData.shootSoundPath, Sound.Effect, transform.position);
         }
 
         public override void Despawned(NetworkRunner runner, bool hasState)

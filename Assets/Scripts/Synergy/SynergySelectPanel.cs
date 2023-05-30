@@ -365,16 +365,16 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
             switch (charStatKey)
             {
                 case CharStat.Health:
-                    health.text = text;
+                    health.text = text + $"\n나의 체력: {Utils.StatConverter.ConversionStatValue(baseStat.GetStat(CharStat.Health))}";
                     break;
                 case CharStat.Speed:
-                    speed.text = text;
+                    speed.text = text + $"\n이동 속도: {Utils.StatConverter.ConversionStatValue(baseStat.GetStat(CharStat.Speed))}";
                     break;
                 case CharStat.Rolling:
                     rolling.text = text;
                     break;
                 case CharStat.Armor:
-                    armor.text = text;
+                    armor.text = text + $"\n데미지 {100 - (int)(Utils.StatConverter.ConversionStatValue(baseStat.GetStat(CharStat.Armor))*100f)}% 감소";
                     break;
                 case CharStat.Calm:
                     calm.text = text;
@@ -397,7 +397,7 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
             switch (weaponStatKey)
             {
                 case WeaponStat.Interval:
-                    interval.text = text;
+                    interval.text = text + $"\n{(int)Utils.StatConverter.ConversionStatValue(baseStat.GetStat(WeaponStat.Interval))}초 마다 발사";;
                     break;
                 case WeaponStat.Special:
                     special.text = text;

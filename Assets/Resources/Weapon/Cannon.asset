@@ -14,13 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sprite: {fileID: 21300000, guid: d37f1d12cf656e44f9b628ffd0d98f00, type: 3}
   weaponName: "\uB300\uD3EC"
-  weaponExplain: "<align=center><b>\uD0C4\uCC3D: 2, \uD2B9\uD654: 80% \uAC10\uC18C,
-    \uD0C4\uC18D: 20% \uAC10\uC18C, \uACF5\uACA9\uB825: 20% \uAC10\uC18C</b></align>\r\n\r\n\uB113\uC740
-    \uBC94\uC704\uB97C \uACF5\uACA9\uD558\uB294 \uD55C \uBC1C\uC744 \uBC1C\uC0AC\uD558\uB294
-    \uB300\uD3EC \uC785\uB2C8\uB2E4. \uD2B9\uD654 \uC218\uCE58\uB9CC\uD07C\uC758
-    \uBC94\uC704\uC5D0 \uB370\uBBF8\uC9C0\uB97C \uC785\uD799\uB2C8\uB2E4.\r\n\uCD1D\uC54C\uC744
-    \uBC1C\uC0AC\uD558\uACE0 \uB09C \uD6C4\uC5D0\uB294 \uCE90\uB9AD\uD130\uC758 \uC774\uB3D9\uC18D\uB3C4\uAC00
-    \uC7A0\uC2DC \uB290\uB824\uC9D1\uB2C8\uB2E4."
+  weaponExplain: "<b>\uD0C4\uCC3D: 2\uBC1C\n\uD2B9\uD654: +10, 90% \uAC10\uC18C\n\uACF5\uACA9\uB825:
+    20% \uAC10\uC18C</b>\n\r\n\uB113\uC740 \uBC94\uC704\uB97C \uACF5\uACA9\uD558\uB294
+    \uD55C \uBC1C\uC744 \uBC1C\uC0AC\uD558\uB294 \uB300\uD3EC \uC785\uB2C8\uB2E4.
+    \uD2B9\uD654 \uC218\uCE58\uB9CC\uD07C\uC758 \uBC94\uC704\uC5D0 \uB370\uBBF8\uC9C0\uB97C
+    \uC785\uD799\uB2C8\uB2E4.\r\n\n\uCD1D\uC54C\uC744 \uBC1C\uC0AC\uD558\uACE0 \uB09C
+    \uD6C4\uC5D0\uB294 \uCE90\uB9AD\uD130\uC758 \uC774\uB3D9\uC18D\uB3C4\uAC00 \uC7A0\uC2DC
+    \uB290\uB824\uC9D1\uB2C8\uB2E4."
   weaponPrefabRef:
     RawGuidValue: 90cb8f3dbab3e774aba3c9e03092e851
   bulletPrefabRef:
@@ -33,19 +33,15 @@ MonoBehaviour:
   isMainWeapon: 1
   basicWeaponStat:
   - <Type>k__BackingField: 1
-    <Amount>k__BackingField: 0
-    <Ratio>k__BackingField: -0.8
+    <Amount>k__BackingField: 10
+    <Ratio>k__BackingField: -0.9
     <Addition>k__BackingField: 0
   - <Type>k__BackingField: 5
-    <Amount>k__BackingField: -7
+    <Amount>k__BackingField: -8
     <Ratio>k__BackingField: 0
     <Addition>k__BackingField: 0
-  - <Type>k__BackingField: 6
-    <Amount>k__BackingField: 0
-    <Ratio>k__BackingField: -0.2
-    <Addition>k__BackingField: 0
   - <Type>k__BackingField: 4
-    <Amount>k__BackingField: -9
+    <Amount>k__BackingField: -5
     <Ratio>k__BackingField: 0
     <Addition>k__BackingField: 0
   - <Type>k__BackingField: 2

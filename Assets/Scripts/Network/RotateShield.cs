@@ -29,10 +29,12 @@ namespace Network
 
         public override void Spawned()
         {
-            base.Spawned();
-            _projectileHolder.ChangeIsDone(false);
-            gameObject.transform.eulerAngles = Vector3.zero;
-            _timer = 0f;
+            if (HasStateAuthority)
+            {
+                _projectileHolder.ChangeIsDone(false);
+                gameObject.transform.eulerAngles = Vector3.zero;
+                _timer = 0f;
+            }
         }
 
         protected override bool IsExpirationProjectile()
