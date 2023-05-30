@@ -11815,8 +11815,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AutoUpdate: 0
-  MapWidth: 32
-  MapHeight: 2
+  MapWidth: 64
+  MapHeight: 64
   Seed: 0
   NoiseScale: 30
   Offset: {x: 0, y: 0}
@@ -11831,7 +11831,7 @@ MonoBehaviour:
   TreeThreshold: 0.02
   TerrainHeight: 6
   TerrainBaseHeight: 5
-  ChunkSize: {x: 1, y: 64, z: 0}
+  ChunkSize: {x: 8, y: 64, z: 8}
   WorldChunkWidth: 8
   WorldChunkHeight: 8
   WoodHeight: 6
