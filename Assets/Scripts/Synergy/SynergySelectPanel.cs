@@ -312,34 +312,38 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
             // 스와이프 초기화
             swipeStartPos = Vector2.zero;
             swipeStartTime = 0f;
-            StartCoroutine(ResetSwipeCoroutine());
+            StartCoroutine(ResetSwipeCoroutine(0.5f));
         }
     }
 
-    private IEnumerator ResetSwipeCoroutine()
+    public IEnumerator ResetSwipeCoroutine(float waitingTime)
     {
+        isSwiping = true;
 
-        yield return new WaitForSecondsRealtime(0.5f); // 1프레임 대기
+        yield return new WaitForSecondsRealtime(waitingTime); // 1프레임 대기
 
         isSwiping = false; // 스와이프 상태 초기화
     }
 
     public void ActiveStat()
     {
-        var thisRectTransform = gameObject.GetComponent<RectTransform>();
-        var canvasHeight = thisRectTransform.rect.height;
-        
+        var thisRectTransform = statPage.GetComponent<RectTransform>();
+        var statPageRectTransform = statPage.transform.GetChild(1).gameObject.GetComponent<RectTransform>();
+        var canvasHeight = statPageRectTransform.rect.height;
+ 
         if (statPageStatus == false)
         {
             statPage.transform.GetChild(1).gameObject.SetActive(true);
-            statPage.transform.DOMoveY(1200f, 0.3f);
+            thisRectTransform.DOAnchorPosY(canvasHeight, 0.5f);
             statPageStatus = true;
         }
         else
         {
-            statPage.transform.DOMoveY(20f, 0.1f);
-            statPage.transform.GetChild(1).gameObject.SetActive(false);
-            statPageStatus = false;
+            thisRectTransform.DOAnchorPosY(25, 0.5f).OnComplete(() =>
+            {
+                statPage.transform.GetChild(1).gameObject.SetActive(false);
+                statPageStatus = false;
+            });
         }
     }
 
@@ -356,7 +360,7 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
             var amount = baseStat.GetStat(charStatKey).Amount;
             var ratio = baseStat.GetStat(charStatKey).Ratio;
             var sum = amount * ratio;
-            var text = $"+{amount} * {ratio * 100}% = {sum}증가";
+            var text = $"+{amount} * {ratio * 100}% = {sum}증가\n 현재 {sum}";
             
             switch (charStatKey)
             {
@@ -388,7 +392,7 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
             var amount = baseStat.GetStat(weaponStatKey).Amount;
             var ratio = baseStat.GetStat(weaponStatKey).Ratio;
             var sum = amount * ratio;
-            var text = $"+{amount} * {ratio * 100}% = {sum}증가";
+            var text = $"+{amount} * {ratio * 100}% = {sum}증가\n 현재 {sum}";
             
             switch (weaponStatKey)
             {

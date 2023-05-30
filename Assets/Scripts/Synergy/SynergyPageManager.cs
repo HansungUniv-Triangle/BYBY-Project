@@ -35,7 +35,7 @@ public class SynergyPageManager : MonoBehaviour
         _spawnPoint = _spawnPointOrigin.GetComponentsInChildren<RectTransform>();
         _thisRectTransform = gameObject.GetComponent<RectTransform>();
         _canvasHeight = _thisRectTransform.rect.height;
-        _thisRectTransform.DOAnchorPosY(_canvasHeight, 0);
+        _thisRectTransform.DOAnchorPosY(_canvasHeight + 1000, 0);
     }
 
     private void Start()
@@ -45,6 +45,7 @@ public class SynergyPageManager : MonoBehaviour
 
     public void SetActiveSynergyPanel(bool value)
     {
+        StartCoroutine(_synergySelectPanel.ResetSwipeCoroutine(1f));
         if (value)
         {
             DOTween.Sequence()
@@ -59,7 +60,7 @@ public class SynergyPageManager : MonoBehaviour
                     ApplySelectedSynergyToCharacter();
                     foreach (var synergyPage in _synergyPages)
                     {
-                        synergyPage.synergyObj.transform.DOKill();
+                        synergyPage.synergyObj.transform.DOPause();
                     }
                 })
                 .Append(_thisRectTransform.DOAnchorPosY(_canvasHeight, 1f))
@@ -67,7 +68,7 @@ public class SynergyPageManager : MonoBehaviour
                 {
                     synergyPanel.SetActive(false);
                 });
-        }
+        }    
     }
 
     public void MakeSynergyPage()
