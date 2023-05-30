@@ -181,16 +181,17 @@ public class WorldManager : Singleton<WorldManager>
         switch (gameMode)
         {
             case GameMode.Shared:
-                TreeThreshold = 0.04f;
-                TerrainHeight = 15;
-                TerrainBaseHeight = 6;
+                NoneThreshold = 0.4f;
+                TreeThreshold = 0.034f;
+                TerrainHeight = 13;
+                TerrainBaseHeight = 3;
 
                 break;
 
             case GameMode.Single:
                 TreeThreshold = 0.02f;
                 TerrainHeight = 6;
-                TerrainBaseHeight = 5;
+                TerrainBaseHeight = 2;
 
                 break;
 

@@ -527,7 +527,7 @@ namespace Network
             nph.SetTarget(targetPoint);
         }
 
-        private Vector3 GetCrossHairPointInScreen()
+        public Vector3 GetCrossHairPointInScreen()
         {
             var position = _crossHair.position;
             return new Vector3(position.x, position.y, 0);
@@ -874,13 +874,16 @@ namespace Network
                     {
                         _isDodge = false;
                         _isWalk = true;
-                        
+
+                        _gameUI.dodgeButton.interactable = false;
                     })
                     .AppendInterval(cooltime)   // 대기 시간
                     .OnComplete(() =>
                     {
                         AnimationIdx = 1;
                         _isDodgeReady = true;
+
+                        _gameUI.dodgeButton.interactable = true;
                     });
             }
         }
@@ -958,7 +961,28 @@ namespace Network
     {
         public void GetUlt()
         {
+            if (!_isShooting)
+                return;
+
             _joystick.OnPointerUp(null);    // joystick 입력값 초기화
+
+            // 카메라 세팅
+            var playerCamera = _camera.GetComponent<PlayerCamera>();
+            var aimRay = _camera.ScreenPointToRay(GetCrossHairPointInScreen());
+            var distCam = Vector3.Distance(_camera.transform.position, transform.position);
+            var aimRayOrigin = aimRay.origin + aimRay.direction * distCam;
+
+            if (Physics.Raycast(aimRayOrigin, aimRay.direction, out var hit, _shootDistance, ShootRayMask))
+                playerCamera.SetFocusedCameraRotation(hit.point);
+
+            playerCamera.SetCameraFocusMode();
+
+            var mainWeapon = GetMainWeapon();
+            if (mainWeapon != null)
+            {
+                mainWeapon.ChangeIsAttacking(false);
+            }
+
             IsCameraFocused = !IsCameraFocused;
             _canvasManager.SwitchUI(CanvasType.GameAiming);
 
@@ -971,15 +995,35 @@ namespace Network
 
         public void EndUlt()
         {
-            //Shoot(AttackType.Ultimate, UltLine);
             IsCameraFocused = false;
             _canvasManager.SwitchUI(CanvasType.GameMoving);
-            
+
+            var mainWeapon = GetMainWeapon();
+            if (mainWeapon != null)
+            {
+                mainWeapon.ForcedAttack();
+                mainWeapon.ChangeIsAttacking(true);
+            }
+
             var weapon = FindObjectOfType<NetworkSniperRifle>();
             if (weapon != null)
             {
                 weapon.SnipingMode(false);
             }
+        }
+
+        public NetworkProjectileHolder GetMainWeapon()
+        {
+            var weapons = GetComponentsInChildren<NetworkProjectileHolder>();
+            foreach (var networkProjectileHolder in weapons)
+            {
+                if (networkProjectileHolder.WeaponData.isMainWeapon)
+                {
+                    return networkProjectileHolder;
+                }
+            }
+
+            return null;
         }
     }
 
@@ -987,6 +1031,7 @@ namespace Network
     public partial class NetworkPlayer
     {
         private List<Stat<CharStat>> _settingsStatList = new();
+        private List<Stat<WeaponStat>> _settingsWeaponStatList = new();
 
         public string IncreaseHp()
         {
@@ -1065,6 +1110,40 @@ namespace Network
             return (_shakeDodgeThreshold -= 0.1f).ToString("F1");
         }
         
+        public string IncreaseSpecial()
+        {
+            _settingsWeaponStatList.Add(new Stat<WeaponStat>(WeaponStat.Special, 1, 0).SetRatio(0));
+            return AdditionalWorkWeapon(WeaponStat.Special);
+        }
+
+        public string DecreaseSpecial()
+        {
+            _settingsWeaponStatList.Add(new Stat<WeaponStat>(WeaponStat.Special, -1, 0).SetRatio(0));
+            return AdditionalWorkWeapon(WeaponStat.Special);
+        }
+
+        private string AdditionalWorkWeapon(WeaponStat type)
+        {
+            InitialStatus();
+
+            var mainWeapon = GetMainWeapon();
+            if (mainWeapon != null)
+            {
+                var baseWeaponStat = mainWeapon.GetWeaponBaseStat();
+
+                foreach (var s in _settingsWeaponStatList)
+                {
+                    baseWeaponStat.AddStat(s);
+                }
+
+                var total = baseWeaponStat.GetStat(type).Total;
+
+                return total.ToString("F2");
+            }
+
+            return null;
+        }
+
         public string IncreaseShootDistance() { return (_shootDistance += 5).ToString(); }
         public string DecreaseShootDistance() { return (_shootDistance -= 5).ToString(); }
 

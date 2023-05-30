@@ -423,7 +423,6 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
     {
         GameManager.Instance.ToggleVibrate();
         IsVibrateOn.transform.GetChild(1).gameObject.SetActive(GameManager.Instance.IsVibrateOn);
-        Debug.Log(GameManager.Instance.IsVibrateOn);
     }
 
     public void SetBGMVolume(Slider slider)

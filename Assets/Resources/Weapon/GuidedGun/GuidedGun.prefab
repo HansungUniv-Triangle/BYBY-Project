@@ -24,7 +24,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1962408039436442485}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.301, z: 0.671}
+  m_LocalPosition: {x: 0, y: 0.301, z: 0.489}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -146,6 +146,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: Pistol01_stylizedToonyShader
       objectReference: {fileID: 0}
+    - target: {fileID: 4713218164618494715, guid: 639136ed295047e45b9d90c0dd1d7df6,
+        type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: -9039553376181802654, guid: f875bfcc79749704683ca8bee77ff9b8,
+        type: 3}
     - target: {fileID: 6759816171615303204, guid: 639136ed295047e45b9d90c0dd1d7df6,
         type: 3}
       propertyPath: m_RootOrder
@@ -225,7 +231,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: c7379e5ed9e7e484ab53e7acdf283fd3, type: 2}
+      objectReference: {fileID: 2100000, guid: 93946f84437e58a4986077af02ef05cd, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 639136ed295047e45b9d90c0dd1d7df6, type: 3}
 --- !u!4 &2962221719061892565 stripped

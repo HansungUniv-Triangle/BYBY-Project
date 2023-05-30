@@ -1958,7 +1958,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 1
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: e73a58f6e2794ae7b1b7e50b7fb811b0, type: 2}
@@ -6656,11 +6656,11 @@ MonoBehaviour:
   Lacunarity: 2.21
   Offset3D: {x: 0, y: 0, z: 0}
   Scale: 0.07
-  NoneThreshold: 0.38
+  NoneThreshold: 0.25
   SandThreshold: 0.6
   BlockThreshold: 0.47
   TreeThreshold: 0.04
-  TerrainHeight: 15
+  TerrainHeight: 8
   TerrainBaseHeight: 6
   ChunkSize: {x: 8, y: 64, z: 8}
   WorldChunkWidth: 8
