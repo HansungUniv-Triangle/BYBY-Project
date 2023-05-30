@@ -15,15 +15,15 @@ MonoBehaviour:
   rarity: 0
   sprite: {fileID: 21300000, guid: 5dc4a33dc555245dc904f585470a0108, type: 3}
   synergyName: "\uD310\uAE08\uAC11\uC637"
-  synergyExplain: "\uBC29\uC5B4<color=green> +5</color>\n\uC18D\uB3C4<color=red>
-    -1</color>\n"
+  synergyExplain: "\uBC29\uC5B4<color=green> +7</color>\n\uC18D\uB3C4<color=red>
+    -2</color>"
   charStatList:
   - <Type>k__BackingField: 3
-    <Amount>k__BackingField: 6
+    <Amount>k__BackingField: 7
     <Ratio>k__BackingField: 0
     <Addition>k__BackingField: 0
   - <Type>k__BackingField: 1
-    <Amount>k__BackingField: -1
+    <Amount>k__BackingField: -2
     <Ratio>k__BackingField: 0
     <Addition>k__BackingField: 0
   weaponStatList: []

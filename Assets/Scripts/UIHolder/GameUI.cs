@@ -46,6 +46,8 @@ namespace UIHolder
 
         public GameEndUI gameWin;
         public GameEndUI gameDefeat;
+
+        public RawImage hitEffect;
         
         [Header("행동분석용")]
         public GameObject behaviourObject;
@@ -385,6 +387,13 @@ namespace UIHolder
                 GameManager.Instance.NetworkManager.DisconnectingServer();
             });
             gameDefeat.gameObject.SetActive(true);
+        }
+
+        public void OnHitEffect(float strength)
+        {
+            hitEffect.DOKill();
+            hitEffect.DOColor(new Color(127, 0, 0, strength), 0.5f).SetEase(Ease.OutElastic)
+                .OnComplete(() => hitEffect.DOColor(new Color(127, 0, 0, 0), 0.1f));
         }
         
         public void OpenCloseMenu(GameObject menu) 

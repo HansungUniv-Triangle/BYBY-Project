@@ -227,6 +227,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interpolationDataSource: 0
+  hitScan: {fileID: 2014828664577897935, guid: 6323c3e94fb079f43ba2eee3d7dc0d3e, type: 3}
 --- !u!1001 &7949235813248710150
 PrefabInstance:
   m_ObjectHideFlags: 0

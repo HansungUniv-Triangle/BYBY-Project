@@ -132,7 +132,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interpolationDataSource: 0
-  timer: 7
+  timer: 16
 --- !u!114 &2773725302530036279
 MonoBehaviour:
   m_ObjectHideFlags: 0

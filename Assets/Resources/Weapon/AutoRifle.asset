@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sprite: {fileID: 21300000, guid: 08afbe6e003cf4045bf6ced217c4622a, type: 3}
   weaponName: "\uC790\uB3D9\uC18C\uCD1D"
-  weaponExplain: "<align=center><b>\uD0C4\uCC3D: 10, \uD2B9\uD654: 80% \uAC10\uC18C</b></align>\r\n\r\n\uC5EC\uB7EC
+  weaponExplain: "<b>\uD0C4\uCC3D: 10\uBC1C\n\uD2B9\uD654: 70% \uAC10\uC18C</b>\n\r\n\uC5EC\uB7EC
     \uBC1C\uC744 \uBC1C\uC0AC\uD558\uB294 \uC790\uB3D9 \uC18C\uCD1D \uC785\uB2C8\uB2E4.
-    \uD2B9\uD654 \uC218\uCE58\uB9CC\uD07C \uCD1D\uC54C\uC744 \uBC1C\uC0AC\uD569\uB2C8\uB2E4.
-    \r\n\uAE30\uBCF8 \uD2B9\uD654\uC758 \uC218\uCE58\uB294 10\uC774\uBA70, 20%\uB9CC
-    \uC801\uC6A9\uB418\uAE30 \uB54C\uBB38\uC5D0 \uAE30\uBCF8\uC801\uC73C\uB85C 2\uBC1C\uC758
+    \uD2B9\uD654 \uC218\uCE58\uB9CC\uD07C \uCD1D\uC54C\uC744 \uBC1C\uC0AC\uD569\uB2C8\uB2E4.\n
+    \r\n\uAE30\uBCF8 \uD2B9\uD654\uC758 \uC218\uCE58\uB294 10\uC774\uBA70, 30%\uB9CC
+    \uC801\uC6A9\uB418\uAE30 \uB54C\uBB38\uC5D0 \uAE30\uBCF8\uC801\uC73C\uB85C 3\uBC1C\uC758
     \uCD1D\uC54C\uC744 \uBC1C\uC0AC\uD569\uB2C8\uB2E4.\r"
   weaponPrefabRef:
     RawGuidValue: 7f4e05c005528794984ac0c2d1b8d793
@@ -33,7 +33,7 @@ MonoBehaviour:
   basicWeaponStat:
   - <Type>k__BackingField: 1
     <Amount>k__BackingField: 0
-    <Ratio>k__BackingField: -0.8
+    <Ratio>k__BackingField: -0.7
     <Addition>k__BackingField: 0
   - <Type>k__BackingField: 5
     <Amount>k__BackingField: 10

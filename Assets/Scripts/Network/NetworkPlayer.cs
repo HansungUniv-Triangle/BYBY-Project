@@ -17,6 +17,7 @@ namespace Network
     {
         [Networked] private float MaxHp { get; set; }
         [Networked(OnChanged = nameof(OnHpChanged))] private float NowHp { get; set; }
+        private float _beforeHp;
 
         private static void OnHpChanged(Changed<NetworkPlayer> changed)
         {
@@ -42,12 +43,19 @@ namespace Network
                     StopHeartBeat();
                 }
 
+                if (_beforeHp > NowHp)
+                {
+                    _gameUI.OnHitEffect(0.25f);
+                }
+                
                 _gameUI.playerHpBarImage.DOFillAmount(NowHp / MaxHp, 0.5f);
             }
             else
             {
                 _gameUI.enemyHpBarImage.DOFillAmount(NowHp / MaxHp, 0.5f);
             }
+
+            _beforeHp = NowHp;
         }
 
         private ParticleSystem _healingEffect;
@@ -164,6 +172,7 @@ namespace Network
         {
             public int Tick { get; set; }
             public NetworkId NetworkId { get; set; }
+            public int Damage { get; set; }
         }
         
         public static void UpdateCharacterHit(Changed<NetworkPlayer> changed)
@@ -185,7 +194,7 @@ namespace Network
                         var networkObject = _gameManager.NetworkManager.FindNetworkObject(data.NetworkId);
                         if (networkObject is null)
                         {
-                            Debug.LogError("해당 오브젝트가 리스트에 없음");
+                            _gameManager.NetworkManager.PlayerCharacter.OnDamagedValue(data.Damage);
                         }
                         else
                         {
@@ -215,7 +224,8 @@ namespace Network
             CharacterHitList.Add(new CharacterHitData
             {
                 Tick = Runner.Tick,
-                NetworkId = networkObject
+                NetworkId = networkObject,
+                Damage = damage
             });
         }
 
@@ -229,6 +239,29 @@ namespace Network
             if (projectile.TryGetComponent<ICollisionCharacterEvent>(out var collisionEvent))
             {
                 collisionEvent.CollisionCharacterEvent(this);
+            }
+        }
+        
+        private void OnDamagedValue(int damage)
+        {
+            var armor = StatConverter.ConversionStatValue(_baseCharStat.GetStat(CharStat.Armor));
+            var calcDamage = damage * armor;
+            NowHp -= calcDamage;
+        }
+        
+        private void OnDamagedDebug()
+        {
+            var damage = 5f;
+            var armor = StatConverter.ConversionStatValue(_baseCharStat.GetStat(CharStat.Armor));
+            var calcDamage = damage * armor;
+            NowHp -= calcDamage;
+        }
+        
+        void OnGUI()
+        {
+            if (GUI.Button(new Rect(10, 10, 500, 250), "I am a button"))
+            {
+                OnDamagedDebug();
             }
         }
     }
@@ -346,7 +379,7 @@ namespace Network
                 _baseCharStat.AddStatList(synergy.charStatList);
             }
             
-            MaxHp = NowHp = StatConverter.ConversionStatValue(_baseCharStat.GetStat(CharStat.Health));
+            MaxHp = NowHp = _beforeHp = StatConverter.ConversionStatValue(_baseCharStat.GetStat(CharStat.Health));
         }
 
         private void InitialWeaponStatus()

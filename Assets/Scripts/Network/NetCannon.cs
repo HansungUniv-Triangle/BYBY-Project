@@ -10,17 +10,14 @@ namespace Network
         {
             if (CanAttack())
             {
-                Debug.Log("shoot");
-                
-                var speed = GetCharStat(CharStat.Speed).Total * 0.8f;
+                var speed = GetCharStat(CharStat.Speed).Total * 0.5f;
 
                 DOTween.Sequence()
                     .OnStart(() =>
                     {
                         IsDoneShootAction = false;
                         SpawnProjectile(ShootPointTransform.position);
-                        RemainBullet--;
-                        var why = RemainBullet;
+                        UpdateBullet(-1);
                     })
                     .AppendCallback(() => AddCharAdditionStat(CharStat.Speed, -speed))
                     .AppendInterval(2.0f)

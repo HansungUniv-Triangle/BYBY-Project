@@ -687,7 +687,7 @@ namespace Network
         private bool IsAllPlayerReady()
         {
             // 혼자서도 인게임 들어갈 수 있게 임시 주석
-            if (!SinglePlayMode && RoomPlayerList.Count < 2) return false;
+            //if (!SinglePlayMode && RoomPlayerList.Count < 2) return false;
         
             foreach (var (_, playerData) in RoomPlayerList)
             {
@@ -834,12 +834,11 @@ namespace Network
                 {
                     GameUIInstance.playerNickText.text = playerData.NickName.ToString();
                 }
-            
                 if (RoomPlayerList.TryGet(EnemyRef, out var enemyData))
                 {
-                    GameUIInstance.playerNickText.text = enemyData.NickName.ToString();
+                    GameUIInstance.enemyNickText.text = enemyData.NickName.ToString();
                 }
-                
+
                 ChangeRound();
             }
         }
@@ -896,7 +895,7 @@ namespace Network
             {
                 roomPlayerData.IsReady = !roomPlayerData.IsReady;
                 RoomPlayerList.Set(playerRef, roomPlayerData);
-
+                RPCLoadScene();
                 if (HasStateAuthority && IsAllPlayerReady())
                 {
                     RPCLoadScene();

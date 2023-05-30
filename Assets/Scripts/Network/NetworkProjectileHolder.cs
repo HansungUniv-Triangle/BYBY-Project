@@ -21,18 +21,6 @@ namespace Network
         
         private int _maxBullet;
         private int _remainBullet;
-        protected int RemainBullet
-        {
-            get
-            {
-                if (WeaponData.isMainWeapon)
-                {
-                    GameManager.Instance.NetworkManager.UpdateBullet(_remainBullet, _maxBullet);
-                }
-                return _remainBullet;
-            }
-            set => _remainBullet = value;
-        }
 
         protected bool IsAttacking;
         protected TickTimer delay;
@@ -67,13 +55,28 @@ namespace Network
             var shootPoint = transform.Find("ShootPoint");
             ShootPointTransform = shootPoint ? shootPoint : WeaponTransform;
         }
+
+        public int GetBullet()
+        {
+            return _remainBullet;
+        }
         
         public void SetBullet()
         {
             if (WeaponData.isMainWeapon)
             {
-                RemainBullet = (int)GetWeaponStat(WeaponStat.Bullet).Total;
+                _remainBullet = (int)GetWeaponStat(WeaponStat.Bullet).Total;
                 _maxBullet = (int)GetWeaponStat(WeaponStat.Bullet).Total;
+            }
+        }
+
+        protected void UpdateBullet(int value)
+        {
+            _remainBullet += value;
+            
+            if (WeaponData.isMainWeapon)
+            {
+                GameManager.Instance.NetworkManager.UpdateBullet(_remainBullet, _maxBullet);
             }
         }
 
@@ -135,7 +138,7 @@ namespace Network
 
         protected virtual bool CanAttack()
         {
-            if (RemainBullet == 0 && _weaponData.isMainWeapon)
+            if (_remainBullet <= 0 && _weaponData.isMainWeapon)
             {
                 ReloadBullet();
                 return false;
@@ -185,19 +188,19 @@ namespace Network
                     IsDoneShootAction = true;
                 });
 
-            var now = RemainBullet;
+            var now = _remainBullet;
             var max = GetWeaponStat(WeaponStat.Bullet).Total;
             var time = GetWeaponStat(WeaponStat.Reload).Total;
             var separateTime = max / time;
             
-            GameManager.Instance.AddBehaviourEventCount(BehaviourEvent.장전, (int)separateTime * 100);
+            GameManager.Instance.AddBehaviourEventCount(BehaviourEvent.장전, (int)(separateTime * 100));
             
             for (int i = now; i < max; i++)
             {
                 _reloadSequence
                     .AppendCallback(() =>
                     {
-                        RemainBullet++;
+                        UpdateBullet(+1);
                     })
                     .AppendInterval(separateTime);
             }

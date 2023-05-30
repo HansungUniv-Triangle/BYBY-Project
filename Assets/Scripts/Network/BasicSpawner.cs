@@ -48,7 +48,7 @@ namespace Network
                 GameMode = GameMode.Shared,
                 IsVisible = false,
                 SceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>()
-            }).ContinueWithOnMainThread(_ => SceneManager.LoadSceneAsync("RoomScene"));
+            }).ContinueWithOnMainThread(_ => SceneManager.LoadScene("RoomScene"));
         }
 
         public async void StartSingleGame()
@@ -62,7 +62,7 @@ namespace Network
             {
                 GameMode = GameMode.Single,
                 SceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>()
-            }).ContinueWithOnMainThread(_ => SceneManager.LoadSceneAsync("RoomScene"));
+            }).ContinueWithOnMainThread(_ => SceneManager.LoadScene("RoomScene"));
         }
         
         public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
