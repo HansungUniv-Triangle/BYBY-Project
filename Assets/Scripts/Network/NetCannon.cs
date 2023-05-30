@@ -10,7 +10,7 @@ namespace Network
         {
             if (CanAttack())
             {
-                var speed = GetCharStat(CharStat.Speed).Total * 0.5f;
+                var speed = GetCharStat(CharStat.Speed).Total * 0.2f;
 
                 DOTween.Sequence()
                     .OnStart(() =>

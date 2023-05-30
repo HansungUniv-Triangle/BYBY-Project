@@ -59,6 +59,8 @@ namespace Network
         [Networked] 
         protected NetworkBool IsEnemyHit { get; set; }
 
+        private bool isSendDestroy = false;
+
         private static void HitEffect(Changed<NetworkProjectileBase> changed)
         {
             changed.Behaviour.HitEffect();
@@ -114,8 +116,9 @@ namespace Network
             
             if (IsExpirationProjectile())
             {
-                if (_projectileHolder.WeaponData.isMainWeapon && Distance > MaxRange)
+                if (!isSendDestroy && _projectileHolder.WeaponData.isMainWeapon && Distance > MaxRange)
                 {
+                    isSendDestroy = true;
                     GameManager.Instance.CheckBulletBetweenEnemyAndMe(transform.position);
                 }
                 

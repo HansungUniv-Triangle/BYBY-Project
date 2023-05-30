@@ -686,7 +686,7 @@ namespace Network
 
         private bool IsAllPlayerReady()
         {
-            //if (!SinglePlayMode && RoomPlayerList.Count < 2) return false;
+            if (!SinglePlayMode && RoomPlayerList.Count < 2) return false;
         
             foreach (var (_, playerData) in RoomPlayerList)
             {
@@ -851,8 +851,7 @@ namespace Network
         private IEnumerator LoadAsyncScene(int sceneNum)
         {
             GameManager.Instance.ActiveLoadingUI();
-            SoundManager.Instance.Clear();
-            Vibration.Cancel();
+            
             AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneNum);
 
             while (!asyncLoad.isDone)
@@ -900,7 +899,7 @@ namespace Network
             {
                 roomPlayerData.IsReady = !roomPlayerData.IsReady;
                 RoomPlayerList.Set(playerRef, roomPlayerData);
-                RPCLoadScene();
+
                 if (HasStateAuthority && IsAllPlayerReady())
                 {
                     RPCLoadScene();

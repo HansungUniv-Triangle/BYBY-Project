@@ -146,12 +146,17 @@ namespace Network
             
             if (delay.ExpiredOrNotRunning(Runner))
             {
-                var delayValue = StatConverter.ConversionStatValue(_baseWeaponStat.GetStat(WeaponStat.Interval));
-                delay = TickTimer.CreateFromSeconds(Runner, delayValue);
+                SetDelayTimer();
                 return true;
             }
             
             return false;
+        }
+
+        protected void SetDelayTimer()
+        {
+            var delayValue = StatConverter.ConversionStatValue(_baseWeaponStat.GetStat(WeaponStat.Interval));
+            delay = TickTimer.CreateFromSeconds(Runner, delayValue);
         }
 
         public void ChangeIsDone(bool value)

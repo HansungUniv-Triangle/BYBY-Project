@@ -33,7 +33,7 @@ namespace Utils
             switch (stat.Type)
             {
                 case CharStat.Health:
-                    return 70 + total;
+                    return 40 + total;
                 case CharStat.Speed:
                     return total * 0.4f;
                 case CharStat.Rolling:

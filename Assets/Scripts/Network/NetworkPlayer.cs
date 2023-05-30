@@ -807,6 +807,11 @@ namespace Network
 
             var speed = StatConverter.ConversionStatValue(_baseCharStat.GetStat(CharStat.Speed));
 
+            if (Vector3.Distance(transform.position, _target.transform.position) < 3)
+            {
+                v = 0;
+            }
+            
             if (_isDodge)
             {
                 var dodgeDir = _lastMoveDir;
@@ -1002,30 +1007,28 @@ namespace Network
 
             IsCameraFocused = !IsCameraFocused;
             _canvasManager.SwitchUI(CanvasType.GameAiming);
-
-            var weapon = FindObjectOfType<NetworkSniperRifle>();
-            if (weapon != null)
-            {
-                weapon.SnipingMode(true);
-            }
         }
 
         public void EndUlt()
         {
             IsCameraFocused = false;
             _canvasManager.SwitchUI(CanvasType.GameMoving);
-
-            var mainWeapon = GetMainWeapon();
-            if (mainWeapon != null)
+            
+            var sniper = FindObjectOfType<NetworkSniperRifle>();
+            if (sniper != null)
             {
-                mainWeapon.ForcedAttack();
-                mainWeapon.ChangeIsAttacking(true);
+                sniper.ForcedAttack();
+                sniper.SnipingShot();
+                sniper.ChangeIsAttacking(true);
             }
-
-            var weapon = FindObjectOfType<NetworkSniperRifle>();
-            if (weapon != null)
+            else
             {
-                weapon.SnipingMode(false);
+                var mainWeapon = GetMainWeapon();
+                if (mainWeapon != null)
+                {
+                    mainWeapon.ForcedAttack();
+                    mainWeapon.ChangeIsAttacking(true);
+                }
             }
         }
 
