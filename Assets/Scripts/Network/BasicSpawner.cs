@@ -87,15 +87,13 @@ namespace Network
         }
         
         public void OnConnectedToServer(NetworkRunner runner) { }
+        public void OnDisconnectedFromServer(NetworkRunner runner) { }
 
         public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
         {
+            SoundManager.Instance.Clear();
+            RDG.Vibration.Cancel();
             GameManager.Instance.ActiveDisconnectUI();
-        }
-
-        public void OnDisconnectedFromServer(NetworkRunner runner)
-        {
-            Debug.Log("서버 연결 끊김");
         }
         
         public void OnInput(NetworkRunner runner, NetworkInput input) { }

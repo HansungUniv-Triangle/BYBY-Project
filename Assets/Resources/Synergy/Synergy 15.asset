@@ -19,11 +19,11 @@ MonoBehaviour:
     +2</color><color=green> +20%</color>"
   charStatList:
   - <Type>k__BackingField: 1
-    <Amount>k__BackingField: 2
-    <Ratio>k__BackingField: 0.2
+    <Amount>k__BackingField: 3
+    <Ratio>k__BackingField: 0.1
     <Addition>k__BackingField: 0
   weaponStatList:
   - <Type>k__BackingField: 0
-    <Amount>k__BackingField: 2
-    <Ratio>k__BackingField: 0.2
+    <Amount>k__BackingField: 3
+    <Ratio>k__BackingField: 0.1
     <Addition>k__BackingField: 0

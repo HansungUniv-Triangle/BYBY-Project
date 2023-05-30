@@ -19,7 +19,11 @@ MonoBehaviour:
     -2</color>"
   charStatList:
   - <Type>k__BackingField: 3
-    <Amount>k__BackingField: 7
+    <Amount>k__BackingField: 3
+    <Ratio>k__BackingField: 0
+    <Addition>k__BackingField: 0
+  - <Type>k__BackingField: 0
+    <Amount>k__BackingField: 3
     <Ratio>k__BackingField: 0
     <Addition>k__BackingField: 0
   - <Type>k__BackingField: 1

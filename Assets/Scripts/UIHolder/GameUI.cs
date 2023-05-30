@@ -199,13 +199,13 @@ namespace UIHolder
                 weapon.CallReload(false);
             });
             
-            disconnectButton.onClick.AddListener(() =>
-            {
-                GameManager.Instance.NetworkManager.DisconnectingServer();
-            });
-
             if (singleMode)
             {
+                disconnectButton.onClick.AddListener(() =>
+                {
+                    GameManager.Instance.NetworkManager.DisconnectingServer();
+                });
+                
                 resetPositionButton.onClick.AddListener(() =>
                 {
                     GameManager.Instance.NetworkManager.PlayerCharacter.InitPosition();

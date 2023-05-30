@@ -4,10 +4,8 @@ using System.Linq;
 using GameStatus;
 using Network;
 using RDG;
-using TMPro;
 using Types;
 using UnityEngine;
-using UnityEngine.UI;
 using Utils;
 using NetworkPlayer = Network.NetworkPlayer;
 

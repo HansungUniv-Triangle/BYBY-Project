@@ -17,7 +17,11 @@ MonoBehaviour:
   synergyName: "\uB3C5\uBCD1"
   synergyExplain: "\uC7A5\uC804<color=green> +3</color>\n\uD0C4\uC18D<color=green>
     +3</color>"
-  charStatList: []
+  charStatList:
+  - <Type>k__BackingField: 4
+    <Amount>k__BackingField: -2
+    <Ratio>k__BackingField: 0
+    <Addition>k__BackingField: 0
   weaponStatList:
   - <Type>k__BackingField: 4
     <Amount>k__BackingField: 3

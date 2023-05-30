@@ -17,34 +17,32 @@ namespace Network
         {
             if (CanAttack())
             {
+                SpawnProjectile(ShootPointTransform.position);
                 UpdateBullet(-1);
-
-                if (_isSnipingMode)
-                {
-                    var line = Runner.Spawn(hitScan, position:null, inputAuthority: Runner.LocalPlayer);
-                    line.GetComponent<HitScan>().SetPosition(ShootPointTransform.position, Target);
-
-                    var result = Physics.OverlapCapsule(ShootPointTransform.position, Target, 0.3f, (int)Layer.Enemy);
-
-                    if (result.Length > 0)
-                    {
-                        var special = GetWeaponStat(WeaponStat.Special).Total;
-                        var ratio = 2 + special * 0.01f;
-                        var damage = GetWeaponStat(WeaponStat.Attack).Total * ratio;
-                        
-                        GameManager.Instance.NetworkManager.AddCharacterHitData(Object, (int)damage, true);
-                    }
-                }
-                else
-                {
-                    SpawnProjectile(ShootPointTransform.position);
-                }
             }
         }
 
-        public void SnipingMode(bool value)
+        public void SnipingShot()
         {
-            _isSnipingMode = value;
+            if (CanAttack())
+            {
+                var line = Runner.Spawn(hitScan, position:null, inputAuthority: Runner.LocalPlayer);
+                line.GetComponent<HitScan>().SetPosition(ShootPointTransform.position, Target);
+
+                var result = Physics.OverlapCapsule(ShootPointTransform.position, Target, 0.3f, (int)Layer.Enemy);
+
+                if (result.Length > 0)
+                {
+                    var special = GetWeaponStat(WeaponStat.Special).Total;
+                    var ratio = 2 + special * 0.01f;
+                    var damage = GetWeaponStat(WeaponStat.Attack).Total * ratio;
+                        
+                    GameManager.Instance.NetworkManager.AddCharacterHitData(Object, (int)damage, true);
+                }
+
+                UpdateBullet(-1);
+                SetDelayTimer();
+            }
         }
     }
 }

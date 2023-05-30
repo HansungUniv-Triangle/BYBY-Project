@@ -686,8 +686,7 @@ namespace Network
 
         private bool IsAllPlayerReady()
         {
-            // 혼자서도 인게임 들어갈 수 있게 임시 주석
-            //if (!SinglePlayMode && RoomPlayerList.Count < 2) return false;
+            if (!SinglePlayMode && RoomPlayerList.Count < 2) return false;
         
             foreach (var (_, playerData) in RoomPlayerList)
             {
@@ -715,7 +714,13 @@ namespace Network
         
         private void SpawnPlayerCharacter()
         {
-            NetworkObject networkPlayerObject = Runner.Spawn(_playerPrefab, new Vector3(30, 30, 30), Quaternion.identity, Runner.LocalPlayer);
+            var spawnPoint = new Vector3(30, 30, 30);
+            if (Physics.Raycast(spawnPoint, Vector3.down, out var hit, 100f, layerMask: (int)Layer.World))
+            {
+                spawnPoint = hit.point + new Vector3(0, 1, 0);
+            }
+            
+            NetworkObject networkPlayerObject = Runner.Spawn(_playerPrefab, spawnPoint, Quaternion.identity, Runner.LocalPlayer);
             PlayerCharacter = networkPlayerObject.GetComponent<NetworkPlayer>();
             SpawnWeapon(GameManager.Instance.SelectWeapon);
         }
@@ -846,8 +851,7 @@ namespace Network
         private IEnumerator LoadAsyncScene(int sceneNum)
         {
             GameManager.Instance.ActiveLoadingUI();
-            SoundManager.Instance.Clear();
-            Vibration.Cancel();
+            
             AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneNum);
 
             while (!asyncLoad.isDone)
@@ -895,7 +899,7 @@ namespace Network
             {
                 roomPlayerData.IsReady = !roomPlayerData.IsReady;
                 RoomPlayerList.Set(playerRef, roomPlayerData);
-                RPCLoadScene();
+
                 if (HasStateAuthority && IsAllPlayerReady())
                 {
                     RPCLoadScene();
