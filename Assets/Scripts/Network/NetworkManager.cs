@@ -895,7 +895,7 @@ namespace Network
             {
                 roomPlayerData.IsReady = !roomPlayerData.IsReady;
                 RoomPlayerList.Set(playerRef, roomPlayerData);
-
+                RPCLoadScene();
                 if (HasStateAuthority && IsAllPlayerReady())
                 {
                     RPCLoadScene();
