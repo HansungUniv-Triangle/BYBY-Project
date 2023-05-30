@@ -178,7 +178,9 @@ public class PlayerCamera : MonoBehaviour
         if (Physics.Raycast(_ray, out _hit, 10, (int)Layer.World))
         {
             _cameraPos.position = _hit.point;
-            _cameraFocusPos.position = _hit.point;
+
+            if (Vector3.Distance(position, _hit.point) < 0.5f)
+                _cameraFocusPos.position = _hit.point;
         }
         else
         {
@@ -192,7 +194,9 @@ public class PlayerCamera : MonoBehaviour
         if (_networkPlayer.IsCameraFocused)
         {
             transform.position = Vector3.Lerp(transform.position, _cameraFocusPos.position, Time.deltaTime * _moveSpeed);
-            transform.rotation = Quaternion.Lerp(transform.rotation, _cameraFocusPos.rotation, Time.deltaTime * _rotationSpeed);
+
+            var q = Quaternion.Lerp(transform.rotation, _cameraFocusPos.rotation, Time.deltaTime * _rotationSpeed);
+            transform.rotation = Quaternion.Euler(q.eulerAngles.x, q.eulerAngles.y, 0);
         }
         else
         {
@@ -201,6 +205,8 @@ public class PlayerCamera : MonoBehaviour
             var relativePosition = _target.position - transform.position;
             var targetRotation = Quaternion.LookRotation(relativePosition);
             transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * _rotationSpeed);
+
+            _cameraFocusPos.rotation = targetRotation;
         }
     }
 
@@ -230,6 +236,20 @@ public class PlayerCamera : MonoBehaviour
         }
     }
     
+    public void SetCameraFocusMode()
+    {
+        transform.position =_cameraFocusPos.position;
+        transform.rotation = Quaternion.Euler(_cameraFocusPos.eulerAngles.x, _cameraFocusPos.eulerAngles.y, 0);
+    }
+
+    public void SetFocusedCameraRotation(Vector3 target)
+    {
+        var relativePosition = target - _cameraFocusPos.position;
+        var targetRotation = Quaternion.LookRotation(relativePosition);
+
+        _cameraFocusPos.rotation = Quaternion.Euler(targetRotation.eulerAngles.x, targetRotation.eulerAngles.y, 0);
+    }
+
     public static Vector2 GetRotatedCoordinates(float x, float y)
     {
         var camAngle = Camera.main.transform.eulerAngles.z * Mathf.Deg2Rad;

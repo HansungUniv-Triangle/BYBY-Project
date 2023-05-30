@@ -159,6 +159,11 @@ namespace UIHolder
             public Button CalmUp;
             public Button CalmDown;
 
+            [Header("Special")]
+            public TextMeshProUGUI specialText;
+            public Button SpecialUp;
+            public Button SpecialDown;
+
             [Header("Moving")]
             public Toggle ReverseHorizontalMove;
         }
@@ -326,7 +331,7 @@ namespace UIHolder
                     settings.shootDistanceText.text = GameManager.Instance.NetworkManager.PlayerCharacter.DecreaseShootDistance();
                 });
 
-                // shoot distance
+                // calm
                 settings.CalmUp.onClick.AddListener(() =>
                 {
                     settings.calmText.text = GameManager.Instance.NetworkManager.PlayerCharacter.IncreaseCalm();
@@ -335,6 +340,17 @@ namespace UIHolder
                 settings.CalmDown.onClick.AddListener(() =>
                 {
                     settings.calmText.text = GameManager.Instance.NetworkManager.PlayerCharacter.DecreaseCalm();
+                });
+
+                // weapon special 
+                settings.SpecialUp.onClick.AddListener(() =>
+                {
+                    settings.specialText.text = GameManager.Instance.NetworkManager.PlayerCharacter.IncreaseSpecial();
+                });
+
+                settings.SpecialDown.onClick.AddListener(() =>
+                {
+                    settings.specialText.text = GameManager.Instance.NetworkManager.PlayerCharacter.DecreaseSpecial();
                 });
 
                 /*

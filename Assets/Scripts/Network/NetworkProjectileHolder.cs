@@ -208,6 +208,11 @@ namespace Network
 
         protected abstract void Attack();
         
+        public void ForcedAttack()
+        {
+            delay = TickTimer.CreateFromSeconds(Runner, 0);
+        }
+
         #region 스탯
 
         protected void AddWeaponAdditionStat(WeaponStat weaponStat, float add)
