@@ -896,11 +896,11 @@ namespace Network
             {
                 roomPlayerData.IsReady = !roomPlayerData.IsReady;
                 RoomPlayerList.Set(playerRef, roomPlayerData);
-
-                if (HasStateAuthority && IsAllPlayerReady())
+                RPCLoadScene();
+                /*if (HasStateAuthority && IsAllPlayerReady())
                 {
                     RPCLoadScene();
-                }
+                }*/
             }
             else
             {
