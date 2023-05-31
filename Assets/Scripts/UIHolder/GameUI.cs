@@ -48,7 +48,7 @@ namespace UIHolder
         public GameEndUI gameDefeat;
 
         public RawImage hitEffect;
-        
+
         [Header("행동분석용")]
         public GameObject behaviourObject;
 
@@ -166,6 +166,10 @@ namespace UIHolder
 
             [Header("Moving")]
             public Toggle ReverseHorizontalMove;
+
+            [Header("Gyro")]
+            public Toggle IsGyroOn;
+            public GameObject ResetGyro;
         }
         public Settings settings;
         
@@ -353,13 +357,15 @@ namespace UIHolder
                     settings.specialText.text = GameManager.Instance.NetworkManager.PlayerCharacter.DecreaseSpecial();
                 });
 
-                /*
-                // reverse horizontal moving
-                settings.ReverseHorizontalMove.onValueChanged.AddListener( state => 
+                settings.IsGyroOn.isOn = GameManager.Instance.IsGyroOn;
+                if (!GameManager.Instance.IsGyroOn)
+                    CloseMenu(settings.ResetGyro);
+
+                settings.IsGyroOn.onValueChanged.AddListener(delegate
                 {
-                    GameManager.Instance.NetworkManager.PlayerCharacter.ToggleReverseHorizontalMove(state);
+                    Camera.main.GetComponent<PlayerCamera>().ToggleGyro();
+                    OpenCloseMenu(settings.ResetGyro);
                 });
-                */
             }
         }
 
