@@ -21,7 +21,7 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
 
     [SerializeField]
     private Transform _tutorialOrigin;
-    private Transform[] _tutorials = new Transform[12];
+    private Transform[] _tutorials = new Transform[14];
 
     [SerializeField]
     private Transform _tutorialOrderOrigin;
@@ -251,7 +251,7 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
 
     public void ButtonClicked_Tutorial()
     {
-        _tutorialPopup.SetActive(true);
+        _tutorialPopup.SetActive(true); 
         _tutorials[TutorialCurrentPage].gameObject.SetActive(true);
         ChangeTutorialOrder();
     }
@@ -340,12 +340,10 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
 
             {
                 _tutorialOrderOrigin.transform.GetChild(TutorialCurrentPage).transform.GetChild(0).gameObject.SetActive(true);
-                //_tutorialOrder[TutorialCurrentPage].transform.GetChild(0).gameObject.SetActive(true);
             }
             else
             {
                 _tutorialOrderOrigin.transform.GetChild(i).transform.GetChild(0).gameObject.SetActive(false);
-                // _tutorialOrder[i].transform.GetChild(0).gameObject.SetActive(false);
             }
         }
 
