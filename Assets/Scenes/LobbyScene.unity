@@ -348,8 +348,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_AspectMode: 0
-  m_AspectRatio: 0.4027778
+  m_AspectMode: 3
+  m_AspectRatio: 0.5
 --- !u!1 &2912981
 GameObject:
   m_ObjectHideFlags: 0
@@ -2571,8 +2571,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_AspectMode: 0
-  m_AspectRatio: 0.4027778
+  m_AspectMode: 3
+  m_AspectRatio: 0.5
 --- !u!1 &262493420
 GameObject:
   m_ObjectHideFlags: 0
@@ -2965,8 +2965,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_AspectMode: 0
-  m_AspectRatio: 0.4027778
+  m_AspectMode: 3
+  m_AspectRatio: 0.5
 --- !u!1 &283858953
 GameObject:
   m_ObjectHideFlags: 0
@@ -5285,8 +5285,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_AspectMode: 0
-  m_AspectRatio: 0.4027778
+  m_AspectMode: 3
+  m_AspectRatio: 0.5
 --- !u!114 &654222142
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5781,8 +5781,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_AspectMode: 0
-  m_AspectRatio: 0.4027778
+  m_AspectMode: 3
+  m_AspectRatio: 0.5
 --- !u!1 &692785578
 GameObject:
   m_ObjectHideFlags: 0
@@ -7026,8 +7026,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_AspectMode: 0
-  m_AspectRatio: 0.4027778
+  m_AspectMode: 3
+  m_AspectRatio: 0.5
 --- !u!1 &823165301
 GameObject:
   m_ObjectHideFlags: 0
@@ -8748,8 +8748,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_AspectMode: 0
-  m_AspectRatio: 0.4027778
+  m_AspectMode: 3
+  m_AspectRatio: 0.5
 --- !u!114 &1097713573
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8964,8 +8964,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_AspectMode: 0
-  m_AspectRatio: 0.4027778
+  m_AspectMode: 3
+  m_AspectRatio: 0.5
 --- !u!1 &1111308257
 GameObject:
   m_ObjectHideFlags: 0
@@ -10203,8 +10203,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_AspectMode: 0
-  m_AspectRatio: 0.4027778
+  m_AspectMode: 3
+  m_AspectRatio: 0.5
 --- !u!114 &1324920582
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10585,8 +10585,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_AspectMode: 0
-  m_AspectRatio: 0.4027778
+  m_AspectMode: 3
+  m_AspectRatio: 0.5
 --- !u!1 &1392046037
 GameObject:
   m_ObjectHideFlags: 0
@@ -12564,8 +12564,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_AspectMode: 0
-  m_AspectRatio: 0.4027778
+  m_AspectMode: 3
+  m_AspectRatio: 0.5
 --- !u!1 &1585085530
 GameObject:
   m_ObjectHideFlags: 0
@@ -13624,8 +13624,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_AspectMode: 0
-  m_AspectRatio: 0.4027778
+  m_AspectMode: 3
+  m_AspectRatio: 0.5
 --- !u!1 &1727801980
 GameObject:
   m_ObjectHideFlags: 0
@@ -13904,8 +13904,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_AspectMode: 0
-  m_AspectRatio: 0.4027778
+  m_AspectMode: 3
+  m_AspectRatio: 0.5
 --- !u!1 &1755587611
 GameObject:
   m_ObjectHideFlags: 0
@@ -14918,8 +14918,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_AspectMode: 0
-  m_AspectRatio: 0.4027778
+  m_AspectMode: 3
+  m_AspectRatio: 0.5
 --- !u!114 &1883159651
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15550,8 +15550,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_AspectMode: 0
-  m_AspectRatio: 0.4027778
+  m_AspectMode: 3
+  m_AspectRatio: 0.5
 --- !u!1 &1953030536
 GameObject:
   m_ObjectHideFlags: 0
@@ -17137,8 +17137,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_AspectMode: 0
-  m_AspectRatio: 0.4027778
+  m_AspectMode: 3
+  m_AspectRatio: 0.5
 --- !u!114 &2128552007
 MonoBehaviour:
   m_ObjectHideFlags: 0
