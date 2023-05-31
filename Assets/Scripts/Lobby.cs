@@ -65,11 +65,12 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
         _settingsPopup = transform.GetChild(1).transform.GetChild(7).gameObject;
         _searchPopup = transform.GetChild(1).transform.GetChild(8).gameObject;
         
-        //IsGyroOn.isOn = GameManager.Instance.IsGyroOn;
+        IsGyroOn.isOn = GameManager.Instance.IsGyroOn;
         IsGyroOn.onValueChanged.AddListener(delegate
         {
             ToggleIsGyro();
         });
+        IsGyroOn.transform.GetChild(1).gameObject.SetActive(GameManager.Instance.IsGyroOn);
 
         IsVibrateOn.isOn = GameManager.Instance.IsVibrateOn;
         IsVibrateOn.onValueChanged.AddListener(delegate
@@ -429,8 +430,8 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
 
     public void ToggleIsGyro()
     {
-        //GameManager.Instance.ToggleGyro();
-        //IsGyroOn.transform.GetChild(1).gameObject.SetActive(GameManager.Instance.IsGyroOn);
+        GameManager.Instance.ToggleGyro();
+        IsGyroOn.transform.GetChild(1).gameObject.SetActive(GameManager.Instance.IsGyroOn);
     }
 
     public void ToggleIsVibrate()

@@ -46,12 +46,18 @@ public class GameManager : Singleton<GameManager>
     public int hitCount;
 
     public bool IsVibrateOn = true;
+    public bool IsGyroOn = true;
 
     public void ToggleVibrate()
     {
         IsVibrateOn = !IsVibrateOn;
         if (IsVibrateOn == false)
             Vibration.Cancel();
+    }
+
+    public void ToggleGyro()
+    {
+        IsGyroOn = !IsGyroOn;
     }
 
     protected override void Initiate()

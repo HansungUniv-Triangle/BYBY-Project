@@ -34,7 +34,6 @@ public class PlayerCamera : MonoBehaviour
     #region UI Settings
     public float zAngle;
     private float zOffset = 0.8f;
-    private bool isGyroOn = true;
 
     public void IncreaseZoffset(GameObject text) { text.GetComponent<TextMeshProUGUI>().text = (zOffset += 0.01f).ToString("F2"); }
     public void DecreaseZoffset(GameObject text) { text.GetComponent<TextMeshProUGUI>().text = (zOffset -= 0.01f).ToString("F2"); }
@@ -43,8 +42,8 @@ public class PlayerCamera : MonoBehaviour
 
     public void ToggleGyro()
     {
-        isGyroOn = !isGyroOn;
-        if (isGyroOn)
+        GameManager.Instance.ToggleGyro();
+        if (GameManager.Instance.IsGyroOn)
             StartGyro();
         else
             StopGyro();
@@ -62,7 +61,8 @@ public class PlayerCamera : MonoBehaviour
 
     private void Awake()
     {
-        StartGyro();
+        if (GameManager.Instance.IsGyroOn)
+            StartGyro();
     }
 
     private void Start()
@@ -158,7 +158,7 @@ public class PlayerCamera : MonoBehaviour
     
     private void CameraGyroRotate()
     {
-        if (!isGyroOn) { return; }
+        if (!GameManager.Instance.IsGyroOn) { return; }
 
         var gyroRotationRate = Input.gyro.rotationRateUnbiased;
 
