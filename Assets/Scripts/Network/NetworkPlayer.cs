@@ -227,6 +227,8 @@ namespace Network
                 NetworkId = networkObject,
                 Damage = damage
             });
+
+            _gameUI.hitDamageText.GetComponent<HitDamage>().HitDamageAnimation(damage, false);
         }
 
         private void OnDamaged(NetworkObject projectile)
@@ -456,7 +458,7 @@ namespace Network
     {
         private Ray _gunRay;
         private RaycastHit _hit;
-        private float _shootDistance = 30f;
+        private float _shootDistance = 100f;
         private bool _isShooting = false;
         private const int ShootRayMask = (int)Layer.Enemy | (int)Layer.World;
 
