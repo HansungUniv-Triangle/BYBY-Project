@@ -47,6 +47,7 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
     public GameObject prefabRankpage;
     public GameObject rankingHint;
 
+    public Toggle IsGyroOn;
     public Toggle IsVibrateOn;
     public Slider BGM;
     public Slider SoundEffect;
@@ -63,6 +64,12 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
         _rankingPopup = transform.GetChild(1).transform.GetChild(6).gameObject;
         _settingsPopup = transform.GetChild(1).transform.GetChild(7).gameObject;
         _searchPopup = transform.GetChild(1).transform.GetChild(8).gameObject;
+        
+        //IsGyroOn.isOn = GameManager.Instance.IsGyroOn;
+        IsGyroOn.onValueChanged.AddListener(delegate
+        {
+            ToggleIsGyro();
+        });
 
         IsVibrateOn.isOn = GameManager.Instance.IsVibrateOn;
         IsVibrateOn.onValueChanged.AddListener(delegate
@@ -418,6 +425,12 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
             swipeStartTime = 0f;
             StartCoroutine(ResetSwipeCoroutine());
         }
+    }
+
+    public void ToggleIsGyro()
+    {
+        //GameManager.Instance.ToggleGyro();
+        //IsGyroOn.transform.GetChild(1).gameObject.SetActive(GameManager.Instance.IsGyroOn);
     }
 
     public void ToggleIsVibrate()
