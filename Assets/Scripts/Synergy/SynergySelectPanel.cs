@@ -371,7 +371,7 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
             var amount = baseStat.GetStat(charStatKey).Amount;
             var ratio = baseStat.GetStat(charStatKey).Ratio;
             var sum = amount * ratio;
-            var text = $"+{amount} * {ratio * 100}% = {sum}증가";
+            var text = $"+{amount} * {ratio * 100}% = {sum}";
             
             switch (charStatKey)
             {
@@ -382,7 +382,7 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
                     speed.text = text + $"\n이동 속도: {Utils.StatConverter.ConversionStatValue(baseStat.GetStat(CharStat.Speed))}";
                     break;
                 case CharStat.Rolling:
-                    rolling.text = text + $"\n구르기: {Utils.StatConverter.ConversionStatValue(baseStat.GetStat(CharStat.Rolling))}"; ;
+                    rolling.text = text + $"\n회피: {Utils.StatConverter.ConversionStatValue(baseStat.GetStat(CharStat.Rolling))}"; ;
                     break;
                 case CharStat.Armor:
                     armor.text = text + $"\n데미지 {100 - (int)(Utils.StatConverter.ConversionStatValue(baseStat.GetStat(CharStat.Armor))*100f)}% 감소";
@@ -402,13 +402,12 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
         {
             var amount = baseStat.GetStat(weaponStatKey).Amount;
             var ratio = baseStat.GetStat(weaponStatKey).Ratio;
-            var sum = amount * ratio;
-            var text = $"+{amount} * {ratio * 100}% = {sum}증가";
+            var text = $"+{amount} * {ratio * 100}% = {amount * ratio}증가";
             
             switch (weaponStatKey)
             {
                 case WeaponStat.Interval:
-                    interval.text = text + $"\n{(int)Utils.StatConverter.ConversionStatValue(baseStat.GetStat(WeaponStat.Interval))}초 마다 발사";
+                    interval.text = text + $"\n{Utils.StatConverter.ConversionStatValue(baseStat.GetStat(WeaponStat.Interval))}초";
                     break;
                 case WeaponStat.Special:
                     special.text = text + $"\n특화: {(int)Utils.StatConverter.ConversionStatValue(baseStat.GetStat(WeaponStat.Special))}";

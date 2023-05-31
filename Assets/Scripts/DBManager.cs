@@ -75,7 +75,7 @@ public class DBManager : Singleton<DBManager>
         }
     }
     
-    public void IncreaseWinData()
+    public void UpdatePlayerWin()
     {
         Dictionary<string, object> dto;
         
@@ -115,7 +115,7 @@ public class DBManager : Singleton<DBManager>
         });
     }
     
-    public void IncreaseDefeatData()
+    public void UpdatePlayerDefeat()
     {
         Dictionary<string, object> dto;
         
