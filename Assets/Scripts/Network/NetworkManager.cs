@@ -506,7 +506,7 @@ namespace Network
             }
             else
             {
-                GameUIInstance.roundText.text = $"게임이 종료되었습니다!";
+                GameUIInstance.roundText.text = $"라운드가 종료되었습니다!";
                 winnerNick = RoomPlayerList.Get(currentData.Winner).NickName.ToString();
                 defeaterNick = RoomPlayerList.Get(currentData.Defeater).NickName.ToString();
             }

@@ -1035,6 +1035,8 @@ MonoBehaviour:
     SpecialUp: {fileID: 0}
     SpecialDown: {fileID: 0}
     ReverseHorizontalMove: {fileID: 0}
+    IsGyroOn: {fileID: 0}
+    ResetGyro: {fileID: 0}
 --- !u!4 &147223794
 Transform:
   m_ObjectHideFlags: 0

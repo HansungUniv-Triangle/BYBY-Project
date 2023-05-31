@@ -1053,6 +1053,7 @@ MonoBehaviour:
   shootCount: 0
   hitCount: 0
   IsVibrateOn: 1
+  IsGyroOn: 1
 --- !u!4 &1765604498
 Transform:
   m_ObjectHideFlags: 0
