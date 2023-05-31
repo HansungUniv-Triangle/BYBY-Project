@@ -463,6 +463,8 @@ namespace Network
         /// </summary>
         private void ViewSynergySelect()
         {
+            PlayerCharacter.InitialStatus();
+            
             GameUIInstance.behaviourObject.SetActive(false);
             GameUIInstance.gameUIGroup.SetActive(false);
             PlayerCamera.ChangeCameraMode(CameraMode.None);
@@ -606,12 +608,12 @@ namespace Network
 
             if (winnerRef == Runner.LocalPlayer)
             {
-                DBManager.Instance.IncreaseWinData();
+                DBManager.Instance.UpdatePlayerWin();
                 GameUIInstance.ActiveGameWin(win, defeat, winScore, defeatScore);
             }
             else
             {
-                DBManager.Instance.IncreaseDefeatData();
+                DBManager.Instance.UpdatePlayerDefeat();
                 GameUIInstance.ActiveGameDefeat(win, defeat, winScore, defeatScore);
             }
         }
@@ -714,7 +716,7 @@ namespace Network
         
         private void SpawnPlayerCharacter()
         {
-            var spawnPoint = new Vector3(30, 30, 30);
+            var spawnPoint = new Vector3(Random.Range(0, 30), 30, Random.Range(0, 30));
             if (Physics.Raycast(spawnPoint, Vector3.down, out var hit, 100f, layerMask: (int)Layer.World))
             {
                 spawnPoint = hit.point + new Vector3(0, 1, 0);
@@ -882,7 +884,7 @@ namespace Network
         {
             if (RoomPlayerList.ContainsKey(playerRef))
             {
-                throw new Exception("플레이어 추가, 방 리스트에 해당 플레이어가 이미 존재함.");
+                return;
             }
             
             RoomPlayerList.Add(playerRef, new RoomPlayerData {

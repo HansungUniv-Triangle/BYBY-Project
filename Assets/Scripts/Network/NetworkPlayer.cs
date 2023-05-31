@@ -626,7 +626,7 @@ namespace Network
 
         private void OnMaterialChanged()
         {
-            transform.GetChild(0).GetChild(0).GetChild(1).GetChild(0).GetComponent<SkinnedMeshRenderer>().material = GameManager.Instance.CatMaterialList[materialIndex];
+            transform.GetChild(0).GetChild(0).GetChild(0).GetChild(1).GetChild(0).GetComponent<SkinnedMeshRenderer>().material = GameManager.Instance.CatMaterialList[materialIndex];
         }
 
         public override void Spawned()
@@ -1016,7 +1016,7 @@ namespace Network
             IsCameraFocused = false;
             _canvasManager.SwitchUI(CanvasType.GameMoving);
             
-            var sniper = FindObjectOfType<NetworkSniperRifle>();
+            var sniper = GetComponentInChildren<NetworkSniperRifle>();
             if (sniper != null)
             {
                 sniper.ForcedAttack();

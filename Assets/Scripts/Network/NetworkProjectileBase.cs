@@ -9,23 +9,8 @@ namespace Network
 {
     public abstract class NetworkProjectileBase : NetworkBehaviour
     {
-        [Networked(OnChanged = nameof(DeActiveNetworkObject))] 
-        protected NetworkBool NetworkActive { get; set; } = true;
-
-        private static void DeActiveNetworkObject(Changed<NetworkProjectileBase> changed)
-        {
-            changed.Behaviour.DeActiveNetworkObject();
-        }
-        
-        private void DeActiveNetworkObject()
-        {
-            gameObject.SetActive(NetworkActive);
-        }
-        
         protected NetworkProjectileHolder _projectileHolder;
         protected Rigidbody _rigidbody;
-        
-        [Networked] private int NetWeaponData { get; set; } = -1;
 
         private Weapon _weaponData;
         public Weapon WeaponData
@@ -54,12 +39,12 @@ namespace Network
         public float IndividualDamage;
 
         // 네트워크 관련
-        [Networked(OnChanged = nameof(HitEffect))] 
-        protected NetworkBool IsHit { get; set; }
-        [Networked] 
-        protected NetworkBool IsEnemyHit { get; set; }
+        [Networked(OnChanged = nameof(HitEffect))] protected NetworkBool IsHit { get; set; }
+        [Networked] protected NetworkBool IsEnemyHit { get; set; }
+        [Networked] protected NetworkBool NetworkActive { get; set; } = true;
+        [Networked] private int NetWeaponData { get; set; } = -1;
 
-        private bool isSendDestroy = false;
+        private bool _isSendDestroy = false;
 
         private static void HitEffect(Changed<NetworkProjectileBase> changed)
         {
@@ -71,7 +56,6 @@ namespace Network
             EffectManager.Instance.PlayEffect(particle, transform.position, -transform.forward);
 
             SoundManager.Instance.Play(WeaponData.hitSoundPath, Sound.Effect);
-            //SoundManager.Instance.Play3DSound(WeaponData.hitSoundPath, Sound.Effect, transform.position);
         }
         
         [Networked] public float Damage { get; set; }
@@ -105,25 +89,31 @@ namespace Network
 
         public override void FixedUpdateNetwork()
         {
-            DamageSave = Damage;
-
-            if (!HasStateAuthority) return;
-            
-            Distance += Runner.DeltaTime * TotalVelocity;
-            Damage = TotalDamage;
-            
-            UpdateProjectile();
-            
-            if (IsExpirationProjectile())
-            {
-                if (!isSendDestroy && _projectileHolder.WeaponData.isMainWeapon && Distance > MaxRange)
-                {
-                    isSendDestroy = true;
-                    GameManager.Instance.CheckBulletBetweenEnemyAndMe(transform.position);
-                }
-                
-                DestroyProjectile();
+            if (NetworkActive != gameObject.activeSelf)
+            { 
+                gameObject.SetActive(NetworkActive);
             }
+            
+            if (NetworkActive && HasStateAuthority)
+            {
+                Distance += Runner.DeltaTime * TotalVelocity;
+                Damage = TotalDamage;
+            
+                UpdateProjectile();
+            
+                if (IsExpirationProjectile())
+                {
+                    if (!_isSendDestroy && _projectileHolder.WeaponData.isMainWeapon && Distance > MaxRange)
+                    {
+                        _isSendDestroy = true;
+                        GameManager.Instance.CheckBulletBetweenEnemyAndMe(transform.position);
+                    }
+                
+                    DestroyProjectile();
+                }
+            }
+            
+            DamageSave = Damage;
         }
         
         public void DestroyProjectile()
@@ -136,7 +126,7 @@ namespace Network
             if(IsHit || !HasStateAuthority) return;
             
             if (other.gameObject.TryGetComponent(out ICollisionObjectEvent collisionObject))
-            { // 추후 해당 인터페이스로 변경할 것.
+            {
                 collisionObject.CollisionObjectEvent(Object);
                 if (!collisionObject.CollisionObjectIsHitCheck())
                 {
