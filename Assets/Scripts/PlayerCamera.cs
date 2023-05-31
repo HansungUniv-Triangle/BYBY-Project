@@ -33,7 +33,7 @@ public class PlayerCamera : MonoBehaviour
     
     #region UI Settings
     public float zAngle;
-    private float zOffset = 0.14f;
+    private float zOffset = 0.8f;
     private bool isGyroOn = true;
 
     public void IncreaseZoffset(GameObject text) { text.GetComponent<TextMeshProUGUI>().text = (zOffset += 0.01f).ToString("F2"); }
@@ -161,8 +161,9 @@ public class PlayerCamera : MonoBehaviour
         if (!isGyroOn) { return; }
 
         var gyroRotationRate = Input.gyro.rotationRateUnbiased;
-        zAngle = Mathf.Clamp(zAngle += gyroRotationRate.z * zOffset, -7.1f, 7.1f);
-        transform.Rotate(new Vector3(0, 0, zAngle));
+
+        zAngle = Mathf.Clamp(zAngle += gyroRotationRate.z * zOffset, -30f, 30f);
+        transform.rotation = Quaternion.Euler(transform.eulerAngles.x, transform.eulerAngles.y, zAngle);
     }
 
     private void GameView()

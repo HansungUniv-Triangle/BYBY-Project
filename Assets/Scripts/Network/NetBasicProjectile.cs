@@ -3,6 +3,7 @@ using Fusion;
 using TMPro;
 using UnityEngine;
 using Types;
+using UIHolder;
 
 namespace Network
 {

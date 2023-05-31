@@ -4,17 +4,12 @@ using UnityEngine;
 
 public class UIRotateBasedOnCamera : MonoBehaviour
 {
-    private RectTransform _rectTransform;
-    private Transform _camera;
-    private void Awake()
-    {
-        _rectTransform = GetComponent<RectTransform>();
-        _camera = Camera.main.transform;
-    }
+    public List<RectTransform> uiList;
 
     // Update is called once per frame
     void Update()
     {
-        _rectTransform.rotation = Quaternion.Euler(0, 0, -_camera.eulerAngles.z);
+        foreach(var ui in uiList)
+            ui.rotation = Quaternion.Euler(0, 0, -transform.eulerAngles.z);
     }
 }

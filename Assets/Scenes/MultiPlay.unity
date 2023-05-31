@@ -965,6 +965,7 @@ MonoBehaviour:
   attackButton: {fileID: 1513434128}
   reloadButton: {fileID: 1241926207}
   dodgeButton: {fileID: 1428162714}
+  disconnectButton: {fileID: 0}
   playerHpBarImage: {fileID: 2124104565}
   enemyHpBarImage: {fileID: 1705874187}
   gameUIGroup: {fileID: 1057175912}
@@ -3375,6 +3376,7 @@ GameObject:
   - component: {fileID: 330585544}
   - component: {fileID: 330585547}
   - component: {fileID: 330585548}
+  - component: {fileID: 330585549}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -3400,7 +3402,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.7882353, g: 0.9843137, b: 1, a: 0}
+  m_BackGroundColor: {r: 0.29803923, g: 0.92941177, b: 1, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -3499,6 +3501,23 @@ MonoBehaviour:
   horizontalSpeed: 0.1
   _worldViewPos: {fileID: 1607352924}
   zAngle: 0
+--- !u!114 &330585549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330585543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8c0c1936c4e72647b1f320f6aa4260c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uiList:
+  - {fileID: 857902445}
+  - {fileID: 2078673924}
+  - {fileID: 1082768935}
+  - {fileID: 686734173203666623}
 --- !u!1 &364565525
 GameObject:
   m_ObjectHideFlags: 0
@@ -8909,7 +8928,6 @@ GameObject:
   - component: {fileID: 1082768938}
   - component: {fileID: 1082768937}
   - component: {fileID: 1082768936}
-  - component: {fileID: 1082768939}
   m_Layer: 5
   m_Name: ResetGyro
   m_TagString: Untagged
@@ -9032,18 +9050,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1082768934}
   m_CullTransparentMesh: 1
---- !u!114 &1082768939
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1082768934}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b8c0c1936c4e72647b1f320f6aa4260c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1097180523
 GameObject:
   m_ObjectHideFlags: 0
@@ -13279,6 +13285,55 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1533426865}
   m_CullTransparentMesh: 1
+--- !u!1 &1548811553
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1548811555}
+  - component: {fileID: 1548811554}
+  m_Layer: 0
+  m_Name: URP_Volume
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1548811554
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1548811553}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IsGlobal: 1
+  priority: 0
+  blendDistance: 0
+  weight: 1
+  sharedProfile: {fileID: 11400000, guid: a6560a915ef98420e9faacc1c7438823, type: 2}
+--- !u!4 &1548811555
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1548811553}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1550927658
 GameObject:
   m_ObjectHideFlags: 0
