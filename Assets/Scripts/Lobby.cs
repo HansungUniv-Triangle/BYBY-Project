@@ -21,7 +21,7 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
 
     [SerializeField]
     private Transform _tutorialOrigin;
-    private Transform[] _tutorials = new Transform[14];
+    private Transform[] _tutorials = new Transform[17];
 
     [SerializeField]
     private Transform _tutorialOrderOrigin;
