@@ -68,7 +68,8 @@ public class SynergyPageManager : MonoBehaviour
                 {
                     synergyPanel.SetActive(false);
                 });
-        }    
+        }
+        _synergySelectPanel.DisableStat();
     }
 
     public void MakeSynergyPage()
