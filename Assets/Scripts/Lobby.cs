@@ -19,9 +19,17 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
     private Transform _menuOrigin;
     private Transform[] _menu = new Transform[4];
 
+    [SerializeField]
+    private Transform _tutorialOrigin;
+    private Transform[] _tutorials = new Transform[17];
+
+    [SerializeField]
+    private Transform _tutorialOrderOrigin;
+
     private GameObject _rankingPopup;
     private GameObject _settingsPopup;
     private GameObject _searchPopup;
+    private GameObject _tutorialPopup;
 
     public GameObject _tab_NumberOfWin;
     public GameObject _tab_Odds;
@@ -32,6 +40,7 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
     private RectTransform[] _spawnPoint;
 
     public int CurrentPage { get; private set; }
+    public int TutorialCurrentPage { get; private set; }
 
     [SerializeField] private float swipeThreshold = 100f;
     [SerializeField] private float swipeDurationThreshold = 0.3f;
@@ -55,16 +64,24 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
     private void Awake()
     {
         CurrentPage = 0;
+        TutorialCurrentPage = 0;
         for(int i = 0; i < _menuOrigin.childCount; i++)
         {
             _menu[i] = _menuOrigin.GetChild(i);
         }
+
+        for (int i = 0; i < _tutorialOrigin.childCount; i++)
+        {
+            _tutorials[i] = _tutorialOrigin.GetChild(i);
+        }
+
         _buttons = _buttonOrigin.GetComponentsInChildren<Button>();
         _spawnPoint = _spawnPointOrigin.GetComponentsInChildren<RectTransform>();
-        _rankingPopup = transform.GetChild(1).transform.GetChild(6).gameObject;
-        _settingsPopup = transform.GetChild(1).transform.GetChild(7).gameObject;
-        _searchPopup = transform.GetChild(1).transform.GetChild(8).gameObject;
-        
+        _rankingPopup = transform.GetChild(1).transform.GetChild(7).gameObject;
+        _settingsPopup = transform.GetChild(1).transform.GetChild(8).gameObject;
+        _searchPopup = transform.GetChild(1).transform.GetChild(9).gameObject;
+        _tutorialPopup = transform.GetChild(1).transform.GetChild(10).gameObject;
+
         IsGyroOn.isOn = GameManager.Instance.IsGyroOn;
         IsGyroOn.onValueChanged.AddListener(delegate
         {
@@ -103,16 +120,17 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
         switch (tabName)
         {
             case "½Â¸® ¼ö":
-                {
-                    for(int i = 0; i < _tab_NumberOfWin.transform.childCount; i++)
-                    {
-                        Destroy(_tab_NumberOfWin.transform.GetChild(i).gameObject);
-                    }
+                { 
                     _tab_NumberOfWin.SetActive(true);
                     _tab_Odds.SetActive(false);
                     _tab_WinningStreak.SetActive(false);
                     DBManager.Instance.GetManyWinRanking().ContinueWithOnMainThread(task =>
                     {
+                        for (int i = 0; i < _tab_NumberOfWin.transform.childCount; i++)
+                        {
+                            Destroy(_tab_NumberOfWin.transform.GetChild(i).gameObject);
+                        }
+
                         var list = task.Result;
                         int count = 1;
 
@@ -127,16 +145,17 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
                     break;
                 }
             case "½Â·ü":
-                {
-                    for (int i = 0; i < _tab_Odds.transform.childCount; i++)
-                    {
-                        Destroy(_tab_Odds.transform.GetChild(i).gameObject);
-                    }
+                {    
                     _tab_NumberOfWin.SetActive(false);
                     _tab_Odds.SetActive(true);
                     _tab_WinningStreak.SetActive(false);
                     DBManager.Instance.GetWinRatingRanking().ContinueWithOnMainThread(task =>
                     {
+                        for (int i = 0; i < _tab_Odds.transform.childCount; i++)
+                        {
+                            Destroy(_tab_Odds.transform.GetChild(i).gameObject);
+                        }
+
                         var list = task.Result;
                         int count = 1;
                         
@@ -153,15 +172,16 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
                 }
             case "¿¬½Â":
                 {
-                    for (int i = 0; i < _tab_WinningStreak.transform.childCount; i++)
-                    {
-                        Destroy(_tab_WinningStreak.transform.GetChild(i).gameObject);
-                    }
                     _tab_NumberOfWin.SetActive(false);
                     _tab_Odds.SetActive(false);
                     _tab_WinningStreak.SetActive(true);
                     DBManager.Instance.GetWinStraightRanking().ContinueWithOnMainThread(task =>
                     {
+                        for (int i = 0; i < _tab_WinningStreak.transform.childCount; i++)
+                        {
+                            Destroy(_tab_WinningStreak.transform.GetChild(i).gameObject);
+                        }
+
                         var list = task.Result;
                         int count = 1;
 
@@ -222,6 +242,18 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
     public void PopupClose_Search()
     {
         _searchPopup.SetActive(false);
+    }
+
+    public void PopupClose_Tutorial()
+    {
+        _tutorialPopup.SetActive(false);
+    }
+
+    public void ButtonClicked_Tutorial()
+    {
+        _tutorialPopup.SetActive(true); 
+        _tutorials[TutorialCurrentPage].gameObject.SetActive(true);
+        ChangeTutorialOrder();
     }
 
     public void UnderButtonClicked_Battle()
@@ -298,6 +330,65 @@ public class Lobby : MonoBehaviour, IDragHandler, IEndDragHandler
                 NextMenu();
             }
         }
+    }
+
+    public void ChangeTutorialOrder()
+    {
+        for (int i = 0; i < _tutorialOrderOrigin.childCount; i++)
+        {
+            if (i == TutorialCurrentPage)
+
+            {
+                _tutorialOrderOrigin.transform.GetChild(TutorialCurrentPage).transform.GetChild(0).gameObject.SetActive(true);
+            }
+            else
+            {
+                _tutorialOrderOrigin.transform.GetChild(i).transform.GetChild(0).gameObject.SetActive(false);
+            }
+        }
+
+    }
+
+    public void BeforeTutorial()
+    {
+        var condition = TutorialCurrentPage > 0;
+        var thisPage = _tutorials[TutorialCurrentPage];
+        var prevPage = condition ? _tutorials[TutorialCurrentPage - 1] : _tutorials[^1];
+
+        if (condition)
+        {
+            TutorialCurrentPage--;
+        }
+        else
+        {
+            TutorialCurrentPage = _tutorials.Length - 1;
+        }
+
+        thisPage.gameObject.SetActive(false);
+        prevPage.gameObject.SetActive(true);
+
+        ChangeTutorialOrder();
+    }
+
+    public void NextTutorial()
+    {
+        var condition = TutorialCurrentPage < (_tutorials.Length - 1);
+        var thisPage = _tutorials[TutorialCurrentPage];
+        var nextPage = condition ? _tutorials[TutorialCurrentPage + 1] : _tutorials[0];
+
+        if (condition)
+        {
+            TutorialCurrentPage++;
+        }
+        else
+        {
+            TutorialCurrentPage = 0;
+        }
+
+        thisPage.gameObject.SetActive(false);
+        nextPage.gameObject.SetActive(true);
+
+        ChangeTutorialOrder();
     }
 
     private void ChangeButtons()
