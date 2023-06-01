@@ -71,8 +71,8 @@ public class TouchRotateCamera : MonoBehaviour, IBeginDragHandler, IDragHandler,
         draggingPos = eventData.position;
         draggingPos = PlayerCamera.GetRotatedCoordinates(draggingPos.x, draggingPos.y);
 
-        yAngle = yAngleTemp + (draggingPos.x - beginPos.x) * rotationSpeed * 2 / Screen.width;
-        xAngle = xAngleTemp - (draggingPos.y - beginPos.y) * rotationSpeed * 2 / Screen.height;
+        yAngle = yAngleTemp + (draggingPos.x - beginPos.x) * rotationSpeed * 3 / Screen.width;
+        xAngle = xAngleTemp - (draggingPos.y - beginPos.y) * rotationSpeed * 3 / Screen.height;
         
         if (xAngle > 50) xAngle = 50;
         if (xAngle < -60) xAngle = -60;
