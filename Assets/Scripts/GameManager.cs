@@ -329,7 +329,7 @@ public class PlayerBehaviorAnalyzer
     
     public readonly Dictionary<BehaviourEvent, Enum[]> BehaviourEventStats = new() {
         { BehaviourEvent.피격, new Enum[] { CharStat.Health, CharStat.Armor} },
-        { BehaviourEvent.회피, new Enum[] { CharStat.Speed, CharStat.Rolling} },
+        { BehaviourEvent.회피, new Enum[] { CharStat.Speed, CharStat.Dodge} },
         { BehaviourEvent.명중, new Enum[] { CharStat.Calm, WeaponStat.Velocity} },
         { BehaviourEvent.피해, new Enum[] { WeaponStat.Attack, WeaponStat.Interval} },
         { BehaviourEvent.특화, new Enum[] { WeaponStat.Special} },
@@ -348,7 +348,7 @@ public class PlayerBehaviorAnalyzer
         {
             { CharStat.Health, 0 },
             { CharStat.Speed, 0 },
-            { CharStat.Rolling, 0 },
+            { CharStat.Dodge, 0 },
             { CharStat.Armor, 0 },
             { CharStat.Calm, 0 },
             { WeaponStat.Interval, 0 },
@@ -364,7 +364,7 @@ public class PlayerBehaviorAnalyzer
         {
             { CharStat.Health, 0 },
             { CharStat.Speed, 0 },
-            { CharStat.Rolling, 0 },
+            { CharStat.Dodge, 0 },
             { CharStat.Armor, 0 },
             { CharStat.Calm, 0 },
             { WeaponStat.Interval, 0 },
@@ -380,7 +380,7 @@ public class PlayerBehaviorAnalyzer
         {
             { CharStat.Health, 0 },
             { CharStat.Speed, 0 },
-            { CharStat.Rolling, 0 },
+            { CharStat.Dodge, 0 },
             { CharStat.Armor, 0 },
             { CharStat.Calm, 0 },
             { WeaponStat.Interval, 0 },
@@ -396,7 +396,7 @@ public class PlayerBehaviorAnalyzer
         {
             { CharStat.Health, 0 },
             { CharStat.Speed, 0 },
-            { CharStat.Rolling, 0 },
+            { CharStat.Dodge, 0 },
             { CharStat.Armor, 0 },
             { CharStat.Calm, 0 },
             { WeaponStat.Interval, 0 },
@@ -506,18 +506,18 @@ public class PlayerBehaviorAnalyzer
             .AddCorrelationValue(CharStat.Health, 0.5f);
 
         CharStats.SetCorrelationType(CharStat.Speed)
-            .AddCorrelationValue(CharStat.Calm, -0.1f)
+            .AddCorrelationValue(CharStat.Speed, -0.1f)
             .AddCorrelationValue(CharStat.Calm, 0.2f)
-            .AddCorrelationValue(CharStat.Rolling, 0.1f)
+            .AddCorrelationValue(CharStat.Dodge, 0.1f)
             .AddCorrelationValue(WeaponStat.Range, 0.2f)
             .AddCorrelationValue(WeaponStat.Velocity, 0.2f);
 
-        CharStats.SetCorrelationType(CharStat.Rolling)
-            .AddCorrelationValue(CharStat.Rolling, -0.5f)
+        CharStats.SetCorrelationType(CharStat.Dodge)
+            .AddCorrelationValue(CharStat.Dodge, -0.5f)
             .AddCorrelationValue(CharStat.Speed, 0.2f);
         
         CharStats.SetCorrelationType(CharStat.Calm)
-            .AddCorrelationValue(CharStat.Rolling, -0.4f)
+            .AddCorrelationValue(CharStat.Calm, -0.4f)
             .AddCorrelationValue(CharStat.Speed, 0.2f);
 
         WeaponStats.SetCorrelationType(WeaponStat.Interval)

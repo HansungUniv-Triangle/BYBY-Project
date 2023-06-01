@@ -98,7 +98,7 @@ public class Synergy : ScriptableObject
         {
             CharStat.Health => "체력",
             CharStat.Speed => "속도",
-            CharStat.Rolling => "회피",
+            CharStat.Dodge => "회피",
             CharStat.Armor => "방어",
             CharStat.Calm => "차분",
             _ => throw new ArgumentOutOfRangeException(nameof(charStat), charStat, null)

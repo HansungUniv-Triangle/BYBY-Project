@@ -5,6 +5,7 @@ using Fusion;
 using GameStatus;
 using TMPro;
 using Types;
+using UIHolder;
 using UnityEngine;
 using Utils;
 
@@ -82,7 +83,7 @@ namespace Network
 
         public override void FixedUpdateNetwork()
         {
-            if (!HasInputAuthority || !IsAttacking || !IsDoneShootAction || !GameManager.Instance.NetworkManager.CanControlCharacter)
+            if (!HasInputAuthority || !IsAttacking || !GameManager.Instance.NetworkManager.CanControlCharacter)
             {
                 return;
             }
@@ -138,6 +139,11 @@ namespace Network
 
         protected virtual bool CanAttack()
         {
+            if (!IsDoneShootAction)
+            {
+                return false;
+            }
+            
             if (_remainBullet <= 0 && _weaponData.isMainWeapon)
             {
                 ReloadBullet();
@@ -179,6 +185,8 @@ namespace Network
 
         protected void ReloadBullet()
         {
+            var gameUI = GameManager.Instance.UIHolder as GameUI ?? FindObjectOfType<GameUI>();
+            
             _reloadSequence.Kill();
             
             _reloadSequence = DOTween.Sequence();
@@ -186,10 +194,12 @@ namespace Network
             _reloadSequence
                 .OnStart(() =>
                 {
+                    gameUI.UpdateCircleReload(true);
                     IsDoneShootAction = false;
                 })
                 .OnComplete(() =>
                 {
+                    gameUI.UpdateCircleReload(false);
                     IsDoneShootAction = true;
                 });
 
