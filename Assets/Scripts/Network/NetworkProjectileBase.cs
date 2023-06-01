@@ -77,6 +77,11 @@ namespace Network
 
         public override void Spawned()
         {
+            if (!HasStateAuthority)
+            {
+                gameObject.layer = LayerMask.NameToLayer("Bullet");
+            }
+
             GameManager.Instance.NetworkManager.AddNetworkObjectInList(Object);
             EffectManager.Instance.PlayEffect(WeaponData.bulletShoot, transform.position, -transform.forward);
             SoundManager.Instance.Play(WeaponData.shootSoundPath, Sound.Effect);

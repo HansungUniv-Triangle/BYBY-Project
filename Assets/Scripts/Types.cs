@@ -16,6 +16,7 @@ namespace Types
         World = 1 << 6,
         Player = 1 << 7,
         Enemy = 1 << 8,
+        Bullet = 1 << 9,
     }
 
     public enum Character

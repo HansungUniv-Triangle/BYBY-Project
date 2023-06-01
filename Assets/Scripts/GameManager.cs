@@ -506,7 +506,7 @@ public class PlayerBehaviorAnalyzer
             .AddCorrelationValue(CharStat.Health, 0.5f);
 
         CharStats.SetCorrelationType(CharStat.Speed)
-            .AddCorrelationValue(CharStat.Calm, -0.1f)
+            .AddCorrelationValue(CharStat.Speed, -0.1f)
             .AddCorrelationValue(CharStat.Calm, 0.2f)
             .AddCorrelationValue(CharStat.Dodge, 0.1f)
             .AddCorrelationValue(WeaponStat.Range, 0.2f)
@@ -517,7 +517,7 @@ public class PlayerBehaviorAnalyzer
             .AddCorrelationValue(CharStat.Speed, 0.2f);
         
         CharStats.SetCorrelationType(CharStat.Calm)
-            .AddCorrelationValue(CharStat.Dodge, -0.4f)
+            .AddCorrelationValue(CharStat.Calm, -0.4f)
             .AddCorrelationValue(CharStat.Speed, 0.2f);
 
         WeaponStats.SetCorrelationType(WeaponStat.Interval)

@@ -751,7 +751,7 @@ namespace Network
                 CatRotate = _catController.Rotation;
             }
             
-            var hitColliders = Physics.OverlapSphere(transform.position, 10f, (int)Layer.Enemy);
+            var hitColliders = Physics.OverlapSphere(transform.position, 5f, (int)Layer.Bullet);
             foreach (var hitCollider in hitColliders)
             {
                 if (hitCollider.TryGetComponent(out NetworkObject id))
