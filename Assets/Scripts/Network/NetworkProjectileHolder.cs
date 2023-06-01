@@ -82,7 +82,7 @@ namespace Network
 
         public override void FixedUpdateNetwork()
         {
-            if (!HasInputAuthority || !IsAttacking || !IsDoneShootAction || !GameManager.Instance.NetworkManager.CanControlCharacter)
+            if (!HasInputAuthority || !IsAttacking || !GameManager.Instance.NetworkManager.CanControlCharacter)
             {
                 return;
             }
@@ -138,6 +138,11 @@ namespace Network
 
         protected virtual bool CanAttack()
         {
+            if (!IsDoneShootAction)
+            {
+                return false;
+            }
+            
             if (_remainBullet <= 0 && _weaponData.isMainWeapon)
             {
                 ReloadBullet();
