@@ -29,9 +29,9 @@ namespace Types
     {
         Health, // 체력
         Speed, // 속도
-        Rolling, // 구르기
-        Armor, // 방어력
-        Calm // 차분함
+        Dodge, // 회피
+        Armor, // 방어
+        Calm // 차분
     }
 
     public enum WeaponStat

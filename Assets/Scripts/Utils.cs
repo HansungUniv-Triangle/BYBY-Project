@@ -33,13 +33,13 @@ namespace Utils
             switch (stat.Type)
             {
                 case CharStat.Health:
-                    return 40 + total;
+                    return total * 5;
                 case CharStat.Speed:
-                    return total * 0.4f;
-                case CharStat.Rolling:
-                    return total;
+                    return 2 + total * 0.2f;
+                case CharStat.Dodge:
+                    return 15 + total * 0.5f;
                 case CharStat.Armor:
-                    return 100 / (100 + total);
+                    return 50 / (50 + total);
                 case CharStat.Calm:
                     var value = 200 - (total * 5);
                     return value > 0 ? value : 1;

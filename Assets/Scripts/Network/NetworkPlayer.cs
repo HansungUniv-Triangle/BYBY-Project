@@ -808,10 +808,10 @@ namespace Network
             if (_isDodge)
             {
                 var dodgeDir = _lastMoveDir;
-                var _dodgeForce = _baseCharStat.GetStat(CharStat.Rolling).Total;
+                var dodgeForce = StatConverter.ConversionStatValue(_baseCharStat.GetStat(CharStat.Dodge));
 
-                dodgeDir.x *= _dodgeForce;
-                dodgeDir.z *= _dodgeForce;
+                dodgeDir.x *= dodgeForce;
+                dodgeDir.z *= dodgeForce;
                 
                 _characterController.Move(dodgeDir * Runner.DeltaTime);
                 _catController.RotateModel(_lastMoveDir, 18f);
@@ -878,7 +878,7 @@ namespace Network
             if (!_isDodge && _isDodgeReady)
             {
                 // 쿨타임 최소 0.5, 최대 2.5
-                float cooltime = Mathf.Clamp(0.5f + (2.0f - ((_baseCharStat.GetStat(CharStat.Rolling).Total - 10f) * 0.1f)), 0.5f, 2.5f);
+                float cooltime = Mathf.Clamp(0.5f + (2.0f - ((_baseCharStat.GetStat(CharStat.Dodge).Total - 10f) * 0.1f)), 0.5f, 2.5f);
 
                 AnimationIdx = 8;
                 _isDodge = true;
@@ -1094,12 +1094,12 @@ namespace Network
         public string DecreaseJump() { return (--_jumpForce).ToString(); }
 
         public string IncreaseDodge(){
-            _settingsStatList.Add(new Stat<CharStat>(CharStat.Rolling, 1, 0).SetRatio(0));
-            return AdditionalWork(CharStat.Rolling);
+            _settingsStatList.Add(new Stat<CharStat>(CharStat.Dodge, 1, 0).SetRatio(0));
+            return AdditionalWork(CharStat.Dodge);
         }
         public string DecreaseDodge(){
-            _settingsStatList.Add(new Stat<CharStat>(CharStat.Rolling, -1, 0).SetRatio(0));
-            return AdditionalWork(CharStat.Rolling);
+            _settingsStatList.Add(new Stat<CharStat>(CharStat.Dodge, -1, 0).SetRatio(0));
+            return AdditionalWork(CharStat.Dodge);
         }
 
         public string IncreaseCalm()
