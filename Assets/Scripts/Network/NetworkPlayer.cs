@@ -466,22 +466,12 @@ namespace Network
         public void ToggleShooting()
         {
             _isShooting = !_isShooting;
+            _gameUI.UpdateBulletCircle(_isShooting);
             ApplyShooting(_isShooting);
         }
 
         private void ApplyShooting(bool shooting)
         {
-            if (shooting)
-            {
-                _gameUI.bulletCircle.SetActive(true);
-                _gameUI.attackCircle.SetActive(false);
-            }
-            else
-            {
-                _gameUI.attackCircle.SetActive(true);
-                _gameUI.bulletCircle.SetActive(false);
-            }
-            
             var weapon = GetComponentsInChildren<NetworkProjectileHolder>();
 
             foreach (var networkProjectileHolder in weapon)

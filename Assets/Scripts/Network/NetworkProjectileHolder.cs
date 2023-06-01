@@ -5,6 +5,7 @@ using Fusion;
 using GameStatus;
 using TMPro;
 using Types;
+using UIHolder;
 using UnityEngine;
 using Utils;
 
@@ -184,6 +185,8 @@ namespace Network
 
         protected void ReloadBullet()
         {
+            var gameUI = GameManager.Instance.UIHolder as GameUI ?? FindObjectOfType<GameUI>();
+            
             _reloadSequence.Kill();
             
             _reloadSequence = DOTween.Sequence();
@@ -191,10 +194,12 @@ namespace Network
             _reloadSequence
                 .OnStart(() =>
                 {
+                    gameUI.UpdateCircleReload(true);
                     IsDoneShootAction = false;
                 })
                 .OnComplete(() =>
                 {
+                    gameUI.UpdateCircleReload(false);
                     IsDoneShootAction = true;
                 });
 
