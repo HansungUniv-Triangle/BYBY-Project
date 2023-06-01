@@ -381,8 +381,8 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
                 case CharStat.Speed:
                     speed.text = text + $"\n이동 속도: {Utils.StatConverter.ConversionStatValue(baseStat.GetStat(CharStat.Speed))}";
                     break;
-                case CharStat.Rolling:
-                    rolling.text = text + $"\n회피: {Utils.StatConverter.ConversionStatValue(baseStat.GetStat(CharStat.Rolling))}"; ;
+                case CharStat.Dodge:
+                    rolling.text = text + $"\n회피: {Utils.StatConverter.ConversionStatValue(baseStat.GetStat(CharStat.Dodge))}"; ;
                     break;
                 case CharStat.Armor:
                     armor.text = text + $"\n데미지 {100 - (int)(Utils.StatConverter.ConversionStatValue(baseStat.GetStat(CharStat.Armor))*100f)}% 감소";

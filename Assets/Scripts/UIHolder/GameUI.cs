@@ -40,6 +40,8 @@ namespace UIHolder
 
         public GameObject bulletCircle;
         public Image bulletLine;
+        public Image bulletImage;
+        public Image bulletReloadImage;
         public TextMeshProUGUI bulletText;
 
         public GameObject attackCircle;
@@ -478,6 +480,38 @@ namespace UIHolder
         {
             bulletLine.DOFillAmount(nowBullet == 0 ? 0 : nowBullet / maxBullet, 0.1f);
             bulletText.text = $"{nowBullet:F0}/{maxBullet:F0}";
+        }
+
+        public void UpdateBulletCircle(bool active)
+        {
+            if (active)
+            {
+                bulletCircle.SetActive(true);
+                attackCircle.SetActive(false);
+            }
+            else
+            {
+                attackCircle.SetActive(true);
+                bulletCircle.SetActive(false);
+            }
+        }
+        
+        public void UpdateCircleReload(bool active)
+        {
+            if (active)
+            {
+                bulletText.color = new Color(1f, 1f, 1f, 0.3f);
+                bulletLine.color = new Color(1f, 0.78f, 0f, 0.3f);
+                bulletImage.gameObject.SetActive(false);
+                bulletReloadImage.gameObject.SetActive(true);
+            }
+            else
+            {
+                bulletText.color = new Color(1f, 1f, 1f, 1f);
+                bulletLine.color = new Color(1f, 0.78f, 0f, 1f);
+                bulletImage.gameObject.SetActive(true);
+                bulletReloadImage.gameObject.SetActive(false);
+            }
         }
     }
 }
