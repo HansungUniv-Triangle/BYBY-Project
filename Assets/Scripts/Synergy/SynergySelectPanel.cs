@@ -371,24 +371,24 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
             var amount = baseStat.GetStat(charStatKey).Amount;
             var ratio = baseStat.GetStat(charStatKey).Ratio;
             var sum = amount * ratio;
-            var text = $"+{amount} * {ratio * 100}% = {sum}";
+            var text = $"+{amount} * {ratio * 100}% = {sum:F2}";
             
             switch (charStatKey)
             {
                 case CharStat.Health:
-                    health.text = text + $"\n나의 체력: {Utils.StatConverter.ConversionStatValue(baseStat.GetStat(CharStat.Health))}";
+                    health.text = text + $"\n나의 체력: {Utils.StatConverter.ConversionStatValue(baseStat.GetStat(CharStat.Health)):F2}";
                     break;
                 case CharStat.Speed:
-                    speed.text = text + $"\n이동 속도: {Utils.StatConverter.ConversionStatValue(baseStat.GetStat(CharStat.Speed))}";
+                    speed.text = text + $"\n이동 속도: {Utils.StatConverter.ConversionStatValue(baseStat.GetStat(CharStat.Speed)):F2}";
                     break;
                 case CharStat.Dodge:
-                    rolling.text = text + $"\n회피: {Utils.StatConverter.ConversionStatValue(baseStat.GetStat(CharStat.Dodge))}"; ;
+                    rolling.text = text + $"\n회피: {Utils.StatConverter.ConversionStatValue(baseStat.GetStat(CharStat.Dodge)):F2}"; ;
                     break;
                 case CharStat.Armor:
-                    armor.text = text + $"\n데미지 {100 - (int)(Utils.StatConverter.ConversionStatValue(baseStat.GetStat(CharStat.Armor))*100f)}% 감소";
+                    armor.text = text + $"\n데미지 {100 - (int)(Utils.StatConverter.ConversionStatValue(baseStat.GetStat(CharStat.Armor))*100f):F2}% 감소";
                     break;
                 case CharStat.Calm:
-                    calm.text = text + $"\n차분함: {Utils.StatConverter.ConversionStatValue(baseStat.GetStat(CharStat.Calm))}"; ;
+                    calm.text = text + $"\n차분함: {Utils.StatConverter.ConversionStatValue(baseStat.GetStat(CharStat.Calm)):F2}"; ;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -402,30 +402,30 @@ public class SynergySelectPanel : MonoBehaviour, IDragHandler, IEndDragHandler
         {
             var amount = baseStat.GetStat(weaponStatKey).Amount;
             var ratio = baseStat.GetStat(weaponStatKey).Ratio;
-            var text = $"+{amount} * {ratio * 100}% = {amount * ratio}증가";
+            var text = $"+{amount} * {ratio * 100}% = {amount * ratio:F2}증가";
             
             switch (weaponStatKey)
             {
                 case WeaponStat.Interval:
-                    interval.text = text + $"\n{Utils.StatConverter.ConversionStatValue(baseStat.GetStat(WeaponStat.Interval))}초";
+                    interval.text = text + $"\n{Utils.StatConverter.ConversionStatValue(baseStat.GetStat(WeaponStat.Interval)):F2}초";
                     break;
                 case WeaponStat.Special:
-                    special.text = text + $"\n특화: {(int)Utils.StatConverter.ConversionStatValue(baseStat.GetStat(WeaponStat.Special))}";
+                    special.text = text + $"\n특화: {(int)Utils.StatConverter.ConversionStatValue(baseStat.GetStat(WeaponStat.Special)):F2}";
                     break;
                 case WeaponStat.Attack:
-                    attack.text = text + $"\n공격력: {(int)Utils.StatConverter.ConversionStatValue(baseStat.GetStat(WeaponStat.Attack))}";
+                    attack.text = text + $"\n공격력: {(int)Utils.StatConverter.ConversionStatValue(baseStat.GetStat(WeaponStat.Attack)):F2}";
                     break;
                 case WeaponStat.Range:
-                    range.text = text + $"\n사거리: {(int)Utils.StatConverter.ConversionStatValue(baseStat.GetStat(WeaponStat.Range))}";
+                    range.text = text + $"\n사거리: {(int)Utils.StatConverter.ConversionStatValue(baseStat.GetStat(WeaponStat.Range)):F2}";
                     break;
                 case WeaponStat.Reload:
-                    reload.text = text + $"\n재장전: {(int)Utils.StatConverter.ConversionStatValue(baseStat.GetStat(WeaponStat.Reload))}";
+                    reload.text = text + $"\n재장전: {(int)Utils.StatConverter.ConversionStatValue(baseStat.GetStat(WeaponStat.Reload)):F2}";
                     break;
                 case WeaponStat.Bullet:
-                    bullet.text = text + $"\n탄환 수: {(int)Utils.StatConverter.ConversionStatValue(baseStat.GetStat(WeaponStat.Bullet))}";
+                    bullet.text = text + $"\n탄환 수: {(int)Utils.StatConverter.ConversionStatValue(baseStat.GetStat(WeaponStat.Bullet)):F2}";
                     break;
                 case WeaponStat.Velocity:
-                    velocity.text = text + $"\n탄속: {(int)Utils.StatConverter.ConversionStatValue(baseStat.GetStat(WeaponStat.Velocity))}";
+                    velocity.text = text + $"\n탄속: {(int)Utils.StatConverter.ConversionStatValue(baseStat.GetStat(WeaponStat.Velocity)):F2}";
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
