@@ -4,23 +4,18 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class LongTouch : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
+public class LongTouchGyro : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
     public bool LongTouched;
     private WaitForSeconds OneSec;
-    private WaitForSeconds PointOneSec;
     private Button button;
-
-    private DoubleTouch _doubleTouch;
 
     private void Awake()
     {
-        button = GetComponent<Button>();
         LongTouched = false;
         OneSec = new WaitForSeconds(1f);
-        PointOneSec = new WaitForSeconds(.1f);
-        
-        _doubleTouch = GameObject.Find("Floating Joystick").GetComponent<DoubleTouch>();
+
+        button = GetComponent<Button>();
     }
 
     public void OnPointerDown(PointerEventData eventData)
@@ -33,8 +28,6 @@ public class LongTouch : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         if (LongTouched)
         {
             LongTouched = false;
-            button.enabled = false;
-            StartCoroutine(buttonEnable());
         }
         else
         {
@@ -48,24 +41,33 @@ public class LongTouch : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         LongTouched = true;
 
         button.OnPointerUp(eventData);
-        registerButton();
-        registeredVibrate();
+        Action();
+        Vibrate();
     }
 
-    private IEnumerator buttonEnable()
+    public void Action()
     {
-        yield return PointOneSec;
-        button.enabled = true;
+        Camera.main.GetComponent<PlayerCamera>().ToggleGyro();
+        ChangeUI(GameManager.Instance.IsGyroOn);
     }
 
-    private void registerButton()
+    public void ChangeUI(bool isOn)
     {
-        _doubleTouch.button.transform.Find("Image").gameObject.SetActive(false);
-        _doubleTouch.SetButton(button);
-        button.transform.Find("Image").gameObject.SetActive(true);
+        if (isOn)
+        {
+            transform.GetChild(0).gameObject.SetActive(true);
+            transform.GetChild(1).gameObject.SetActive(false);
+            button.interactable = true;
+        }
+        else
+        {
+            transform.GetChild(0).gameObject.SetActive(false);
+            transform.GetChild(1).gameObject.SetActive(true);
+            button.interactable = false;
+        }
     }
 
-    private void registeredVibrate()
+    private void Vibrate()
     {
         long[] pattern = { 0, 10, 1000, 0 };
         int[] amplitudes = { 0, 1 };

@@ -800,7 +800,7 @@ namespace Network
 
             var speed = StatConverter.ConversionStatValue(_baseCharStat.GetStat(CharStat.Speed));
 
-            if (Vector3.Distance(transform.position, _target.transform.position) < 3)
+            if (Vector3.Distance(transform.position, _target.transform.position) < 3 && v > 0)
             {
                 v = 0;
             }

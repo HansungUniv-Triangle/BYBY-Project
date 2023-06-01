@@ -85,6 +85,8 @@ namespace UIHolder
         public TextMeshProUGUI enemyReloadValueText;
         public Slider reloadSlider;
 
+        public GameObject ResetGyro;
+
         [Serializable]
         public class SubWeapon
         {
@@ -168,10 +170,6 @@ namespace UIHolder
 
             [Header("Moving")]
             public Toggle ReverseHorizontalMove;
-
-            [Header("Gyro")]
-            public Toggle IsGyroOn;
-            public GameObject ResetGyro;
         }
         public Settings settings;
         
@@ -358,16 +356,11 @@ namespace UIHolder
                 {
                     settings.specialText.text = GameManager.Instance.NetworkManager.PlayerCharacter.DecreaseSpecial();
                 });
+            }
 
-                settings.IsGyroOn.isOn = GameManager.Instance.IsGyroOn;
-                if (!GameManager.Instance.IsGyroOn)
-                    CloseMenu(settings.ResetGyro);
-
-                settings.IsGyroOn.onValueChanged.AddListener(delegate
-                {
-                    Camera.main.GetComponent<PlayerCamera>().ToggleGyro();
-                    OpenCloseMenu(settings.ResetGyro);
-                });
+            if (!GameManager.Instance.IsGyroOn)
+            {
+                ResetGyro.GetComponent<LongTouchGyro>().ChangeUI(GameManager.Instance.IsGyroOn);
             }
         }
 
