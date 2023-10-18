@@ -16,3 +16,7 @@
 **지도교수**
 
 황기태
+
+
+## 플레이 영상
+[![Video Label](http://img.youtube.com/vi/FOmLGUQzekQ/0.jpg)](https://www.youtube.com/watch?v=FOmLGUQzekQ)
