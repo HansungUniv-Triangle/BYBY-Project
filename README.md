@@ -1,5 +1,5 @@
 # BYBY
-![graphic](Image\graphic.png)
+![graphic](Image/graphic.png)
 
 BYBY는 유니티와 포톤 퓨전을 사용한 실시간 모바일 슈팅 게임 입니다.
 
@@ -29,7 +29,7 @@ BYBY는 유니티와 포톤 퓨전을 사용한 실시간 모바일 슈팅 게�
 
 ## 소개
 
-![panel](Image\panel.jpg)
+![panel](Image/panel.jpg)
 
 
 
